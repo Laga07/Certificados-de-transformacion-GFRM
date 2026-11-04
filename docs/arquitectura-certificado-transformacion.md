@@ -28,11 +28,9 @@ testnet por ahora.
 ### 2.1 Modelo de dos tokens
 
 - **Token de custodia** — representa gramos de un lote físico concreto. El PDF pide ERC-1155.
-  **Decisión**: no lo implementamos como un ERC-1155 de transferencia libre. El documento mismo
-  dice "no se puede transferir libremente: solo se mueve con el material" — eso choca con la
-  semántica estándar de `safeTransferFrom`/`setApprovalForAll`. Vamos a:
-  - Heredar `ERC1155Upgradeable` de OpenZeppelin (por compatibilidad de eventos/metadata con
-    wallets y exploradores — `TransferSingle`, balance por `(cuenta, loteId)`).
+  **Decisión**: no lo implementamos como un ERC-1155 de transferencia libre. El documento mismo dice "no se puede transferir libremente: solo se mueve con el material" — eso choca con la semántica estándar de `safeTransferFrom`/`setApprovalForAll`. Vamos a:
+  - Heredar `ERC1155Upgradeable` de OpenZeppelin (por compatibilidad de eventos/metadata con wallets y exploradores 
+  — `TransferSingle`, balance por `(cuenta, loteId)`).
   - Sobrescribir el hook de transferencia (`_update` en OZ v5) para que **revierta** si quien
     llama no es el propio contrato de lógica — es decir, no existe transferencia "libre"; el
     balance solo cambia a través de nuestras funciones controladas (acuñar en la entrega, mover
@@ -82,12 +80,26 @@ Esto también acota el costo de gas de forma razonable: el linaje completo (qué
 qué) se guarda **una vez por lote de emisión** (uno por evento de transformación), no una vez
 por kilogramo ni una vez por certificado individual.
 
-### 2.3 "Green Foot no custodia fondos de terceros" como restricción de diseño
+### 2.3 Custodia de fondos: ledger de saldos pendientes + retiro permissionless
 
-Página 16 del documento. Implica que `venderPrimario` no puede acumular un balance de USDT que
-el contrato "retenga" para repartir después — tiene que empujar las 4-5 transferencias de USDT
-(separadores, intermediarios, transformador, plataforma) **dentro de la misma transacción** que
-recibe el pago del comprador. Funcionalmente:
+El primer borrador de este documento proponía empujar (`transfer`) el USDT a cada destinatario
+dentro de la misma transacción de venta. Pensado para un producto real, ese diseño tiene dos
+riesgos serios:
+
+1. **Un solo destinatario puede tumbar el pago de todos los demás.** Un `transfer` que revierte
+   revierte toda la transacción. Con USDT esto no es hipotético: Tether tiene una blacklist
+   administrada por ellos — si *cualquier* dirección de la cadena de reparto queda ahí alguna
+   vez (por cualquier motivo, ajeno a Green Foot), ese pago queda imposible de ejecutar **para
+   siempre**, y con él, el de todos los demás participantes de ese lote de emisión.
+2. **El número de separadores no tiene techo.** Una ruta municipal agrega material de un barrio
+   entero a un solo lote. Un `transfer` por cada uno en un loop hace que el gas de
+   `venderPrimario` crezca con el tamaño del lote, hasta superar el límite de gas de un bloque y
+   volver la venta imposible de ejecutar — justo lo que un producto que va a escalar no se puede
+   permitir.
+
+**Patrón elegido**: el mismo que `PaymentSplitter` de OpenZeppelin (librería auditada, en
+producción en miles de contratos) — contabilidad de saldos pendientes, retiro desacoplado de la
+venta:
 
 ```
 function venderPrimario(loteEmisionId, cantidadKg, precioUSDTporKg):
@@ -95,23 +107,48 @@ function venderPrimario(loteEmisionId, cantidadKg, precioUSDTporKg):
     valorTotal = cantidadKg * precioUSDTporKg
     reparto = calcularReparto(loteEmisionId, cantidadKg, valorTotal)   // ver 2.4
 
-    USDT.transferFrom(comprador, address(this), valorTotal)
+    USDT.safeTransferFrom(comprador, address(this), valorTotal)
     for (destinatario, monto) in reparto:
-        if monto > 0: USDT.transfer(destinatario, monto)
-    // si "reparto" consolida varios separadores en un solo pago mensual (pág. 15-16),
-    // esa consolidación es tarea del indexer/backend, no del contrato -- el contrato
-    // siempre paga a cada wallet individual en el momento de la venta.
-
+        saldoPendiente[destinatario] += monto     // solo storage, sin llamada externa
     certificadoERC20[material].transfer(comprador, cantidadKg)
     marcarVendido(loteEmisionId, cantidadKg)
     emit VentaPrimaria(loteEmisionId, comprador, cantidadKg, valorTotal, reparto)
+
+// Callable por CUALQUIERA -- el propio destinatario, o un bot del backend de Green Foot
+// pagando el gas en nombre de todos, para cumplir "nadie tiene que reclamarlo":
+function retirarPago(destinatario):
+    monto = saldoPendiente[destinatario]
+    requiere: monto > 0
+    saldoPendiente[destinatario] = 0          // effects antes de interactions
+    USDT.safeTransfer(destinatario, monto)
+    emit PagoRetirado(destinatario, monto)
 ```
 
-Si una de las transferencias de USDT falla (ej. un separador con wallet que rechaza, poco
-probable con USDT pero hay que contemplarlo), **toda la transacción revierte** — no hay reparto
-parcial. Esto es más estricto que lo que pide el documento, pero es la única forma honesta de
-cumplir "no custodia fondos" sin introducir un patrón pull-payment con balances pendientes (que
-sí sería una forma de custodia).
+Por qué esto sigue siendo "no custodia fondos de terceros" y no un paso atrás: el USDT que
+respalda cada `saldoPendiente` vive en el contrato (código neutral, sin discreción humana), no
+en una cuenta de Green Foot — cada saldo queda comprometido, público y auditable on-chain desde
+el instante de la venta, igual que con push, solo que la entrega final es una llamada aparte.
+Es, de hecho, el patrón que la mayoría de protocolos que reparten valor entre muchas direcciones
+usan precisamente para poder sostener esa afirmación con seguridad.
+
+Cómo se preserva "nadie tiene que reclamarlo" (pág. 15-16, que de hecho ya proponía un "pago
+mensual consolidado"): un job del backend llama `retirarPago()` para cada dirección con saldo
+pendiente, en lotes, de forma periódica — paga el gas Green Foot, no el participante. Quien no
+quiera esperar puede llamar su propio `retirarPago()` en cualquier momento desde el dashboard.
+Un destinatario problemático (blacklisteado, wallet rota) solo bloquea **su propio** retiro,
+nunca el de los demás ni la venta en sí.
+
+Detalles que se derivan de esto:
+- `retirarPago` lleva `ReentrancyGuardTransient` igual que el resto del contrato, aunque el
+  orden checks-effects-interactions ya lo hace seguro por sí solo.
+- Todas las transferencias de USDT usan `SafeERC20` de OpenZeppelin (`safeTransfer`/
+  `safeTransferFrom`), no la interfaz cruda — protege contra tokens que no devuelven `bool` en
+  `transfer` (defecto conocido del USDT original de Ethereum mainnet; el de Polygon no debería
+  tenerlo, pero `SafeERC20` lo vuelve indiferente).
+- Los porcentajes (35/20/30/15 y la cascada de merma) se calculan en basis points (`/10000`,
+  nunca floats) y el redondeo final (la división entera no reparte nunca el 100% exacto) se
+  asigna a la **plataforma** — único destinatario de cardinalidad 1 en toda la operación, así
+  que absorber unos pocos micro-USDT de diferencia ahí es inofensivo y evita fondos huérfanos.
 
 ### 2.4 Cascada de merma + piso en cero + faltante — algoritmo
 
@@ -144,16 +181,21 @@ si faltanteTotal > 0:
     si transformador en otros: transformador.shareFinal -= porCada
 ```
 
-**Caso borde que el documento no cubre y necesito que confirmes antes de codear**: ¿qué pasa si
-*dos* eslabones generan faltante en el mismo lote de emisión (ej. un intermediario Y el
-transformador ambos pierden más de lo que les tocaba)? El ejemplo del documento (pág. 15) solo
-cubre un eslabón en falta. Dos lecturas razonables:
-  - (a) cada faltante se reparte por separado, secuencialmente, entre los que en ESE momento
-    sigan con `shareFinal > 0`, o
-  - (b) se suman ambos faltantes y se reparten juntos entre quien quede con `shareFinal > 0`
-    después de aplicar ambos pisos en cero.
-  (a) y (b) dan resultados distintos cuando el total de faltantes es grande. Voy a asumir (b)
-  (más simple, un solo pase) salvo que me digas lo contrario.
+**Caso borde resuelto — dos o más eslabones en falta en el mismo lote de emisión** (ej. un
+intermediario Y el transformador ambos pierden más de lo que les tocaba): repartir ese faltante
+combinado entre "los demás" dejaría un grupo cada vez más chico absorbiendo cada vez más, así
+que en vez de eso **se toma directo del grupo de separadores**, pro-rateado entre ellos por kg —
+el mismo piso en cero aplica ahí (un separador nunca queda en negativo; si el faltante superara
+incluso toda la parte de los separadores, el contrato deja esa porción sin cubrir en vez de
+inventar una regla no pedida — sería señal de que ese lote no debió venderse a ese precio).
+
+```
+si count(eslabonesConFaltante) == 1:
+    // regla documentada (pag. 15): reparte entre separadores + demas intermediarios + transformador
+    repartirEntreOtros(faltanteTotal)
+si no:  // 2+ eslabones en falta
+    repartirSoloEntreSeparadores(faltanteTotal)   // pro-rata por kg, con piso en cero
+```
 
 ### 2.5 Roles
 
@@ -184,9 +226,24 @@ Enum real (no libre) porque el material determina a qué contrato ERC-20 de cert
 token de custodia afecta — necesita validación on-chain dura. **Append-only**: agregar un
 material nuevo es agregar un valor al final del enum + desplegar su clone de certificado: no
 rompe nada existente, pero sí requiere un upgrade del contrato núcleo (a diferencia de la
-variante, que es libre/string y no necesita upgrade). Variantes (PET/PEAD/... para plástico,
-periódico/revistas para cartón, etc.) viajan como string/uint8 libre en el registro de la
-entrega — igual que hoy `TipoPlastico`, generalizado.
+variante, que es libre/string y no necesita upgrade).
+
+Variantes: cada material tiene su **propio catálogo de sub-tipos**, libre/append-only igual que
+hoy `TipoPlastico` (uint8 sin enum on-chain, catálogo real vive en el frontend, nunca se
+reordena/inserta en el medio) — el documento es explícito en que esto aplica a varios
+materiales, no solo a plástico (Tabla 10):
+
+| Material | Catálogo de variantes (orden = índice on-chain) |
+|---|---|
+| Plástico | PET, PEAD, PVC, PEBD, PP, PS, Otros |
+| Cartón y papel | Cartón y papel, Periódico, Revistas |
+| Tetrapack | Envases multicapa |
+| Vidrio | (sin variantes todavía — catálogo vacío, se agrega si hace falta) |
+| Metales | Aluminio en latas, Aluminio en perfiles, Ferrosos, Cobre, Otros no ferrosos |
+
+En el struct de la entrega: `material` (enum, validado on-chain) + `varianteId` (uint8 libre,
+su significado depende de `material` — se resuelve contra la tabla de arriba del lado del
+frontend/indexer, igual que hoy).
 
 ### 2.7 Lotes: unión, división, traspaso en dos pasos
 
@@ -226,20 +283,20 @@ funcional:
   legales, no bloquean escribir el contrato, pero sí van a bloquear operar con dinero/personas
   reales.
 
-## 4. Decisiones que necesito que confirmes antes de escribir Solidity
+## 4. Decisiones confirmadas (2026-11-04)
 
-1. El caso borde 2.4 (doble faltante en un mismo lote de emisión) — ¿asumo la lectura (b)?
-2. ¿El "precio por certificado" en `venderPrimario` lo fija el transformador libremente por
-   ahora (precio libre, una de las 3 opciones que el propio documento deja abiertas en la
-   sección 10), o querés dejar un punto de extensión para fijarlo por gobernanza/admin más
-   adelante? Para Fase 1 propongo precio libre fijado por quien vende — es lo más simple y es
-   coherente con "tema abierto" del documento.
-3. ¿`Comprador` necesita poder comprar sin registrarse primero (solo con USDT + wallet), o
-   también debe pasar por `RegistroEntidades` como los demás roles? Propongo que sí se registre
-   (nombre de empresa + flag Ley 9786) porque el retiro de certificado necesita esa identidad
-   para el informe de cumplimiento — pero es tu decisión de producto, no mía.
+1. **Doble faltante en un lote de emisión** → se toma del grupo de separadores, pro-rata por kg
+   (2.4).
+2. **Precio del certificado en `venderPrimario`** → sin objeción, queda como propuse: precio
+   libre, fijado por quien vende (transformador), sin mecanismo de gobernanza en Fase 1. Es la
+   única de las 3 preguntas originales que no se contestó explícitamente — avisar si en
+   realidad se quiere revisar.
+3. **Comprador se registra** → sí, vía `RegistroEntidades` igual que los demás roles (2.5).
+4. **Custodia de fondos** → ledger de saldos pendientes + `retirarPago` permissionless, no
+   push-a-todos en la venta (2.3).
+5. **Variantes por material** → cada material tiene su propio catálogo append-only, no solo
+   plástico (2.6).
 
-Cuando confirmes estos 3 puntos (o digas "seguí con lo que proponés"), el siguiente paso es
-escribir el contrato (`packages/contracts/contracts/`) siguiendo este documento, con su propia
-suite de tests de Hardhat — especialmente para 2.3 y 2.4, que son donde más fácil es introducir
-un bug con dinero real de por medio.
+Con esto el diseño de Fase 1 queda cerrado. Sigue escribir el contrato
+(`packages/contracts/contracts/`) y su propia suite de tests de Hardhat — particularmente para
+2.3 y 2.4, que son donde más fácil es introducir un bug con dinero real de por medio.

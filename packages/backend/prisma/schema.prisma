@@ -1,0 +1,244 @@
+// Prisma schema de GreenMaterialsDAPP: refleja las entidades y eventos
+// emitidos por los contratos en packages/contracts/contracts/PlasticExchange.sol
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Provincia {
+  SanJose
+  Alajuela
+  Cartago
+  Heredia
+  Guanacaste
+  Puntarenas
+  Limon
+}
+
+enum TipoPlastico {
+  Desconocido
+  PET
+  PEAD
+  PVC
+  PEBD
+  PP
+  PS
+  Otros
+}
+
+enum TipoTransaccion {
+  UsuarioACentroGratis
+  UsuarioACentroUsuarioRecibe
+  UsuarioACentroUsuarioPaga
+  UsuarioAMunicipalidad
+  CentroACentro
+  ReconciliacionMunicipal
+}
+
+/// Usuario (mapping RegistroEntidades.usuarios), poblado desde el evento UsuarioRegistrado
+model User {
+  wallet        String    @id @db.VarChar(42)
+  identidadHash String    @unique @db.VarChar(66)
+  provincia     Provincia
+  cantonId      Int
+  loteM2        Int
+  tipoVivienda  Int
+  activo        Boolean   @default(true)
+  registradoEn  DateTime
+  blockNumber   BigInt
+  txHash        String    @db.VarChar(66)
+  createdAt     DateTime  @default(now())
+
+  transaccionesComoOrigen Transaccion[] @relation("TransaccionOrigenUsuario")
+
+  @@index([provincia, cantonId])
+  @@map("users")
+}
+
+/// Centro recolector (mapping RegistroEntidades.centros)
+model CollectionCenter {
+  wallet        String    @id @db.VarChar(42)
+  nombreHash    String    @db.VarChar(66)
+  cedulaHash    String    @unique @db.VarChar(66)
+  provincia     Provincia
+  cantonId      Int
+  loteM2        Int
+  tipoVivienda  Int
+  esPublico     Boolean
+  verificado    Boolean   @default(false)
+  verificadoEn  DateTime?
+  verificadoPor String?   @db.VarChar(42)
+  activo        Boolean   @default(true)
+  registradoEn  DateTime
+  blockNumber   BigInt
+  txHash        String    @db.VarChar(66)
+  createdAt     DateTime  @default(now())
+
+  @@index([verificado])
+  @@map("collection_centers")
+}
+
+/// Municipalidad (mapping RegistroEntidades.municipalidades)
+model Municipality {
+  wallet       String    @id @db.VarChar(42)
+  nombreHash   String    @db.VarChar(66)
+  // Cada canton en Costa Rica tiene su propia municipalidad; guardar su provincia/canton
+  // permite relacionar correctamente lotes y usuarios cuando varias municipalidades de
+  // la misma provincia tienen rutas abiertas al mismo tiempo.
+  provincia    Provincia
+  cantonId     Int
+  activo       Boolean   @default(true)
+  registradoEn DateTime
+  blockNumber  BigInt
+  txHash       String    @db.VarChar(66)
+  createdAt    DateTime  @default(now())
+
+  lotes MunicipalBatch[]
+
+  @@index([provincia, cantonId])
+  @@map("municipalities")
+}
+
+/// Transaccion (mapping TransaccionesPlastico.transacciones), poblada desde TransaccionRegistrada
+/// y actualizada por TransaccionReconciliada cuando el lote municipal se cierra.
+/// Los montos on-chain (uint256) se guardan como Decimal(78,0): un BigInt de Postgres
+/// (int64) se desborda con montos de 18 decimales.
+model Transaccion {
+  id                 BigInt          @id
+  origen             String          @db.VarChar(42)
+  destino            String          @db.VarChar(42)
+  pesoGramos         Decimal         @db.Decimal(78, 0)
+  // Peso tal como lo declaro quien entrego, fijado una sola vez al crear la fila (nunca se
+  // actualiza). `pesoGramos` de arriba si se reescribe cuando la municipalidad reconcilia
+  // el lote -- este campo es el registro permanente de "cuanto dijo el usuario" original.
+  pesoGramosDeclarado Decimal        @db.Decimal(78, 0)
+  tokensMinteados    Decimal         @default(0) @db.Decimal(78, 0)
+  usdtPagado       Decimal         @default(0) @db.Decimal(78, 0)
+  tipo             TipoTransaccion
+  tipoPlastico     TipoPlastico
+  reconciliada     Boolean         @default(false)
+  loteId           BigInt?
+  timestampOnchain DateTime
+  blockNumber      BigInt
+  txHash           String          @db.VarChar(66)
+  logIndex         Int
+  createdAt        DateTime        @default(now())
+
+  usuario User?           @relation("TransaccionOrigenUsuario", fields: [origen], references: [wallet])
+  lote    MunicipalBatch? @relation(fields: [loteId], references: [id])
+
+  @@unique([txHash, logIndex])
+  @@index([origen])
+  @@index([destino])
+  @@index([tipo])
+  @@index([loteId])
+  @@index([blockNumber])
+  @@map("transacciones")
+}
+
+/// LoteMunicipal (mapping TransaccionesPlastico.lotesMunicipales)
+model MunicipalBatch {
+  id                  BigInt   @id
+  municipalidadWallet String   @db.VarChar(42)
+  fechaRecoleccion    DateTime
+  rutaId              Int
+  cerrado             Boolean  @default(false)
+  pesoOficialGramos   Decimal? @db.Decimal(78, 0)
+  factorAjuste        Decimal? @db.Decimal(20, 0)
+  blockNumberIniciado BigInt
+  txHashIniciado      String   @db.VarChar(66)
+  blockNumberCerrado  BigInt?
+  txHashCerrado       String?  @db.VarChar(66)
+  createdAt           DateTime @default(now())
+
+  municipalidad Municipality     @relation(fields: [municipalidadWallet], references: [wallet])
+  transacciones Transaccion[]
+  tiposCerrados LoteTipoCierre[]
+
+  @@index([municipalidadWallet, cerrado])
+  @@map("municipal_batches")
+}
+
+/// Cierre por tipo de plastico dentro de un lote (evento LoteTipoCerrado). Un lote se
+/// cierra tipo por tipo -- pesoOficialGramos/factorAjuste en MunicipalBatch son solo el
+/// agregado final una vez que todos los tipos del lote terminaron de reconciliarse aca.
+model LoteTipoCierre {
+  id                Int          @id @default(autoincrement())
+  loteId            BigInt
+  tipoPlastico      TipoPlastico
+  pesoOficialGramos Decimal      @db.Decimal(78, 0)
+  factorAjuste      Decimal      @db.Decimal(20, 0)
+  blockNumber       BigInt
+  txHash            String       @db.VarChar(66)
+  createdAt         DateTime     @default(now())
+
+  lote MunicipalBatch @relation(fields: [loteId], references: [id])
+
+  @@unique([loteId, tipoPlastico])
+  @@map("lote_tipo_cierres")
+}
+
+/// Auditoria cruzada del evento TokensMinteados (PlasticoToken), independiente de Transaccion
+model TokenMintEvent {
+  id            Int      @id @default(autoincrement())
+  destinatario  String   @db.VarChar(42)
+  cantidad      Decimal  @db.Decimal(78, 0)
+  transaccionId BigInt
+  blockNumber   BigInt
+  txHash        String   @db.VarChar(66)
+  logIndex      Int
+  createdAt     DateTime @default(now())
+
+  @@unique([txHash, logIndex])
+  @@index([destinatario])
+  @@map("token_mint_events")
+}
+
+/// Ingesta cruda de eventos: resiliencia ante crashes/reorgs del indexer.
+/// Cada log se guarda aqui antes de aplicar su handler especifico.
+model RawEvent {
+  id              Int      @id @default(autoincrement())
+  contractAddress String   @db.VarChar(42)
+  eventName       String
+  blockNumber     BigInt
+  blockHash       String   @db.VarChar(66)
+  txHash          String   @db.VarChar(66)
+  logIndex        Int
+  args            Json
+  processed       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  @@unique([txHash, logIndex])
+  @@index([processed])
+  @@map("raw_events")
+}
+
+/// Estado de indexacion por chain: ultimo bloque procesado, usado para el backfill
+/// y para detectar reorgs comparando lastBlockHash contra la cadena real.
+model IndexerState {
+  id              Int      @id @default(1)
+  chainId         Int      @unique
+  lastBlockNumber BigInt
+  lastBlockHash   String   @db.VarChar(66)
+  updatedAt       DateTime @updatedAt
+
+  @@map("indexer_state")
+}
+
+/// Cuenta de acceso a la aplicacion (email/contrasena): un gate de aplicacion previo
+/// a conectar la wallet, separado por completo del rol on-chain (Usuario/Centro/
+/// Municipalidad, que se maneja en RegistroEntidades). No representa identidad
+/// verificada ni reemplaza a la wallet -- solo controla quien puede entrar al sitio.
+model Account {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique @db.VarChar(255)
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  @@map("accounts")
+}

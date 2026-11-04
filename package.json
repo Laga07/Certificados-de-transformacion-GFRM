@@ -1,0 +1,29 @@
+{
+  "name": "dapp-certificado-transformacion",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Green Foot - trazabilidad multi-material y emision de Certificado de Transformacion (ERC20) sobre Polygon, con indexer y API sobre PostgreSQL",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "db:up": "docker compose up -d postgres",
+    "db:down": "docker compose down",
+    "contracts:compile": "npm run compile --workspace=packages/contracts",
+    "contracts:test": "npm run test --workspace=packages/contracts",
+    "contracts:deploy:amoy": "npm run deploy:amoy --workspace=packages/contracts",
+    "contracts:export": "npm run export-abi --workspace=packages/contracts",
+    "backend:migrate": "npm run prisma:migrate --workspace=packages/backend",
+    "backend:generate": "npm run prisma:generate --workspace=packages/backend",
+    "frontend:generate": "npm run generate --workspace=packages/frontend",
+    "dev": "concurrently -n api,indexer,web -c blue,yellow,green \"npm run dev:api --workspace=packages/backend\" \"npm run dev:indexer --workspace=packages/backend\" \"npm run dev --workspace=packages/frontend\"",
+    "backend:typecheck": "npm run typecheck --workspace=packages/backend",
+    "backend:lint": "npm run lint --workspace=packages/backend",
+    "frontend:typecheck": "npm run typecheck --workspace=packages/frontend",
+    "frontend:lint": "npm run lint --workspace=packages/frontend",
+    "ci": "npm run contracts:compile && npm run contracts:test && npm run backend:typecheck && npm run backend:lint && npm run frontend:typecheck && npm run frontend:lint"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

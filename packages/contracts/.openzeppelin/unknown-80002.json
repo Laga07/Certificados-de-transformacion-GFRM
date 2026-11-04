@@ -1,0 +1,1919 @@
+{
+  "manifestVersion": "3.2",
+  "proxies": [
+    {
+      "address": "0xD75f4C9D19fD589b1D4F3b24f9375cf7A33F6758",
+      "txHash": "0x0b1db08396d59323be725b505214a413424b8d746a4251cb4d22ce9f44f292c8",
+      "kind": "uups"
+    },
+    {
+      "address": "0xB843C7a2b06f8a700653Df933C019A52779F7221",
+      "txHash": "0xdde830d807fbe2e78f0d0dfddadc13aa283cf8d52d1668f5b51fb84ec3cac345",
+      "kind": "uups"
+    },
+    {
+      "address": "0x81cf46e6FB9aC517ABd6Deb2C89978e6CAbC0F62",
+      "txHash": "0x73d2dd206e0cbe9efa0bdc80b797c64d025b5a1a22b633ed6a76d3192a21d39b",
+      "kind": "uups"
+    },
+    {
+      "address": "0x216a4D8Ff11Cf15a2cB55a65c3ee3fF7D5870b75",
+      "txHash": "0x1b8ca0353c011803f76c96646b48fa47832d7426b57912839dd265c1f32b3f4a",
+      "kind": "uups"
+    }
+  ],
+  "impls": {
+    "dbb2106e4d5ef7e5cac2e9705937913411e2ecec76ea4b9778e456958ec458f5": {
+      "address": "0x6B5A96505fFD39290363DC9A1366fe0F7792aDE7",
+      "txHash": "0x3bbbe9fe5680b7b7c9dc242ac4429521e75467b480f92d8bd741a85d50247f68",
+      "layout": {
+        "solcVersion": "0.8.24",
+        "storage": [
+          {
+            "label": "usuarios",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_mapping(t_address,t_struct(Usuario)4422_storage)",
+            "contract": "RegistroEntidades",
+            "src": "project\\contracts\\PlasticExchange.sol:300"
+          },
+          {
+            "label": "centros",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_mapping(t_address,t_struct(CentroRecolector)4438_storage)",
+            "contract": "RegistroEntidades",
+            "src": "project\\contracts\\PlasticExchange.sol:301"
+          },
+          {
+            "label": "municipalidades",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_mapping(t_address,t_struct(Municipalidad)4450_storage)",
+            "contract": "RegistroEntidades",
+            "src": "project\\contracts\\PlasticExchange.sol:302"
+          },
+          {
+            "label": "cedulaHashToWallet",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_mapping(t_bytes32,t_address)",
+            "contract": "RegistroEntidades",
+            "src": "project\\contracts\\PlasticExchange.sol:303"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "RegistroEntidades",
+            "src": "project\\contracts\\PlasticExchange.sol:444"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)24_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AccessControlStorage)34_storage": {
+            "label": "struct AccessControlUpgradeable.AccessControlStorage",
+            "members": [
+              {
+                "label": "_roles",
+                "type": "t_mapping(t_bytes32,t_struct(RoleData)24_storage)",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(InitializableStorage)786_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(RoleData)24_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "hasRole",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_enum(Provincia)3971": {
+            "label": "enum Provincia",
+            "members": [
+              "SanJose",
+              "Alajuela",
+              "Cartago",
+              "Heredia",
+              "Guanacaste",
+              "Puntarenas",
+              "Limon"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_struct(CentroRecolector)4438_storage)": {
+            "label": "mapping(address => struct RegistroEntidades.CentroRecolector)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(Municipalidad)4450_storage)": {
+            "label": "mapping(address => struct RegistroEntidades.Municipalidad)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(Usuario)4422_storage)": {
+            "label": "mapping(address => struct RegistroEntidades.Usuario)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_address)": {
+            "label": "mapping(bytes32 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(CentroRecolector)4438_storage": {
+            "label": "struct RegistroEntidades.CentroRecolector",
+            "members": [
+              {
+                "label": "nombreHash",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "cedulaHash",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "ubicacion",
+                "type": "t_struct(Residencia)3981_storage",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "esPublico",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "verificado",
+                "type": "t_bool",
+                "offset": 1,
+                "slot": "3"
+              },
+              {
+                "label": "verificadoEn",
+                "type": "t_uint64",
+                "offset": 2,
+                "slot": "3"
+              },
+              {
+                "label": "activo",
+                "type": "t_bool",
+                "offset": 10,
+                "slot": "3"
+              }
+            ],
+            "numberOfBytes": "128"
+          },
+          "t_struct(Municipalidad)4450_storage": {
+            "label": "struct RegistroEntidades.Municipalidad",
+            "members": [
+              {
+                "label": "nombreHash",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "wallet",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "activo",
+                "type": "t_bool",
+                "offset": 20,
+                "slot": "1"
+              },
+              {
+                "label": "provincia",
+                "type": "t_enum(Provincia)3971",
+                "offset": 21,
+                "slot": "1"
+              },
+              {
+                "label": "cantonId",
+                "type": "t_uint8",
+                "offset": 22,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Residencia)3981_storage": {
+            "label": "struct Residencia",
+            "members": [
+              {
+                "label": "provincia",
+                "type": "t_enum(Provincia)3971",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "cantonId",
+                "type": "t_uint8",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "loteM2",
+                "type": "t_uint32",
+                "offset": 2,
+                "slot": "0"
+              },
+              {
+                "label": "tipoVivienda",
+                "type": "t_uint8",
+                "offset": 6,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(Usuario)4422_storage": {
+            "label": "struct RegistroEntidades.Usuario",
+            "members": [
+              {
+                "label": "identidadHash",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "wallet",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "residencia",
+                "type": "t_struct(Residencia)3981_storage",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "activo",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "registradoEn",
+                "type": "t_uint64",
+                "offset": 1,
+                "slot": "3"
+              }
+            ],
+            "numberOfBytes": "128"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint32": {
+            "label": "uint32",
+            "numberOfBytes": "4"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.AccessControl": [
+            {
+              "contract": "AccessControlUpgradeable",
+              "label": "_roles",
+              "type": "t_mapping(t_bytes32,t_struct(RoleData)24_storage)",
+              "src": "npm\\@openzeppelin\\contracts-upgradeable@5.6.1\\access\\AccessControlUpgradeable.sol:61",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "npm\\@openzeppelin\\contracts@5.6.1\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "npm\\@openzeppelin\\contracts@5.6.1\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "3145364948e67bf611c49c36ce2a01a8c3210d1047215cf33405dc91283811fe": {
+      "address": "0x5057f87a12E70d986DB96d392c188E1f548Bd88F",
+      "txHash": "0xc36fc7437d1f4193984b7fbbb25d64bbd74d650368ace05290f86eac6643d8c2",
+      "layout": {
+        "solcVersion": "0.8.24",
+        "storage": [
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "PlasticoToken",
+            "src": "project\\contracts\\PlasticExchange.sol:260"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_uint256))": {
+            "label": "mapping(address => mapping(address => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)24_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AccessControlStorage)34_storage": {
+            "label": "struct AccessControlUpgradeable.AccessControlStorage",
+            "members": [
+              {
+                "label": "_roles",
+                "type": "t_mapping(t_bytes32,t_struct(RoleData)24_storage)",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(ERC20Storage)185_storage": {
+            "label": "struct ERC20Upgradeable.ERC20Storage",
+            "members": [
+              {
+                "label": "_balances",
+                "type": "t_mapping(t_address,t_uint256)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_allowances",
+                "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "_totalSupply",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "_name",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "_symbol",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "4"
+              }
+            ],
+            "numberOfBytes": "160"
+          },
+          "t_struct(InitializableStorage)786_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PausableStorage)411_storage": {
+            "label": "struct PausableUpgradeable.PausableStorage",
+            "members": [
+              {
+                "label": "_paused",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(RoleData)24_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "hasRole",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.AccessControl": [
+            {
+              "contract": "AccessControlUpgradeable",
+              "label": "_roles",
+              "type": "t_mapping(t_bytes32,t_struct(RoleData)24_storage)",
+              "src": "npm\\@openzeppelin\\contracts-upgradeable@5.6.1\\access\\AccessControlUpgradeable.sol:61",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Pausable": [
+            {
+              "contract": "PausableUpgradeable",
+              "label": "_paused",
+              "type": "t_bool",
+              "src": "npm\\@openzeppelin\\contracts-upgradeable@5.6.1\\utils\\PausableUpgradeable.sol:21",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.ERC20": [
+            {
+              "contract": "ERC20Upgradeable",
+              "label": "_balances",
+              "type": "t_mapping(t_address,t_uint256)",
+              "src": "npm\\@openzeppelin\\contracts-upgradeable@5.6.1\\token\\ERC20\\ERC20Upgradeable.sol:33",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "ERC20Upgradeable",
+              "label": "_allowances",
+              "type": "t_mapping(t_address,t_mapping(t_address,t_uint256))",
+              "src": "npm\\@openzeppelin\\contracts-upgradeable@5.6.1\\token\\ERC20\\ERC20Upgradeable.sol:35",
+              "offset": 0,
+              "slot": "1"
+            },
+            {
+              "contract": "ERC20Upgradeable",
+              "label": "_totalSupply",
+              "type": "t_uint256",
+              "src": "npm\\@openzeppelin\\contracts-upgradeable@5.6.1\\token\\ERC20\\ERC20Upgradeable.sol:37",
+              "offset": 0,
+              "slot": "2"
+            },
+            {
+              "contract": "ERC20Upgradeable",
+              "label": "_name",
+              "type": "t_string_storage",
+              "src": "npm\\@openzeppelin\\contracts-upgradeable@5.6.1\\token\\ERC20\\ERC20Upgradeable.sol:39",
+              "offset": 0,
+              "slot": "3"
+            },
+            {
+              "contract": "ERC20Upgradeable",
+              "label": "_symbol",
+              "type": "t_string_storage",
+              "src": "npm\\@openzeppelin\\contracts-upgradeable@5.6.1\\token\\ERC20\\ERC20Upgradeable.sol:40",
+              "offset": 0,
+              "slot": "4"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "npm\\@openzeppelin\\contracts@5.6.1\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "npm\\@openzeppelin\\contracts@5.6.1\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "c018f5d8122f4c14a987c1ea3e8e4eef2011d828ab3b5c28e9d706079dab5980": {
+      "address": "0xf499cAe9400Bd19451F0aD79BBF8d887F1Cc3f97",
+      "txHash": "0xfe70a8658fac538269273156c60032fc741391ac0c2d23ac16629c31d0aa96af",
+      "layout": {
+        "solcVersion": "0.8.24",
+        "storage": [
+          {
+            "label": "plasticoToken",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_contract(IPlasticoToken)3963",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:461"
+          },
+          {
+            "label": "registro",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_contract(IRegistroEntidades)4073",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:462"
+          },
+          {
+            "label": "usdt",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_contract(IERC20)2440",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:463"
+          },
+          {
+            "label": "nextTransaccionId",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_uint256",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:465"
+          },
+          {
+            "label": "nextLoteId",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_uint256",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:466"
+          },
+          {
+            "label": "transacciones",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_mapping(t_uint256,t_struct(Transaccion)4955_storage)",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:493"
+          },
+          {
+            "label": "transaccionesPorDireccion",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_mapping(t_address,t_array(t_uint256)dyn_storage)",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:494"
+          },
+          {
+            "label": "lotesMunicipales",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_mapping(t_uint256,t_struct(LoteMunicipal)4973_storage)",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:495"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:836"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)24_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AccessControlStorage)34_storage": {
+            "label": "struct AccessControlUpgradeable.AccessControlStorage",
+            "members": [
+              {
+                "label": "_roles",
+                "type": "t_mapping(t_bytes32,t_struct(RoleData)24_storage)",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(InitializableStorage)786_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PausableStorage)411_storage": {
+            "label": "struct PausableUpgradeable.PausableStorage",
+            "members": [
+              {
+                "label": "_paused",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(RoleData)24_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "hasRole",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_array(t_uint256)dyn_storage": {
+            "label": "uint256[]",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IERC20)2440": {
+            "label": "contract IERC20",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IPlasticoToken)3963": {
+            "label": "contract IPlasticoToken",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IRegistroEntidades)4073": {
+            "label": "contract IRegistroEntidades",
+            "numberOfBytes": "20"
+          },
+          "t_enum(TipoPlastico)4082": {
+            "label": "enum TipoPlastico",
+            "members": [
+              "Desconocido",
+              "PET",
+              "PEAD",
+              "PVC",
+              "PEBD",
+              "PP",
+              "PS",
+              "Otros"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_enum(TipoTransaccion)4089": {
+            "label": "enum TipoTransaccion",
+            "members": [
+              "UsuarioACentroGratis",
+              "UsuarioACentroUsuarioRecibe",
+              "UsuarioACentroUsuarioPaga",
+              "UsuarioAMunicipalidad",
+              "CentroACentro",
+              "ReconciliacionMunicipal"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_array(t_uint256)dyn_storage)": {
+            "label": "mapping(address => uint256[])",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(LoteMunicipal)4973_storage)": {
+            "label": "mapping(uint256 => struct TransaccionesPlastico.LoteMunicipal)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Transaccion)4955_storage)": {
+            "label": "mapping(uint256 => struct TransaccionesPlastico.Transaccion)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(LoteMunicipal)4973_storage": {
+            "label": "struct TransaccionesPlastico.LoteMunicipal",
+            "members": [
+              {
+                "label": "id",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "municipalidad",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "fechaRecoleccion",
+                "type": "t_uint64",
+                "offset": 20,
+                "slot": "1"
+              },
+              {
+                "label": "rutaId",
+                "type": "t_uint8",
+                "offset": 28,
+                "slot": "1"
+              },
+              {
+                "label": "cerrado",
+                "type": "t_bool",
+                "offset": 29,
+                "slot": "1"
+              },
+              {
+                "label": "pesoOficialGramos",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "factorAjuste",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "transaccionesUsuarios",
+                "type": "t_array(t_uint256)dyn_storage",
+                "offset": 0,
+                "slot": "4"
+              }
+            ],
+            "numberOfBytes": "160"
+          },
+          "t_struct(Transaccion)4955_storage": {
+            "label": "struct TransaccionesPlastico.Transaccion",
+            "members": [
+              {
+                "label": "id",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "origen",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "destino",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "pesoGramos",
+                "type": "t_uint216",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "timestamp",
+                "type": "t_uint32",
+                "offset": 27,
+                "slot": "3"
+              },
+              {
+                "label": "tokensMinteados",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "usdtPagado",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "tipo",
+                "type": "t_enum(TipoTransaccion)4089",
+                "offset": 0,
+                "slot": "6"
+              },
+              {
+                "label": "tipoPlastico",
+                "type": "t_enum(TipoPlastico)4082",
+                "offset": 1,
+                "slot": "6"
+              },
+              {
+                "label": "reconciliada",
+                "type": "t_bool",
+                "offset": 2,
+                "slot": "6"
+              },
+              {
+                "label": "loteId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "7"
+              }
+            ],
+            "numberOfBytes": "256"
+          },
+          "t_uint216": {
+            "label": "uint216",
+            "numberOfBytes": "27"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint32": {
+            "label": "uint32",
+            "numberOfBytes": "4"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Pausable": [
+            {
+              "contract": "PausableUpgradeable",
+              "label": "_paused",
+              "type": "t_bool",
+              "src": "npm\\@openzeppelin\\contracts-upgradeable@5.6.1\\utils\\PausableUpgradeable.sol:21",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.AccessControl": [
+            {
+              "contract": "AccessControlUpgradeable",
+              "label": "_roles",
+              "type": "t_mapping(t_bytes32,t_struct(RoleData)24_storage)",
+              "src": "npm\\@openzeppelin\\contracts-upgradeable@5.6.1\\access\\AccessControlUpgradeable.sol:61",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "npm\\@openzeppelin\\contracts@5.6.1\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "npm\\@openzeppelin\\contracts@5.6.1\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "30e17b517b2be9eb1b330f5cfbcd23411291147d9ada989ba96116ed3b641d0b": {
+      "address": "0x2fe0dfab3418227029D710Be6357B656b587Fa79",
+      "txHash": "0x03e31019c28d30f58ed4cbf35d2ffb642794d2fa67fc8f91c56517e2c0630b0f",
+      "layout": {
+        "solcVersion": "0.8.24",
+        "storage": [
+          {
+            "label": "plasticoToken",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_contract(IPlasticoToken)3963",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:478"
+          },
+          {
+            "label": "registro",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_contract(IRegistroEntidades)4073",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:479"
+          },
+          {
+            "label": "usdt",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_contract(IERC20)2440",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:480"
+          },
+          {
+            "label": "nextTransaccionId",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_uint256",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:482"
+          },
+          {
+            "label": "nextLoteId",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_uint256",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:483"
+          },
+          {
+            "label": "transacciones",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_mapping(t_uint256,t_struct(Transaccion)4969_storage)",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:514"
+          },
+          {
+            "label": "transaccionesPorDireccion",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_mapping(t_address,t_array(t_uint256)dyn_storage)",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:515"
+          },
+          {
+            "label": "lotesMunicipales",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_mapping(t_uint256,t_struct(LoteMunicipal)4991_storage)",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:516"
+          },
+          {
+            "label": "tipoReconciliadoDeLote",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_mapping(t_uint256,t_mapping(t_enum(TipoPlastico)4082,t_bool))",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:519"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "9",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:896"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)24_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AccessControlStorage)34_storage": {
+            "label": "struct AccessControlUpgradeable.AccessControlStorage",
+            "members": [
+              {
+                "label": "_roles",
+                "type": "t_mapping(t_bytes32,t_struct(RoleData)24_storage)",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(InitializableStorage)786_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PausableStorage)411_storage": {
+            "label": "struct PausableUpgradeable.PausableStorage",
+            "members": [
+              {
+                "label": "_paused",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(RoleData)24_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "hasRole",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_array(t_enum(TipoPlastico)4082)dyn_storage": {
+            "label": "enum TipoPlastico[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)dyn_storage": {
+            "label": "uint256[]",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IERC20)2440": {
+            "label": "contract IERC20",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IPlasticoToken)3963": {
+            "label": "contract IPlasticoToken",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IRegistroEntidades)4073": {
+            "label": "contract IRegistroEntidades",
+            "numberOfBytes": "20"
+          },
+          "t_enum(TipoPlastico)4082": {
+            "label": "enum TipoPlastico",
+            "members": [
+              "Desconocido",
+              "PET",
+              "PEAD",
+              "PVC",
+              "PEBD",
+              "PP",
+              "PS",
+              "Otros"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_enum(TipoTransaccion)4089": {
+            "label": "enum TipoTransaccion",
+            "members": [
+              "UsuarioACentroGratis",
+              "UsuarioACentroUsuarioRecibe",
+              "UsuarioACentroUsuarioPaga",
+              "UsuarioAMunicipalidad",
+              "CentroACentro",
+              "ReconciliacionMunicipal"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_array(t_uint256)dyn_storage)": {
+            "label": "mapping(address => uint256[])",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_enum(TipoPlastico)4082,t_bool)": {
+            "label": "mapping(enum TipoPlastico => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_enum(TipoPlastico)4082,t_bool))": {
+            "label": "mapping(uint256 => mapping(enum TipoPlastico => bool))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(LoteMunicipal)4991_storage)": {
+            "label": "mapping(uint256 => struct TransaccionesPlastico.LoteMunicipal)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Transaccion)4969_storage)": {
+            "label": "mapping(uint256 => struct TransaccionesPlastico.Transaccion)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(LoteMunicipal)4991_storage": {
+            "label": "struct TransaccionesPlastico.LoteMunicipal",
+            "members": [
+              {
+                "label": "id",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "municipalidad",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "fechaRecoleccion",
+                "type": "t_uint64",
+                "offset": 20,
+                "slot": "1"
+              },
+              {
+                "label": "rutaId",
+                "type": "t_uint8",
+                "offset": 28,
+                "slot": "1"
+              },
+              {
+                "label": "cerrado",
+                "type": "t_bool",
+                "offset": 29,
+                "slot": "1"
+              },
+              {
+                "label": "pesoOficialGramos",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "factorAjuste",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "transaccionesUsuarios",
+                "type": "t_array(t_uint256)dyn_storage",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "tiposPresentes",
+                "type": "t_array(t_enum(TipoPlastico)4082)dyn_storage",
+                "offset": 0,
+                "slot": "5"
+              }
+            ],
+            "numberOfBytes": "192"
+          },
+          "t_struct(Transaccion)4969_storage": {
+            "label": "struct TransaccionesPlastico.Transaccion",
+            "members": [
+              {
+                "label": "id",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "origen",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "destino",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "pesoGramos",
+                "type": "t_uint216",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "timestamp",
+                "type": "t_uint32",
+                "offset": 27,
+                "slot": "3"
+              },
+              {
+                "label": "tokensMinteados",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "usdtPagado",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "tipo",
+                "type": "t_enum(TipoTransaccion)4089",
+                "offset": 0,
+                "slot": "6"
+              },
+              {
+                "label": "tipoPlastico",
+                "type": "t_enum(TipoPlastico)4082",
+                "offset": 1,
+                "slot": "6"
+              },
+              {
+                "label": "reconciliada",
+                "type": "t_bool",
+                "offset": 2,
+                "slot": "6"
+              },
+              {
+                "label": "loteId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "7"
+              }
+            ],
+            "numberOfBytes": "256"
+          },
+          "t_uint216": {
+            "label": "uint216",
+            "numberOfBytes": "27"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint32": {
+            "label": "uint32",
+            "numberOfBytes": "4"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Pausable": [
+            {
+              "contract": "PausableUpgradeable",
+              "label": "_paused",
+              "type": "t_bool",
+              "src": "npm\\@openzeppelin\\contracts-upgradeable@5.6.1\\utils\\PausableUpgradeable.sol:21",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.AccessControl": [
+            {
+              "contract": "AccessControlUpgradeable",
+              "label": "_roles",
+              "type": "t_mapping(t_bytes32,t_struct(RoleData)24_storage)",
+              "src": "npm\\@openzeppelin\\contracts-upgradeable@5.6.1\\access\\AccessControlUpgradeable.sol:61",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "npm\\@openzeppelin\\contracts@5.6.1\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "npm\\@openzeppelin\\contracts@5.6.1\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "fcd00a34ac62ad0f600db01f7e2f34ef7e9bde11d11be03ff4c2cbc0d6f2ea97": {
+      "address": "0x9d6C1EdC2C98dD8C685df2043d658646795d0e9B",
+      "txHash": "0x092a16f2f165339c4821132fc26b0a9115bdfbaf234377855758e4be934a0746",
+      "layout": {
+        "solcVersion": "0.8.24",
+        "storage": [
+          {
+            "label": "plasticoToken",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_contract(IPlasticoToken)3963",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:478"
+          },
+          {
+            "label": "registro",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_contract(IRegistroEntidades)4073",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:479"
+          },
+          {
+            "label": "usdt",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_contract(IERC20)2440",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:480"
+          },
+          {
+            "label": "nextTransaccionId",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_uint256",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:482"
+          },
+          {
+            "label": "nextLoteId",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_uint256",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:483"
+          },
+          {
+            "label": "transacciones",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_mapping(t_uint256,t_struct(Transaccion)4971_storage)",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:519"
+          },
+          {
+            "label": "transaccionesPorDireccion",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_mapping(t_address,t_array(t_uint256)dyn_storage)",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:520"
+          },
+          {
+            "label": "lotesMunicipales",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_mapping(t_uint256,t_struct(LoteMunicipal)4993_storage)",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:521"
+          },
+          {
+            "label": "tipoReconciliadoDeLote",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_mapping(t_uint256,t_mapping(t_enum(TipoPlastico)4082,t_bool))",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:525"
+          },
+          {
+            "label": "pesoOficialPorTipo",
+            "offset": 0,
+            "slot": "9",
+            "type": "t_mapping(t_uint256,t_mapping(t_enum(TipoPlastico)4082,t_uint256))",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:526"
+          },
+          {
+            "label": "factorAjustePorTipo",
+            "offset": 0,
+            "slot": "10",
+            "type": "t_mapping(t_uint256,t_mapping(t_enum(TipoPlastico)4082,t_uint256))",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:527"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "11",
+            "type": "t_array(t_uint256)47_storage",
+            "contract": "TransaccionesPlastico",
+            "src": "project\\contracts\\PlasticExchange.sol:938"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)24_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AccessControlStorage)34_storage": {
+            "label": "struct AccessControlUpgradeable.AccessControlStorage",
+            "members": [
+              {
+                "label": "_roles",
+                "type": "t_mapping(t_bytes32,t_struct(RoleData)24_storage)",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(InitializableStorage)786_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PausableStorage)411_storage": {
+            "label": "struct PausableUpgradeable.PausableStorage",
+            "members": [
+              {
+                "label": "_paused",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(RoleData)24_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "hasRole",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_array(t_enum(TipoPlastico)4082)dyn_storage": {
+            "label": "enum TipoPlastico[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)47_storage": {
+            "label": "uint256[47]",
+            "numberOfBytes": "1504"
+          },
+          "t_array(t_uint256)dyn_storage": {
+            "label": "uint256[]",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IERC20)2440": {
+            "label": "contract IERC20",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IPlasticoToken)3963": {
+            "label": "contract IPlasticoToken",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IRegistroEntidades)4073": {
+            "label": "contract IRegistroEntidades",
+            "numberOfBytes": "20"
+          },
+          "t_enum(TipoPlastico)4082": {
+            "label": "enum TipoPlastico",
+            "members": [
+              "Desconocido",
+              "PET",
+              "PEAD",
+              "PVC",
+              "PEBD",
+              "PP",
+              "PS",
+              "Otros"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_enum(TipoTransaccion)4089": {
+            "label": "enum TipoTransaccion",
+            "members": [
+              "UsuarioACentroGratis",
+              "UsuarioACentroUsuarioRecibe",
+              "UsuarioACentroUsuarioPaga",
+              "UsuarioAMunicipalidad",
+              "CentroACentro",
+              "ReconciliacionMunicipal"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_array(t_uint256)dyn_storage)": {
+            "label": "mapping(address => uint256[])",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_enum(TipoPlastico)4082,t_bool)": {
+            "label": "mapping(enum TipoPlastico => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_enum(TipoPlastico)4082,t_uint256)": {
+            "label": "mapping(enum TipoPlastico => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_enum(TipoPlastico)4082,t_bool))": {
+            "label": "mapping(uint256 => mapping(enum TipoPlastico => bool))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_enum(TipoPlastico)4082,t_uint256))": {
+            "label": "mapping(uint256 => mapping(enum TipoPlastico => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(LoteMunicipal)4993_storage)": {
+            "label": "mapping(uint256 => struct TransaccionesPlastico.LoteMunicipal)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Transaccion)4971_storage)": {
+            "label": "mapping(uint256 => struct TransaccionesPlastico.Transaccion)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(LoteMunicipal)4993_storage": {
+            "label": "struct TransaccionesPlastico.LoteMunicipal",
+            "members": [
+              {
+                "label": "id",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "municipalidad",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "fechaRecoleccion",
+                "type": "t_uint64",
+                "offset": 20,
+                "slot": "1"
+              },
+              {
+                "label": "rutaId",
+                "type": "t_uint8",
+                "offset": 28,
+                "slot": "1"
+              },
+              {
+                "label": "cerrado",
+                "type": "t_bool",
+                "offset": 29,
+                "slot": "1"
+              },
+              {
+                "label": "pesoOficialGramos",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "factorAjuste",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "transaccionesUsuarios",
+                "type": "t_array(t_uint256)dyn_storage",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "tiposPresentes",
+                "type": "t_array(t_enum(TipoPlastico)4082)dyn_storage",
+                "offset": 0,
+                "slot": "5"
+              }
+            ],
+            "numberOfBytes": "192"
+          },
+          "t_struct(Transaccion)4971_storage": {
+            "label": "struct TransaccionesPlastico.Transaccion",
+            "members": [
+              {
+                "label": "id",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "origen",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "destino",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "pesoGramos",
+                "type": "t_uint216",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "timestamp",
+                "type": "t_uint32",
+                "offset": 27,
+                "slot": "3"
+              },
+              {
+                "label": "tokensMinteados",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "usdtPagado",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "tipo",
+                "type": "t_enum(TipoTransaccion)4089",
+                "offset": 0,
+                "slot": "6"
+              },
+              {
+                "label": "tipoPlastico",
+                "type": "t_enum(TipoPlastico)4082",
+                "offset": 1,
+                "slot": "6"
+              },
+              {
+                "label": "reconciliada",
+                "type": "t_bool",
+                "offset": 2,
+                "slot": "6"
+              },
+              {
+                "label": "loteId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "7"
+              },
+              {
+                "label": "pesoGramosDeclarado",
+                "type": "t_uint216",
+                "offset": 0,
+                "slot": "8"
+              }
+            ],
+            "numberOfBytes": "288"
+          },
+          "t_uint216": {
+            "label": "uint216",
+            "numberOfBytes": "27"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint32": {
+            "label": "uint32",
+            "numberOfBytes": "4"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Pausable": [
+            {
+              "contract": "PausableUpgradeable",
+              "label": "_paused",
+              "type": "t_bool",
+              "src": "npm\\@openzeppelin\\contracts-upgradeable@5.6.1\\utils\\PausableUpgradeable.sol:21",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.AccessControl": [
+            {
+              "contract": "AccessControlUpgradeable",
+              "label": "_roles",
+              "type": "t_mapping(t_bytes32,t_struct(RoleData)24_storage)",
+              "src": "npm\\@openzeppelin\\contracts-upgradeable@5.6.1\\access\\AccessControlUpgradeable.sol:61",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "npm\\@openzeppelin\\contracts@5.6.1\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "npm\\@openzeppelin\\contracts@5.6.1\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

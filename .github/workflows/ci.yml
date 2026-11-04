@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Compilar y probar contratos
+        run: npm run contracts:compile && npm run contracts:test
+
+      - name: Typecheck + lint backend
+        run: npm run backend:typecheck && npm run backend:lint
+
+      - name: Typecheck + lint frontend
+        run: npm run frontend:typecheck && npm run frontend:lint

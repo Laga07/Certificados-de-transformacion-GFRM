@@ -4,85 +4,80 @@ import { prisma } from "../lib/prisma.js";
 export async function statsRoutes(app: FastifyInstance) {
   app.get("/stats", async () => {
     const [
-      totalUsuarios,
-      totalCentros,
-      totalCentrosVerificados,
-      totalMunicipalidades,
-      totalTransacciones,
+      totalSeparadores,
+      totalIntermediarios,
+      totalIntermediariosVerificados,
+      totalTransformadores,
+      totalTransformadoresVerificados,
+      totalCompradores,
       totalLotes,
-      totalLotesCerrados,
-      porTipoPlastico,
-      porTipoTransaccion,
+      totalEntregas,
+      totalEmisiones,
+      totalVentas,
+      porMaterial,
     ] = await prisma.$transaction([
-      prisma.user.count(),
-      prisma.collectionCenter.count(),
-      prisma.collectionCenter.count({ where: { verificado: true } }),
-      prisma.municipality.count(),
-      prisma.transaccion.count(),
-      prisma.municipalBatch.count(),
-      prisma.municipalBatch.count({ where: { cerrado: true } }),
-      prisma.transaccion.groupBy({
-        by: ["tipoPlastico"],
-        _sum: { pesoGramos: true, tokensMinteados: true },
-        _count: { _all: true },
-      }),
-      prisma.transaccion.groupBy({
-        by: ["tipo"],
+      prisma.separador.count(),
+      prisma.intermediario.count(),
+      prisma.intermediario.count({ where: { verificado: true } }),
+      prisma.transformador.count(),
+      prisma.transformador.count({ where: { verificado: true } }),
+      prisma.comprador.count(),
+      prisma.lote.count(),
+      prisma.entrega.count(),
+      prisma.emision.count(),
+      prisma.ventaPrimaria.count(),
+      prisma.emision.groupBy({
+        by: ["material"],
+        _sum: { kgTransformadosOriginal: true },
         _count: { _all: true },
       }),
     ]);
 
     return {
       totales: {
-        usuarios: totalUsuarios,
-        centros: totalCentros,
-        centrosVerificados: totalCentrosVerificados,
-        municipalidades: totalMunicipalidades,
-        transacciones: totalTransacciones,
+        separadores: totalSeparadores,
+        intermediarios: totalIntermediarios,
+        intermediariosVerificados: totalIntermediariosVerificados,
+        transformadores: totalTransformadores,
+        transformadoresVerificados: totalTransformadoresVerificados,
+        compradores: totalCompradores,
         lotes: totalLotes,
-        lotesCerrados: totalLotesCerrados,
+        entregas: totalEntregas,
+        emisiones: totalEmisiones,
+        ventas: totalVentas,
       },
-      porTipoPlastico: porTipoPlastico.map((row) => ({
-        tipoPlastico: row.tipoPlastico,
-        transacciones: row._count._all,
-        pesoGramosTotal: row._sum.pesoGramos?.toString() ?? "0",
-        tokensMinteadosTotal: row._sum.tokensMinteados?.toString() ?? "0",
-      })),
-      porTipoTransaccion: porTipoTransaccion.map((row) => ({
-        tipo: row.tipo,
-        transacciones: row._count._all,
+      porMaterial: porMaterial.map((row) => ({
+        material: row.material,
+        emisiones: row._count._all,
+        kgTransformadosTotal: row._sum.kgTransformadosOriginal?.toString() ?? "0",
       })),
     };
   });
 
-  // Estadisticas por provincia/canton para el mapa del dashboard. El peso reciclado se
-  // atribuye a la residencia del Usuario que entrego el plastico (origen de la transaccion),
-  // no a donde lo recibio el Centro/Municipalidad.
+  // Estadisticas por provincia/canton para el mapa del dashboard -- el peso separado se
+  // atribuye a la residencia del Separador que entrego el material (origen de la entrega).
   app.get("/stats/geografia", async () => {
-    const [usuariosPorCanton, centrosPorCanton, pesoPorCanton] = await Promise.all([
-      prisma.user.groupBy({
-        by: ["provincia", "cantonId"],
-        _count: { _all: true },
-      }),
-      prisma.collectionCenter.groupBy({
+    const [separadoresPorCanton, intermediariosPorCanton, pesoPorCanton] = await Promise.all([
+      prisma.separador.groupBy({ by: ["provincia", "cantonId"], _count: { _all: true } }),
+      prisma.intermediario.groupBy({
         by: ["provincia", "cantonId"],
         where: { verificado: true },
         _count: { _all: true },
       }),
       prisma.$queryRaw<{ provincia: string; cantonId: number; pesoGramosTotal: string | null }[]>`
-        SELECT u.provincia as "provincia", u."cantonId" as "cantonId",
-               SUM(t."pesoGramos")::text as "pesoGramosTotal"
-        FROM transacciones t
-        JOIN users u ON u.wallet = t.origen
-        GROUP BY u.provincia, u."cantonId"
+        SELECT s.provincia as "provincia", s."cantonId" as "cantonId",
+               SUM(e."pesoGramos")::text as "pesoGramosTotal"
+        FROM entregas e
+        JOIN separadores s ON s.wallet = e."separadorWallet"
+        GROUP BY s.provincia, s."cantonId"
       `,
     ]);
 
     interface Fila {
       provincia: string;
       cantonId: number;
-      usuarios: number;
-      centrosVerificados: number;
+      separadores: number;
+      intermediariosVerificados: number;
       pesoGramosTotal: string;
     }
 
@@ -91,17 +86,17 @@ export async function statsRoutes(app: FastifyInstance) {
       const clave = `${provincia}-${cantonId}`;
       let fila = porCanton.get(clave);
       if (!fila) {
-        fila = { provincia, cantonId, usuarios: 0, centrosVerificados: 0, pesoGramosTotal: "0" };
+        fila = { provincia, cantonId, separadores: 0, intermediariosVerificados: 0, pesoGramosTotal: "0" };
         porCanton.set(clave, fila);
       }
       return fila;
     }
 
-    for (const row of usuariosPorCanton) {
-      obtener(row.provincia, row.cantonId).usuarios = row._count._all;
+    for (const row of separadoresPorCanton) {
+      obtener(row.provincia, row.cantonId).separadores = row._count._all;
     }
-    for (const row of centrosPorCanton) {
-      obtener(row.provincia, row.cantonId).centrosVerificados = row._count._all;
+    for (const row of intermediariosPorCanton) {
+      obtener(row.provincia, row.cantonId).intermediariosVerificados = row._count._all;
     }
     for (const row of pesoPorCanton) {
       obtener(row.provincia, row.cantonId).pesoGramosTotal = row.pesoGramosTotal ?? "0";

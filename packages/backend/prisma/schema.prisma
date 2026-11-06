@@ -1,5 +1,7 @@
-// Prisma schema de GreenMaterialsDAPP: refleja las entidades y eventos
-// emitidos por los contratos en packages/contracts/contracts/PlasticExchange.sol
+// Prisma schema de DAPP Certificado de Transformacion: refleja las entidades y eventos
+// emitidos por RegistroEntidades.sol, TokenCustodia.sol, CertificadoTransformacion.sol y
+// MercadoCertificados.sol (packages/contracts/contracts/). Ver
+// docs/arquitectura-certificado-transformacion.md para el diseno completo.
 
 generator client {
   provider = "prisma-client"
@@ -20,56 +22,64 @@ enum Provincia {
   Limon
 }
 
-enum TipoPlastico {
-  Desconocido
-  PET
-  PEAD
-  PVC
-  PEBD
-  PP
-  PS
-  Otros
+// Coincide 1 a 1 con el enum Material de TiposComunes.sol -- append-only, nunca reordenar.
+enum Material {
+  Plastico
+  CartonPapel
+  Tetrapack
+  Vidrio
+  Metales
 }
 
-enum TipoTransaccion {
-  UsuarioACentroGratis
-  UsuarioACentroUsuarioRecibe
-  UsuarioACentroUsuarioPaga
-  UsuarioAMunicipalidad
-  CentroACentro
-  ReconciliacionMunicipal
+enum ModalidadEntrega {
+  SinPago
+  ConPago
+  RutaMunicipal
 }
 
-/// Usuario (mapping RegistroEntidades.usuarios), poblado desde el evento UsuarioRegistrado
-model User {
+enum QuienAbsorbe {
+  Envia
+  Recibe
+  Mitad
+}
+
+enum EstadoTraspaso {
+  Declarado
+  Confirmado
+}
+
+/// Separador (mapping RegistroEntidades.separadores), poblado desde SeparadorRegistrado.
+/// tipoSeparador es libre (sin enum on-chain) -- catalogo real en el frontend, igual que
+/// tipoVivienda en DAPP Plastico Tesis (Hogar, Comercio, Industria, Institucion,
+/// Recuperador Inclusivo).
+model Separador {
   wallet        String    @id @db.VarChar(42)
   identidadHash String    @unique @db.VarChar(66)
   provincia     Provincia
   cantonId      Int
-  loteM2        Int
-  tipoVivienda  Int
+  tipoSeparador Int
   activo        Boolean   @default(true)
   registradoEn  DateTime
   blockNumber   BigInt
   txHash        String    @db.VarChar(66)
   createdAt     DateTime  @default(now())
 
-  transaccionesComoOrigen Transaccion[] @relation("TransaccionOrigenUsuario")
+  entregas Entrega[]
+  aportes  EmisionAporte[]
 
   @@index([provincia, cantonId])
-  @@map("users")
+  @@map("separadores")
 }
 
-/// Centro recolector (mapping RegistroEntidades.centros)
-model CollectionCenter {
+/// Intermediario (mapping RegistroEntidades.intermediarios). subtipo es libre (Recolector,
+/// Centro de acopio, Municipalidad/ruta selectiva, Compactador, Transportista).
+model Intermediario {
   wallet        String    @id @db.VarChar(42)
   nombreHash    String    @db.VarChar(66)
   cedulaHash    String    @unique @db.VarChar(66)
   provincia     Provincia
   cantonId      Int
-  loteM2        Int
-  tipoVivienda  Int
-  esPublico     Boolean
+  subtipo       Int
   verificado    Boolean   @default(false)
   verificadoEn  DateTime?
   verificadoPor String?   @db.VarChar(42)
@@ -79,128 +89,342 @@ model CollectionCenter {
   txHash        String    @db.VarChar(66)
   createdAt     DateTime  @default(now())
 
+  entregasRecibidas  Entrega[]
+  eslabonesDeEmision EmisionEslabon[]
+
   @@index([verificado])
-  @@map("collection_centers")
-}
-
-/// Municipalidad (mapping RegistroEntidades.municipalidades)
-model Municipality {
-  wallet       String    @id @db.VarChar(42)
-  nombreHash   String    @db.VarChar(66)
-  // Cada canton en Costa Rica tiene su propia municipalidad; guardar su provincia/canton
-  // permite relacionar correctamente lotes y usuarios cuando varias municipalidades de
-  // la misma provincia tienen rutas abiertas al mismo tiempo.
-  provincia    Provincia
-  cantonId     Int
-  activo       Boolean   @default(true)
-  registradoEn DateTime
-  blockNumber  BigInt
-  txHash       String    @db.VarChar(66)
-  createdAt    DateTime  @default(now())
-
-  lotes MunicipalBatch[]
-
   @@index([provincia, cantonId])
-  @@map("municipalities")
+  @@map("intermediarios")
 }
 
-/// Transaccion (mapping TransaccionesPlastico.transacciones), poblada desde TransaccionRegistrada
-/// y actualizada por TransaccionReconciliada cuando el lote municipal se cierra.
-/// Los montos on-chain (uint256) se guardan como Decimal(78,0): un BigInt de Postgres
-/// (int64) se desborda con montos de 18 decimales.
-model Transaccion {
-  id                 BigInt          @id
-  origen             String          @db.VarChar(42)
-  destino            String          @db.VarChar(42)
-  pesoGramos         Decimal         @db.Decimal(78, 0)
-  // Peso tal como lo declaro quien entrego, fijado una sola vez al crear la fila (nunca se
-  // actualiza). `pesoGramos` de arriba si se reescribe cuando la municipalidad reconcilia
-  // el lote -- este campo es el registro permanente de "cuanto dijo el usuario" original.
-  pesoGramosDeclarado Decimal        @db.Decimal(78, 0)
-  tokensMinteados    Decimal         @default(0) @db.Decimal(78, 0)
-  usdtPagado       Decimal         @default(0) @db.Decimal(78, 0)
-  tipo             TipoTransaccion
-  tipoPlastico     TipoPlastico
-  reconciliada     Boolean         @default(false)
-  loteId           BigInt?
-  timestampOnchain DateTime
-  blockNumber      BigInt
-  txHash           String          @db.VarChar(66)
-  logIndex         Int
-  createdAt        DateTime        @default(now())
+/// Transformador (mapping RegistroEntidades.transformadores).
+model Transformador {
+  wallet        String    @id @db.VarChar(42)
+  nombreHash    String    @db.VarChar(66)
+  cedulaHash    String    @unique @db.VarChar(66)
+  provincia     Provincia
+  cantonId      Int
+  verificado    Boolean   @default(false)
+  verificadoEn  DateTime?
+  verificadoPor String?   @db.VarChar(42)
+  activo        Boolean   @default(true)
+  registradoEn  DateTime
+  blockNumber   BigInt
+  txHash        String    @db.VarChar(66)
+  createdAt     DateTime  @default(now())
 
-  usuario User?           @relation("TransaccionOrigenUsuario", fields: [origen], references: [wallet])
-  lote    MunicipalBatch? @relation(fields: [loteId], references: [id])
+  emisiones Emision[]
+
+  @@index([verificado])
+  @@map("transformadores")
+}
+
+/// Comprador (mapping RegistroEntidades.compradores). empresaObligadaLey9786 es
+/// autodeclarado, solo para reporting/analitica -- no cambia el flujo del contrato.
+model Comprador {
+  wallet                 String   @id @db.VarChar(42)
+  nombreHash              String   @db.VarChar(66)
+  cedulaHash              String   @unique @db.VarChar(66)
+  empresaObligadaLey9786  Boolean  @default(false)
+  activo                  Boolean  @default(true)
+  registradoEn            DateTime
+  blockNumber             BigInt
+  txHash                  String   @db.VarChar(66)
+  createdAt               DateTime @default(now())
+
+  ventas     VentaPrimaria[]
+  retiros    CertificadoRetiro[]
+
+  @@map("compradores")
+}
+
+/// Lote (mapping TokenCustodia.lotes) -- proyeccion que se actualiza en el lugar con cada
+/// entrega/traspaso/union/division/consumo, igual que MunicipalBatch en DAPP Plastico Tesis.
+/// El historial completo de como llego a su estado actual vive en Entrega/Traspaso/
+/// LoteUnionEvento/LoteDivisionEvento, no aca.
+model Lote {
+  id                 BigInt   @id
+  material           Material
+  varianteId         Int
+  custodioActual     String   @db.VarChar(42)
+  pesoActual         Decimal  @db.Decimal(78, 0)
+  pesoAceptadoOrigen Decimal  @db.Decimal(78, 0)
+  activo             Boolean  @default(true)
+  blockNumberCreado  BigInt
+  txHashCreado       String   @db.VarChar(66)
+  updatedAt          DateTime @updatedAt
+
+  entregas          Entrega[]
+  traspasos         Traspaso[]
+  unionesComoNuevo  LoteUnionEvento[]   @relation("LoteUnionNuevo")
+  divisionesComoOrigen LoteDivisionEvento[] @relation("LoteDivisionOrigen")
+
+  @@index([material, activo])
+  @@index([custodioActual])
+  @@map("lotes")
+}
+
+/// Entrega (evento EntregaRegistrada) -- registro append-only de cada entrega individual,
+/// sea a un lote nuevo o a uno existente.
+model Entrega {
+  id               Int              @id @default(autoincrement())
+  loteId           BigInt
+  separadorWallet  String           @db.VarChar(42)
+  receptorWallet   String           @db.VarChar(42)
+  material         Material
+  varianteId       Int
+  pesoGramos       Decimal          @db.Decimal(78, 0)
+  modalidad        ModalidadEntrega
+  precioUSDTporKg  Decimal          @db.Decimal(78, 0)
+  blockNumber      BigInt
+  txHash           String           @db.VarChar(66)
+  logIndex         Int
+  createdAt        DateTime         @default(now())
+
+  lote      Lote           @relation(fields: [loteId], references: [id])
+  separador Separador      @relation(fields: [separadorWallet], references: [wallet])
+  receptor  Intermediario  @relation(fields: [receptorWallet], references: [wallet])
 
   @@unique([txHash, logIndex])
-  @@index([origen])
-  @@index([destino])
-  @@index([tipo])
   @@index([loteId])
-  @@index([blockNumber])
-  @@map("transacciones")
+  @@index([separadorWallet])
+  @@index([receptorWallet])
+  @@map("entregas")
 }
 
-/// LoteMunicipal (mapping TransaccionesPlastico.lotesMunicipales)
-model MunicipalBatch {
-  id                  BigInt   @id
-  municipalidadWallet String   @db.VarChar(42)
-  fechaRecoleccion    DateTime
-  rutaId              Int
-  cerrado             Boolean  @default(false)
-  pesoOficialGramos   Decimal? @db.Decimal(78, 0)
-  factorAjuste        Decimal? @db.Decimal(20, 0)
-  blockNumberIniciado BigInt
-  txHashIniciado      String   @db.VarChar(66)
-  blockNumberCerrado  BigInt?
-  txHashCerrado       String?  @db.VarChar(66)
-  createdAt           DateTime @default(now())
+/// LoteUnido -- que lotes se fusionaron en cual. El linaje proporcional exacto (que % le
+/// corresponde a cada separador/intermediario original) no se guarda on-chain -- se
+/// reconstruye desde este evento + los aportes/merma que ya tenian los lotes de origen en el
+/// momento de la union (consultables via Entrega/Traspaso de esos loteIds).
+model LoteUnionEvento {
+  id                 Int      @id @default(autoincrement())
+  nuevoLoteId        BigInt
+  loteIdsOrigen      Json // uint256[] como string[] (BigInt no es serializable directo a Json)
+  pesosOrigen        Json // uint256[] como string[]
+  varianteResultante Int
+  blockNumber        BigInt
+  txHash             String   @db.VarChar(66)
+  logIndex           Int
+  createdAt          DateTime @default(now())
 
-  municipalidad Municipality     @relation(fields: [municipalidadWallet], references: [wallet])
-  transacciones Transaccion[]
-  tiposCerrados LoteTipoCierre[]
+  nuevoLote Lote @relation("LoteUnionNuevo", fields: [nuevoLoteId], references: [id])
 
-  @@index([municipalidadWallet, cerrado])
-  @@map("municipal_batches")
+  @@unique([txHash, logIndex])
+  @@index([nuevoLoteId])
+  @@map("lote_union_eventos")
 }
 
-/// Cierre por tipo de plastico dentro de un lote (evento LoteTipoCerrado). Un lote se
-/// cierra tipo por tipo -- pesoOficialGramos/factorAjuste en MunicipalBatch son solo el
-/// agregado final una vez que todos los tipos del lote terminaron de reconciliarse aca.
-model LoteTipoCierre {
-  id                Int          @id @default(autoincrement())
-  loteId            BigInt
-  tipoPlastico      TipoPlastico
-  pesoOficialGramos Decimal      @db.Decimal(78, 0)
-  factorAjuste      Decimal      @db.Decimal(20, 0)
-  blockNumber       BigInt
-  txHash            String       @db.VarChar(66)
-  createdAt         DateTime     @default(now())
-
-  lote MunicipalBatch @relation(fields: [loteId], references: [id])
-
-  @@unique([loteId, tipoPlastico])
-  @@map("lote_tipo_cierres")
-}
-
-/// Auditoria cruzada del evento TokensMinteados (PlasticoToken), independiente de Transaccion
-model TokenMintEvent {
+/// LoteDividido -- un lote origen partido en N piezas nuevas.
+model LoteDivisionEvento {
   id            Int      @id @default(autoincrement())
-  destinatario  String   @db.VarChar(42)
-  cantidad      Decimal  @db.Decimal(78, 0)
-  transaccionId BigInt
+  loteIdOrigen  BigInt
+  nuevosLoteIds Json // uint256[] como string[]
+  pesos         Json // uint256[] como string[]
   blockNumber   BigInt
   txHash        String   @db.VarChar(66)
   logIndex      Int
   createdAt     DateTime @default(now())
 
+  loteOrigen Lote @relation("LoteDivisionOrigen", fields: [loteIdOrigen], references: [id])
+
   @@unique([txHash, logIndex])
-  @@index([destinatario])
-  @@map("token_mint_events")
+  @@index([loteIdOrigen])
+  @@map("lote_division_eventos")
 }
 
-/// Ingesta cruda de eventos: resiliencia ante crashes/reorgs del indexer.
-/// Cada log se guarda aqui antes de aplicar su handler especifico.
+/// Traspaso en dos pasos (EnvioDeclarado + RecepcionConfirmada sobre el mismo loteId).
+/// Se crea en "Declarado" y se completa a "Confirmado" cuando llega el segundo evento --
+/// mismo patron de reconciliacion en dos fases que Transaccion/LoteTipoCierre en DAPP
+/// Plastico Tesis.
+model Traspaso {
+  id                 Int             @id @default(autoincrement())
+  loteId             BigInt
+  de                 String          @db.VarChar(42)
+  hacia               String          @db.VarChar(42)
+  pesoEnviado        Decimal         @db.Decimal(78, 0)
+  precioUSDTporKg    Decimal         @db.Decimal(78, 0)
+  estado             EstadoTraspaso  @default(Declarado)
+  pesoRecibido       Decimal?        @db.Decimal(78, 0)
+  merma              Decimal?        @db.Decimal(78, 0)
+  quienAbsorbe       QuienAbsorbe?
+  blockNumberDeclarado  BigInt
+  txHashDeclarado       String       @db.VarChar(66)
+  blockNumberConfirmado BigInt?
+  txHashConfirmado      String?      @db.VarChar(66)
+  createdAt          DateTime        @default(now())
+
+  lote Lote @relation(fields: [loteId], references: [id])
+
+  @@index([loteId])
+  @@index([de])
+  @@index([hacia])
+  @@index([estado])
+  @@map("traspasos")
+}
+
+/// CertificadoContrato -- catalogo material -> direccion del clon ERC20 desplegado (evento
+/// CertificadoDesplegado en MercadoCertificados).
+model CertificadoContrato {
+  material    Material @id
+  direccion   String   @db.VarChar(42)
+  nombre      String
+  simbolo     String
+  blockNumber BigInt
+  txHash      String   @db.VarChar(66)
+  createdAt   DateTime @default(now())
+
+  @@map("certificado_contratos")
+}
+
+/// Emision (evento TransformacionRegistrada) -- el "LoteDeEmision" del documento de
+/// arquitectura: snapshot inmutable tomado al transformar. kgDisponiblesPrimario se
+/// actualiza con cada venta primaria parcial (igual que pesoOficialGramos en
+/// MunicipalBatch).
+model Emision {
+  id                      BigInt   @id
+  material                Material
+  transformadorWallet     String   @db.VarChar(42)
+  loteConsolidadoId       BigInt
+  pesoConsumidoTotal      Decimal  @db.Decimal(78, 0)
+  kgTransformadosOriginal Decimal  @db.Decimal(78, 0)
+  kgDisponiblesPrimario   Decimal  @db.Decimal(78, 0)
+  pesoAceptadoOrigenTotal Decimal  @db.Decimal(78, 0)
+  mermaTransformador      Decimal  @db.Decimal(78, 0)
+  precioUSDTporKg         Decimal  @db.Decimal(78, 0)
+  blockNumber             BigInt
+  txHash                  String   @db.VarChar(66)
+  createdAt               DateTime @default(now())
+
+  transformador Transformador    @relation(fields: [transformadorWallet], references: [wallet])
+  aportes       EmisionAporte[]
+  eslabones     EmisionEslabon[]
+  ventas        VentaPrimaria[]
+
+  @@index([transformadorWallet])
+  @@index([material])
+  @@map("emisiones")
+}
+
+/// Aporte de cada separador a una emision (copiado desde TokenCustodia.aportesDeLote en el
+/// momento de registrarTransformacion) -- base para calcular su parte de cada venta.
+model EmisionAporte {
+  id              Int     @id @default(autoincrement())
+  emisionId       BigInt
+  separadorWallet String  @db.VarChar(42)
+  kgAportado      Decimal @db.Decimal(78, 0)
+
+  emision   Emision   @relation(fields: [emisionId], references: [id])
+  separador Separador @relation(fields: [separadorWallet], references: [wallet])
+
+  @@unique([emisionId, separadorWallet])
+  @@index([separadorWallet])
+  @@map("emision_aportes")
+}
+
+/// Eslabon (intermediario o el transformador) de una emision, con su merma atribuida --
+/// copiado desde TokenCustodia.mermaDeLote mas la merma propia de la transformacion.
+model EmisionEslabon {
+  id         Int     @id @default(autoincrement())
+  emisionId  BigInt
+  direccion  String  @db.VarChar(42)
+  mermaKg    Decimal @db.Decimal(78, 0)
+
+  emision       Emision        @relation(fields: [emisionId], references: [id])
+  intermediario Intermediario? @relation(fields: [direccion], references: [wallet])
+
+  @@unique([emisionId, direccion])
+  @@index([direccion])
+  @@map("emision_eslabones")
+}
+
+/// Venta primaria (evento CertificadoComprado) -- cada compra (total o parcial) de una
+/// emision.
+model VentaPrimaria {
+  id              Int      @id @default(autoincrement())
+  emisionId       BigInt
+  compradorWallet String   @db.VarChar(42)
+  cantidadKg      Decimal  @db.Decimal(78, 0)
+  valorTotal      Decimal  @db.Decimal(78, 0)
+  blockNumber     BigInt
+  txHash          String   @db.VarChar(66)
+  logIndex        Int
+  createdAt       DateTime @default(now())
+
+  emision   Emision   @relation(fields: [emisionId], references: [id])
+  comprador Comprador @relation(fields: [compradorWallet], references: [wallet])
+  pagos     PagoAcreditado[]
+
+  @@unique([txHash, logIndex])
+  @@index([emisionId])
+  @@index([compradorWallet])
+  @@map("ventas_primarias")
+}
+
+/// Pago acreditado a un destinatario por una venta (evento PagoAcreditado) -- el detalle
+/// linea por linea del reparto 35/20/30/15 + cascada de merma de cada venta. saldoPendiente
+/// en si no se duplica en la base de datos: se lee en vivo del contrato (mismo patron que
+/// las lecturas de rol en DAPP Plastico Tesis), esta tabla es el historial de como se
+/// compuso cada acreditacion.
+model PagoAcreditado {
+  id            Int      @id @default(autoincrement())
+  ventaId       Int?
+  emisionId     BigInt
+  destinatario  String   @db.VarChar(42)
+  monto         Decimal  @db.Decimal(78, 0)
+  blockNumber   BigInt
+  txHash        String   @db.VarChar(66)
+  logIndex      Int
+  createdAt     DateTime @default(now())
+
+  venta VentaPrimaria? @relation(fields: [ventaId], references: [id])
+
+  @@unique([txHash, logIndex])
+  @@index([destinatario])
+  @@index([emisionId])
+  @@map("pagos_acreditados")
+}
+
+/// Retiro de un saldo pendiente (evento PagoRetirado) -- permissionless, lo puede disparar
+/// cualquiera a nombre del destinatario.
+model PagoRetiro {
+  id           Int      @id @default(autoincrement())
+  destinatario String   @db.VarChar(42)
+  monto        Decimal  @db.Decimal(78, 0)
+  blockNumber  BigInt
+  txHash       String   @db.VarChar(66)
+  logIndex     Int
+  createdAt    DateTime @default(now())
+
+  @@unique([txHash, logIndex])
+  @@index([destinatario])
+  @@map("pagos_retiros")
+}
+
+/// Retiro de certificado para uso en un informe de cumplimiento (evento
+/// CertificadoRetirado) -- quema permanente, queda registrado quien lo uso, en que informe
+/// y para que periodo.
+model CertificadoRetiro {
+  id              Int      @id @default(autoincrement())
+  compradorWallet String   @db.VarChar(42)
+  material        Material
+  cantidadKg      Decimal  @db.Decimal(78, 0)
+  informeRef      String   @db.VarChar(66)
+  periodo         Int
+  blockNumber     BigInt
+  txHash          String   @db.VarChar(66)
+  logIndex        Int
+  createdAt       DateTime @default(now())
+
+  comprador Comprador @relation(fields: [compradorWallet], references: [wallet])
+
+  @@unique([txHash, logIndex])
+  @@index([compradorWallet])
+  @@index([material])
+  @@map("certificado_retiros")
+}
+
+/// Ingesta cruda de eventos: resiliencia ante crashes/reorgs del indexer. Cada log se
+/// guarda aqui antes de aplicar su handler especifico.
 model RawEvent {
   id              Int      @id @default(autoincrement())
   contractAddress String   @db.VarChar(42)
@@ -218,8 +442,8 @@ model RawEvent {
   @@map("raw_events")
 }
 
-/// Estado de indexacion por chain: ultimo bloque procesado, usado para el backfill
-/// y para detectar reorgs comparando lastBlockHash contra la cadena real.
+/// Estado de indexacion por chain: ultimo bloque procesado, usado para el backfill y para
+/// detectar reorgs comparando lastBlockHash contra la cadena real.
 model IndexerState {
   id              Int      @id @default(1)
   chainId         Int      @unique
@@ -230,9 +454,8 @@ model IndexerState {
   @@map("indexer_state")
 }
 
-/// Cuenta de acceso a la aplicacion (email/contrasena): un gate de aplicacion previo
-/// a conectar la wallet, separado por completo del rol on-chain (Usuario/Centro/
-/// Municipalidad, que se maneja en RegistroEntidades). No representa identidad
+/// Cuenta de acceso a la aplicacion (email/contrasena): un gate de aplicacion previo a
+/// conectar la wallet, separado por completo del rol on-chain. No representa identidad
 /// verificada ni reemplaza a la wallet -- solo controla quien puede entrar al sitio.
 model Account {
   id           Int      @id @default(autoincrement())

@@ -16,8 +16,10 @@ export interface Deployment {
   contracts: {
     MockUSDT: { address: string };
     RegistroEntidades: { address: string };
-    PlasticoToken: { address: string };
-    TransaccionesPlastico: { address: string };
+    TokenCustodia: { address: string };
+    CertificadoTransformacionImpl: { address: string };
+    MercadoCertificados: { address: string };
+    Certificados: Record<string, string>; // simbolo -> direccion del clone
   };
 }
 
@@ -42,20 +44,22 @@ export function getProvider(): ethers.JsonRpcProvider {
   if (!rpcUrl) {
     throw new Error("AMOY_RPC_URL no esta definido en el entorno");
   }
-  // batchMaxCount: 1 desactiva el agrupamiento automatico de ethers (por defecto junta
-  // varias llamadas RPC hechas en el mismo tick en un solo POST con un array de
-  // requests). Con dRPC gratis eso rompia el indexador: dos eth_getLogs de 5,000
-  // bloques cada uno (bien dentro del limite individual) se agrupaban en un batch y
-  // dRPC rechazaba el batch entero por sumar 10,000 bloques combinados. Cada llamada
-  // sale ahora por su cuenta, en su propio POST.
+  // batchMaxCount: 1 -- ver nota en DAPP Plastico Tesis: dRPC free plan rechaza un batch de
+  // varias llamadas agrupadas si suman mas de 10,000 bloques combinados, aunque cada una
+  // individualmente este dentro del limite. Desactivar el agrupamiento automatico de
+  // ethers evita el problema de raiz.
   return new ethers.JsonRpcProvider(rpcUrl, undefined, { batchMaxCount: 1 });
 }
 
 export interface IndexedContracts {
   deployment: Deployment;
   registro: ethers.Contract;
-  transacciones: ethers.Contract;
-  token: ethers.Contract;
+  custodia: ethers.Contract;
+  mercado: ethers.Contract;
+  // Un contrato ERC20 por material, indexado por el mismo nombre de simbolo que aparece en
+  // deployment.contracts.Certificados (ej. "CERT-PLAST"). Todas las instancias comparten la
+  // misma ABI (CertificadoTransformacion), solo cambia la direccion.
+  certificados: Record<string, ethers.Contract>;
 }
 
 export async function getIndexedContracts(
@@ -64,11 +68,17 @@ export async function getIndexedContracts(
 ): Promise<IndexedContracts> {
   const deployment = await loadDeployment(networkName);
 
-  const [registroAbi, transaccionesAbi, tokenAbi] = await Promise.all([
+  const [registroAbi, custodiaAbi, mercadoAbi, certificadoAbi] = await Promise.all([
     loadAbi("RegistroEntidades"),
-    loadAbi("TransaccionesPlastico"),
-    loadAbi("PlasticoToken"),
+    loadAbi("TokenCustodia"),
+    loadAbi("MercadoCertificados"),
+    loadAbi("CertificadoTransformacion"),
   ]);
+
+  const certificados: Record<string, ethers.Contract> = {};
+  for (const [simbolo, direccion] of Object.entries(deployment.contracts.Certificados)) {
+    certificados[simbolo] = new ethers.Contract(direccion, certificadoAbi, provider);
+  }
 
   return {
     deployment,
@@ -77,11 +87,16 @@ export async function getIndexedContracts(
       registroAbi,
       provider,
     ),
-    transacciones: new ethers.Contract(
-      deployment.contracts.TransaccionesPlastico.address,
-      transaccionesAbi,
+    custodia: new ethers.Contract(
+      deployment.contracts.TokenCustodia.address,
+      custodiaAbi,
       provider,
     ),
-    token: new ethers.Contract(deployment.contracts.PlasticoToken.address, tokenAbi, provider),
+    mercado: new ethers.Contract(
+      deployment.contracts.MercadoCertificados.address,
+      mercadoAbi,
+      provider,
+    ),
+    certificados,
   };
 }

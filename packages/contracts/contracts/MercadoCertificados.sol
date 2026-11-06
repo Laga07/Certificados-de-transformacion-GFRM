@@ -66,6 +66,19 @@ contract MercadoCertificados is
     /// `transfer` a cada destinatario dentro de la venta.
     mapping(address => uint256) public saldoPendiente;
 
+    /// @notice Lista de separadores que aportaron a una emision -- el indexer la usa junto
+    /// con aporteKgDeEmision para reconstruir el reparto de cada venta sin tener que leer
+    /// storage interno directamente.
+    function separadoresDeEmision(uint256 emisionId) external view returns (address[] memory) {
+        return _separadoresDeEmision[emisionId];
+    }
+
+    /// @notice Lista de eslabones (intermediarios + transformador) de una emision -- ver
+    /// separadoresDeEmision.
+    function eslabonesDeEmision(uint256 emisionId) external view returns (address[] memory) {
+        return _eslabonesDeEmision[emisionId];
+    }
+
     event CertificadoDesplegado(Material indexed material, address indexed clone, string nombre, string simbolo);
     event TransformacionRegistrada(
         uint256 indexed emisionId,

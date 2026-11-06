@@ -3,55 +3,76 @@ import type { prisma as PrismaClientInstance } from "../lib/prisma.js";
 import { logger } from "../lib/logger.js";
 import type { IndexedContracts } from "../lib/contracts.js";
 import {
-  handleCentroRegistrado,
-  handleCentroVerificado,
-  handleMunicipalidadRegistrada,
-  handleUsuarioRegistrado,
+  handleCompradorRegistrado,
+  handleIntermediarioRegistrado,
+  handleIntermediarioVerificado,
+  handleSeparadorRegistrado,
+  handleTransformadorRegistrado,
+  handleTransformadorVerificado,
 } from "./handlers/registroEntidades.js";
 import {
-  handleLoteMunicipalCerrado,
-  handleLoteMunicipalIniciado,
-  handleLoteTipoCerrado,
-  handleTransaccionReconciliada,
-  handleTransaccionRegistrada,
-} from "./handlers/transaccionesPlastico.js";
-import { handleTokensMinteados } from "./handlers/plasticoToken.js";
+  handleEntregaRegistrada,
+  handleEnvioDeclarado,
+  handleLoteConsumido,
+  handleLoteCreado,
+  handleLoteDividido,
+  handleLoteUnido,
+  handleRecepcionConfirmada,
+} from "./handlers/tokenCustodia.js";
+import {
+  handleCertificadoComprado,
+  handleCertificadoDesplegado,
+  handleCertificadoRetirado,
+  handlePagoAcreditado,
+  handlePagoRetirado,
+  handleTransformacionRegistrada,
+} from "./handlers/mercadoCertificados.js";
 
 type Prisma = typeof PrismaClientInstance;
 
-// Configurable porque el rango maximo de eth_getLogs depende del proveedor RPC. El free
-// tier de Alchemy lo limita a 10 bloques por llamada. dRPC gratis DICE soportar hasta
-// 10,000 en su mensaje de error, pero probado en vivo (29 sept 2026) el limite real para
-// eth_getLogs con filtro de address ronda los 75-100 bloques -- 150 ya falla siempre con
-// el mismo mensaje (mal etiquetado). 50 deja margen. Si cambia el proveedor, ajustar
-// INDEXER_BLOCK_WINDOW en el .env en vez de tocar este default -- y volver a probar en
-// vivo el limite real en vez de confiar en el texto del error.
+// Configurable porque el rango maximo de eth_getLogs depende del proveedor RPC. dRPC gratis
+// DICE soportar hasta 10,000 bloques en su mensaje de error, pero probado en vivo (DAPP
+// Plastico Tesis, 29 sept 2026) el limite real para eth_getLogs con filtro de address ronda
+// los 75-100 bloques -- 150 ya falla siempre con el mismo mensaje (mal etiquetado). 50 deja
+// margen. Si cambia el proveedor, ajustar INDEXER_BLOCK_WINDOW en el .env en vez de tocar
+// este default -- y volver a probar en vivo el limite real en vez de confiar en el texto
+// del error.
 const MAX_BLOCK_WINDOW = Number(process.env.INDEXER_BLOCK_WINDOW ?? 50);
 
 const REGISTRO_EVENTS = [
-  "UsuarioRegistrado",
-  "CentroRegistrado",
-  "CentroVerificado",
-  "MunicipalidadRegistrada",
+  "SeparadorRegistrado",
+  "IntermediarioRegistrado",
+  "IntermediarioVerificado",
+  "TransformadorRegistrado",
+  "TransformadorVerificado",
+  "CompradorRegistrado",
 ];
-const TRANSACCIONES_EVENTS = [
-  "TransaccionRegistrada",
-  "LoteMunicipalIniciado",
-  "LoteTipoCerrado",
-  "LoteMunicipalCerrado",
-  "TransaccionReconciliada",
+const CUSTODIA_EVENTS = [
+  "EntregaRegistrada",
+  "LoteCreado",
+  "LoteUnido",
+  "LoteDividido",
+  "EnvioDeclarado",
+  "RecepcionConfirmada",
+  "LoteConsumido",
 ];
-const TOKEN_EVENTS = ["TokensMinteados"];
+const MERCADO_EVENTS = [
+  "CertificadoDesplegado",
+  "TransformacionRegistrada",
+  "CertificadoComprado",
+  "PagoAcreditado",
+  "PagoRetirado",
+  "CertificadoRetirado",
+];
 
 interface TaggedLog {
-  contractName: "registro" | "transacciones" | "token";
+  contractName: "registro" | "custodia" | "mercado";
   eventName: string;
   log: ethers.EventLog;
 }
 
 // Espaciado entre llamadas eth_getLogs para no exceder el limite de compute-units-por-
-// segundo de RPCs gratuitos (ej. Alchemy free tier). Configurable por si el RPC usado
-// permite mas throughput.
+// segundo de RPCs gratuitos.
 const RPC_CALL_DELAY_MS = Number(process.env.INDEXER_RPC_DELAY_MS ?? 250);
 
 function sleep(ms: number) {
@@ -60,9 +81,8 @@ function sleep(ms: number) {
 
 // dRPC (y cualquier RPC "agregador" que reparte la consulta entre varios operadores de
 // nodo) tira de vez en cuando errores transitorios que no son limite de tasa -- ej.
-// "Temporary internal error, please retry". Sin esto, cada uno de esos blips le costaba
-// un ciclo entero de 8 segundos (el catch de run.ts reintenta recien en el proximo poll);
-// con el reintento inmediato de aca se resuelve solo, casi siempre en menos de 1 segundo.
+// "Temporary internal error, please retry". El reintento inmediato de aca se resuelve solo,
+// casi siempre en menos de 1 segundo -- sin esto, cada blip costaba un ciclo entero de poll.
 function esErrorTransitorio(error: unknown): boolean {
   const texto = error instanceof Error ? JSON.stringify(error) : String(error);
   return /429|compute units|temporary|timeout|ETIMEDOUT|ECONNRESET|rate limit/i.test(texto);
@@ -87,12 +107,9 @@ async function getLogsWithRetry(
   }
 }
 
-// Antes se pedia un eth_getLogs POR CADA nombre de evento (hasta 10 llamadas por ventana:
-// 4 de registro + 5 de transacciones + 1 de token -- eso fue lo que agoto la cuota
-// gratuita de Alchemy en dias). Un solo eth_getLogs por CONTRATO trae todos sus logs de
-// una vez; se decodifican aca y se descarta lo que no nos interesa (ej. RoleGranted,
-// Paused, Upgraded de OpenZeppelin, que tambien viven en el mismo ABI). ~3x menos
-// llamadas por ventana, combinado con la ventana mas ancha de MAX_BLOCK_WINDOW.
+// Un solo eth_getLogs POR CONTRATO (no por nombre de evento) -- se decodifican aca y se
+// descarta lo que no interesa (ej. RoleGranted, Paused, Upgraded de OpenZeppelin, que
+// tambien viven en el mismo ABI).
 async function fetchLogsInRange(
   provider: ethers.Provider,
   contract: ethers.Contract,
@@ -136,26 +153,38 @@ async function dispatch(
   const { contractName, eventName, log } = tagged;
 
   if (contractName === "registro") {
-    if (eventName === "UsuarioRegistrado") return handleUsuarioRegistrado(prisma, contracts, log);
-    if (eventName === "CentroRegistrado")
-      return handleCentroRegistrado(prisma, contracts, provider, log);
-    if (eventName === "CentroVerificado") return handleCentroVerificado(prisma, provider, log);
-    if (eventName === "MunicipalidadRegistrada")
-      return handleMunicipalidadRegistrada(prisma, contracts, provider, log);
+    if (eventName === "SeparadorRegistrado") return handleSeparadorRegistrado(prisma, contracts, log);
+    if (eventName === "IntermediarioRegistrado")
+      return handleIntermediarioRegistrado(prisma, contracts, log);
+    if (eventName === "IntermediarioVerificado")
+      return handleIntermediarioVerificado(prisma, provider, log);
+    if (eventName === "TransformadorRegistrado")
+      return handleTransformadorRegistrado(prisma, contracts, log);
+    if (eventName === "TransformadorVerificado")
+      return handleTransformadorVerificado(prisma, provider, log);
+    if (eventName === "CompradorRegistrado") return handleCompradorRegistrado(prisma, contracts, log);
   }
 
-  if (contractName === "transacciones") {
-    if (eventName === "TransaccionRegistrada")
-      return handleTransaccionRegistrada(prisma, contracts, log);
-    if (eventName === "LoteMunicipalIniciado") return handleLoteMunicipalIniciado(prisma, log);
-    if (eventName === "LoteTipoCerrado") return handleLoteTipoCerrado(prisma, log);
-    if (eventName === "LoteMunicipalCerrado") return handleLoteMunicipalCerrado(prisma, log);
-    if (eventName === "TransaccionReconciliada")
-      return handleTransaccionReconciliada(prisma, contracts, log);
+  if (contractName === "custodia") {
+    if (eventName === "LoteCreado") return handleLoteCreado(prisma, contracts, log);
+    if (eventName === "EntregaRegistrada") return handleEntregaRegistrada(prisma, contracts, log);
+    if (eventName === "LoteUnido") return handleLoteUnido(prisma, contracts, log);
+    if (eventName === "LoteDividido") return handleLoteDividido(prisma, contracts, log);
+    if (eventName === "EnvioDeclarado") return handleEnvioDeclarado(prisma, log);
+    if (eventName === "RecepcionConfirmada")
+      return handleRecepcionConfirmada(prisma, contracts, log);
+    if (eventName === "LoteConsumido") return handleLoteConsumido(prisma, contracts, log);
   }
 
-  if (contractName === "token" && eventName === "TokensMinteados") {
-    return handleTokensMinteados(prisma, log);
+  if (contractName === "mercado") {
+    if (eventName === "CertificadoDesplegado") return handleCertificadoDesplegado(prisma, log);
+    if (eventName === "TransformacionRegistrada")
+      return handleTransformacionRegistrada(prisma, contracts, log);
+    if (eventName === "CertificadoComprado")
+      return handleCertificadoComprado(prisma, contracts, log);
+    if (eventName === "PagoAcreditado") return handlePagoAcreditado(prisma, log);
+    if (eventName === "PagoRetirado") return handlePagoRetirado(prisma, log);
+    if (eventName === "CertificadoRetirado") return handleCertificadoRetirado(prisma, log);
   }
 
   throw new Error(`Sin handler para ${contractName}.${eventName}`);
@@ -186,12 +215,21 @@ async function checkReorg(
 
   await prisma.$transaction([
     prisma.rawEvent.deleteMany({ where: { blockNumber: { gt: rollbackTo } } }),
-    prisma.transaccion.deleteMany({ where: { blockNumber: { gt: rollbackTo } } }),
-    prisma.municipalBatch.deleteMany({ where: { blockNumberIniciado: { gt: rollbackTo } } }),
-    prisma.tokenMintEvent.deleteMany({ where: { blockNumber: { gt: rollbackTo } } }),
-    prisma.user.deleteMany({ where: { blockNumber: { gt: rollbackTo } } }),
-    prisma.collectionCenter.deleteMany({ where: { blockNumber: { gt: rollbackTo } } }),
-    prisma.municipality.deleteMany({ where: { blockNumber: { gt: rollbackTo } } }),
+    prisma.separador.deleteMany({ where: { blockNumber: { gt: rollbackTo } } }),
+    prisma.intermediario.deleteMany({ where: { blockNumber: { gt: rollbackTo } } }),
+    prisma.transformador.deleteMany({ where: { blockNumber: { gt: rollbackTo } } }),
+    prisma.comprador.deleteMany({ where: { blockNumber: { gt: rollbackTo } } }),
+    prisma.entrega.deleteMany({ where: { blockNumber: { gt: rollbackTo } } }),
+    prisma.loteUnionEvento.deleteMany({ where: { blockNumber: { gt: rollbackTo } } }),
+    prisma.loteDivisionEvento.deleteMany({ where: { blockNumber: { gt: rollbackTo } } }),
+    prisma.traspaso.deleteMany({ where: { blockNumberDeclarado: { gt: rollbackTo } } }),
+    prisma.lote.deleteMany({ where: { blockNumberCreado: { gt: rollbackTo } } }),
+    prisma.certificadoContrato.deleteMany({ where: { blockNumber: { gt: rollbackTo } } }),
+    prisma.emision.deleteMany({ where: { blockNumber: { gt: rollbackTo } } }),
+    prisma.ventaPrimaria.deleteMany({ where: { blockNumber: { gt: rollbackTo } } }),
+    prisma.pagoAcreditado.deleteMany({ where: { blockNumber: { gt: rollbackTo } } }),
+    prisma.pagoRetiro.deleteMany({ where: { blockNumber: { gt: rollbackTo } } }),
+    prisma.certificadoRetiro.deleteMany({ where: { blockNumber: { gt: rollbackTo } } }),
   ]);
 
   const rollbackBlock = await provider.getBlock(rollbackTo);
@@ -229,11 +267,8 @@ export async function syncOnce(
   }
 
   // Se recorre ventana por ventana (no todo el rango de una), guardando el avance en
-  // IndexerState despues de cada una. Con un backlog grande (RPC gratuito, 10 bloques por
-  // llamada) procesar todo el tramo antes de persistir nada puede tardar horas -- si el
-  // proceso se reinicia a la mitad, se perdia todo ese trabajo y arrancaba de cero otra vez.
-  // Asi el progreso real queda guardado cada pocos segundos, sin importar que tan atras se
-  // este.
+  // IndexerState despues de cada una -- si el proceso se reinicia a la mitad de un backlog
+  // grande, no se pierde el progreso ya hecho.
   let eventosProcesados = 0;
 
   for (let windowFrom = fromBlock; windowFrom <= toBlock; windowFrom += MAX_BLOCK_WINDOW) {
@@ -249,25 +284,25 @@ export async function syncOnce(
       windowFrom,
       windowTo,
     );
-    const transaccionesLogs = await fetchLogsInRange(
+    const custodiaLogs = await fetchLogsInRange(
       provider,
-      contracts.transacciones,
-      "transacciones",
-      TRANSACCIONES_EVENTS,
+      contracts.custodia,
+      "custodia",
+      CUSTODIA_EVENTS,
       windowFrom,
       windowTo,
     );
-    const tokenLogs = await fetchLogsInRange(
+    const mercadoLogs = await fetchLogsInRange(
       provider,
-      contracts.token,
-      "token",
-      TOKEN_EVENTS,
+      contracts.mercado,
+      "mercado",
+      MERCADO_EVENTS,
       windowFrom,
       windowTo,
     );
 
     // Orden cronologico real entre los 3 contratos: por bloque y luego por logIndex dentro del bloque.
-    const todosLosLogs = [...registroLogs, ...transaccionesLogs, ...tokenLogs].sort((a, b) => {
+    const todosLosLogs = [...registroLogs, ...custodiaLogs, ...mercadoLogs].sort((a, b) => {
       if (a.log.blockNumber !== b.log.blockNumber) return a.log.blockNumber - b.log.blockNumber;
       return a.log.index - b.log.index;
     });

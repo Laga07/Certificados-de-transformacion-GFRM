@@ -5,33 +5,41 @@ import { prisma } from "../lib/prisma.js";
 import { booleanQueryParam, paginatedResponse, paginationSchema, toSkipTake } from "../lib/pagination.js";
 
 const listQuerySchema = paginationSchema.extend({
-  verificado: booleanQueryParam.optional(),
   provincia: z.string().optional(),
+  verificado: booleanQueryParam.optional(),
 });
 
-export async function centrosRoutes(app: FastifyInstance) {
-  app.get("/centros", async (request, reply) => {
+export async function intermediariosRoutes(app: FastifyInstance) {
+  app.get("/intermediarios", async (request, reply) => {
     const query = listQuerySchema.safeParse(request.query);
     if (!query.success) return reply.badRequest(query.error.message);
 
     const where = {
-      ...(query.data.verificado !== undefined ? { verificado: query.data.verificado } : {}),
       ...(query.data.provincia ? { provincia: query.data.provincia as never } : {}),
+      ...(query.data.verificado !== undefined ? { verificado: query.data.verificado } : {}),
     };
 
     const [data, total] = await Promise.all([
-      prisma.collectionCenter.findMany({
+      prisma.intermediario.findMany({
         where,
         ...toSkipTake(query.data),
         orderBy: { registradoEn: "desc" },
       }),
-      prisma.collectionCenter.count({ where }),
+      prisma.intermediario.count({ where }),
     ]);
 
     return paginatedResponse(data, total, query.data);
   });
 
-  app.get<{ Params: { wallet: string } }>("/centros/:wallet", async (request, reply) => {
+  // Atajo para el panel de administracion: intermediarios/transformadores aun sin verificar.
+  app.get("/intermediarios/pendientes", async () => {
+    return prisma.intermediario.findMany({
+      where: { verificado: false, activo: true },
+      orderBy: { registradoEn: "asc" },
+    });
+  });
+
+  app.get<{ Params: { wallet: string } }>("/intermediarios/:wallet", async (request, reply) => {
     let wallet: string;
     try {
       wallet = ethers.getAddress(request.params.wallet);
@@ -39,8 +47,8 @@ export async function centrosRoutes(app: FastifyInstance) {
       return reply.badRequest("Direccion invalida");
     }
 
-    const centro = await prisma.collectionCenter.findUnique({ where: { wallet } });
-    if (!centro) return reply.notFound("Centro no encontrado");
-    return centro;
+    const intermediario = await prisma.intermediario.findUnique({ where: { wallet } });
+    if (!intermediario) return reply.notFound("Intermediario no encontrado");
+    return intermediario;
   });
 }

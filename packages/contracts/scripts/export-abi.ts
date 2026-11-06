@@ -8,9 +8,10 @@ const EXPORTED_ADDRESSES_DIR = path.join(import.meta.dirname, "..", "exported", 
 
 // Fuente + nombre del contrato -> nombre de archivo exportado
 const CONTRATOS_A_EXPORTAR = [
-  { source: "PlasticExchange.sol", name: "PlasticoToken" },
-  { source: "PlasticExchange.sol", name: "RegistroEntidades" },
-  { source: "PlasticExchange.sol", name: "TransaccionesPlastico" },
+  { source: "RegistroEntidades.sol", name: "RegistroEntidades" },
+  { source: "TokenCustodia.sol", name: "TokenCustodia" },
+  { source: "CertificadoTransformacion.sol", name: "CertificadoTransformacion" },
+  { source: "MercadoCertificados.sol", name: "MercadoCertificados" },
   { source: "mocks/MockUSDT.sol", name: "MockUSDT" },
 ];
 

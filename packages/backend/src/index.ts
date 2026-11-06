@@ -8,12 +8,13 @@ import swaggerUi from "@fastify/swagger-ui";
 import { logger } from "./lib/logger.js";
 import { healthRoutes } from "./routes/health.js";
 import { authRoutes } from "./routes/auth.js";
-import { usuariosRoutes } from "./routes/usuarios.js";
-import { walletsRoutes } from "./routes/wallets.js";
-import { centrosRoutes } from "./routes/centros.js";
-import { municipalidadesRoutes } from "./routes/municipalidades.js";
-import { transaccionesRoutes } from "./routes/transacciones.js";
+import { separadoresRoutes } from "./routes/separadores.js";
+import { intermediariosRoutes } from "./routes/intermediarios.js";
+import { transformadoresRoutes } from "./routes/transformadores.js";
+import { compradoresRoutes } from "./routes/compradores.js";
 import { lotesRoutes } from "./routes/lotes.js";
+import { emisionesRoutes } from "./routes/emisiones.js";
+import { walletsRoutes } from "./routes/wallets.js";
 import { statsRoutes } from "./routes/stats.js";
 
 const PORT = Number(process.env.PORT ?? 4000);
@@ -27,9 +28,9 @@ async function main() {
   await app.register(swagger, {
     openapi: {
       info: {
-        title: "GreenMaterialsDAPP API",
+        title: "DAPP Certificado de Transformacion API",
         description: "API REST de lectura sobre los datos indexados de la DApp (PostgreSQL)",
-        version: "1.0.0",
+        version: "0.1.0",
       },
     },
   });
@@ -37,12 +38,13 @@ async function main() {
 
   await app.register(healthRoutes, { prefix: "/api" });
   await app.register(authRoutes, { prefix: "/api" });
-  await app.register(usuariosRoutes, { prefix: "/api" });
-  await app.register(walletsRoutes, { prefix: "/api" });
-  await app.register(centrosRoutes, { prefix: "/api" });
-  await app.register(municipalidadesRoutes, { prefix: "/api" });
-  await app.register(transaccionesRoutes, { prefix: "/api" });
+  await app.register(separadoresRoutes, { prefix: "/api" });
+  await app.register(intermediariosRoutes, { prefix: "/api" });
+  await app.register(transformadoresRoutes, { prefix: "/api" });
+  await app.register(compradoresRoutes, { prefix: "/api" });
   await app.register(lotesRoutes, { prefix: "/api" });
+  await app.register(emisionesRoutes, { prefix: "/api" });
+  await app.register(walletsRoutes, { prefix: "/api" });
   await app.register(statsRoutes, { prefix: "/api" });
 
   await app.listen({ port: PORT, host: "0.0.0.0" });

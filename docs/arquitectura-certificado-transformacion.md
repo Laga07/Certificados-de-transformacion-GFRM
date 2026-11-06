@@ -1,10 +1,35 @@
 # Arquitectura del contrato — DAPP Certificado de Transformación
 
-Estado: **borrador para revisión — todavía no hay una sola línea de Solidity nueva escrita.**
+Estado: **Fase 1 implementada y con tests pasando (39/39)** —
+`RegistroEntidades.sol`, `TokenCustodia.sol`, `CertificadoTransformacion.sol` y
+`MercadoCertificados.sol` en `packages/contracts/contracts/`. El test de
+`comprarCertificado` reproduce el ejemplo numérico exacto de la Tabla 12 del documento
+(10,000 kg origen → 3500/1000/800/2706/1500, suma 9506) como regresión. Pendiente: deploy a
+Amoy, backend/indexer, frontend.
+
 Este documento traduce el "Resumen ejecutivo... Certificado de Transformación" (el PDF dirigido
 al Ministerio de Salud) a decisiones de implementación concretas. Donde el PDF deja algo abierto
 a propósito (precio, naturaleza jurídica, protección de datos), este documento tampoco lo cierra
 — son temas legales/de negocio, no de ingeniería.
+
+## 0. Ajustes descubiertos al implementar (sobre lo ya confirmado en la sección 4)
+
+- **`registrarEntrega` también acepta a un Transformador verificado como receptor**, no solo
+  a un Intermediario. Sin esto, el caso "sin intermediarios" de la Tabla 11 (material directo
+  al transformador) era imposible de construir — toda entrega habría necesitado pasar por al
+  menos un Intermediario por diseño de los `require`.
+- **El 20% de intermediarios sin nadie que lo reclame (0 o 1+ intermediarios con redondeo) se
+  suma explícitamente a la plataforma**, no se deja como residuo implícito. El primer intento
+  de esto (un `pagoPlataforma` como residuo de `valorTotal`) tenía un bug real: en el caso
+  "sin intermediarios" ese 20% simplemente quedaba sin acreditar a nadie (ver commit de tests).
+  Ahora `basePlataforma` suma explícitamente ese sobrante y el redondeo de dividirlo entre
+  `nIntermediariosReales`.
+- Confirmado con un test que fuerza el caso: si el faltante de merma es tan catastrófico que ni
+  vaciar por completo el pool de separadores alcanza a cubrirlo, la venta **revierte** (vía un
+  `require` de invariante interno) en vez de distribuir mal los fondos o darle un sobrante
+  inmerecido a la plataforma. Es un caso extremo (pérdidas por encima de lo que separadores +
+  intermediarios + transformador pueden absorber combinados) que el documento no contempla; se
+  decidió fallar cerrado antes que inventar una regla no pedida.
 
 Alcance acordado: **completo** (los 5 materiales, los 5 roles, linaje de lotes, cascada de merma
 con piso en cero) y con **rigor de producto real** (no custodia de fondos desde el diseño,

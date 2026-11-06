@@ -155,7 +155,14 @@ contract TokenCustodia is
         uint256 precioUSDTporKg
     ) external whenNotPaused returns (uint256 loteId) {
         require(pesoGramos > 0, "Peso debe ser > 0");
-        require(registro.esIntermediarioVerificado(msg.sender), "Receptor no es intermediario verificado");
+        // Normalmente el primer receptor es un Intermediario, pero el documento tambien
+        // contempla que el material llegue "directo al transformador" (Tabla 11, "Sin
+        // intermediarios") -- por eso un Transformador verificado tambien puede recibir una
+        // entrega de primera mano, no solo via traspaso de un intermediario.
+        require(
+            registro.esIntermediarioVerificado(msg.sender) || registro.esTransformadorVerificado(msg.sender),
+            "Receptor no es intermediario ni transformador verificado"
+        );
         require(registro.esSeparador(separador), "Origen no es separador registrado");
 
         if (loteDestino == 0) {

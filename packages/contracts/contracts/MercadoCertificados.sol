@@ -260,10 +260,18 @@ contract MercadoCertificados is
             if (eslabones[i] != emision.transformador) nIntermediariosReales++;
         }
         // "Sin intermediarios" (Tabla 11): si nadie mas que el transformador toco el lote, el
-        // 20% que les hubiera correspondido queda sin asignar aca y termina en la plataforma
-        // via el residuo final.
-        uint256 baseShareIntermediarioIndividual =
-            nIntermediariosReales > 0 ? baseIntermediariosTotal / nIntermediariosReales : 0;
+        // 20% que les hubiera correspondido queda sin asignar en el loop de eslabones mas
+        // abajo -- se lo sumamos aca a la plataforma explicitamente, para que no quede
+        // huerfano en el contrato.
+        uint256 baseShareIntermediarioIndividual = 0;
+        if (nIntermediariosReales > 0) {
+            baseShareIntermediarioIndividual = baseIntermediariosTotal / nIntermediariosReales;
+            // Redondeo de ESTA division tambien a la plataforma (nIntermediariosReales no
+            // siempre divide baseIntermediariosTotal exacto).
+            basePlataforma += baseIntermediariosTotal - (baseShareIntermediarioIndividual * nIntermediariosReales);
+        } else {
+            basePlataforma += baseIntermediariosTotal;
+        }
 
         uint256[] memory shareFinal = new uint256[](nEslabones);
         uint256 faltanteTotal = 0;

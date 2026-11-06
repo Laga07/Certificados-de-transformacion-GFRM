@@ -20,6 +20,21 @@
       "address": "0x216a4D8Ff11Cf15a2cB55a65c3ee3fF7D5870b75",
       "txHash": "0x1b8ca0353c011803f76c96646b48fa47832d7426b57912839dd265c1f32b3f4a",
       "kind": "uups"
+    },
+    {
+      "address": "0xBf64d614a4C9C54AeAC2298027D0a38549e048BD",
+      "txHash": "0x2b8128b8d35d21c0a16a40591af66ce81b26447f87b86c6ac4aefc97ae75579e",
+      "kind": "uups"
+    },
+    {
+      "address": "0x03Dba0fe3edbE52746A92305E28879698CE21911",
+      "txHash": "0x679cf8ec51db116a317290aa400e22fc3d98d53c3f66cc10c6d7ccd04790e3d5",
+      "kind": "uups"
+    },
+    {
+      "address": "0x8a99D2863EDE393efc6F485E59516e2d58F39164",
+      "txHash": "0x32297cc8d6265bfc95be3f8fba3150e42aeb9a65abbce8510b344d439eb6f23e",
+      "kind": "uups"
     }
   ],
   "impls": {
@@ -1871,6 +1886,1176 @@
           "t_uint8": {
             "label": "uint8",
             "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Pausable": [
+            {
+              "contract": "PausableUpgradeable",
+              "label": "_paused",
+              "type": "t_bool",
+              "src": "npm\\@openzeppelin\\contracts-upgradeable@5.6.1\\utils\\PausableUpgradeable.sol:21",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.AccessControl": [
+            {
+              "contract": "AccessControlUpgradeable",
+              "label": "_roles",
+              "type": "t_mapping(t_bytes32,t_struct(RoleData)24_storage)",
+              "src": "npm\\@openzeppelin\\contracts-upgradeable@5.6.1\\access\\AccessControlUpgradeable.sol:61",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "npm\\@openzeppelin\\contracts@5.6.1\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "npm\\@openzeppelin\\contracts@5.6.1\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "402d4153fb4e414281843ad557ad800803478fa25a3e1d07dd3543287bd668a0": {
+      "address": "0x218EE4De1f19ec93DE0A91f37bb261446c1844D8",
+      "txHash": "0x308090f55cc12332af8c894a93d2861746e850a9e968072b55db22f903693574",
+      "layout": {
+        "solcVersion": "0.8.24",
+        "storage": [
+          {
+            "label": "separadores",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_mapping(t_address,t_struct(Separador)12630_storage)",
+            "contract": "RegistroEntidades",
+            "src": "project\\contracts\\RegistroEntidades.sol:125"
+          },
+          {
+            "label": "intermediarios",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_mapping(t_address,t_struct(Intermediario)12646_storage)",
+            "contract": "RegistroEntidades",
+            "src": "project\\contracts\\RegistroEntidades.sol:126"
+          },
+          {
+            "label": "transformadores",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_mapping(t_address,t_struct(Transformador)12660_storage)",
+            "contract": "RegistroEntidades",
+            "src": "project\\contracts\\RegistroEntidades.sol:127"
+          },
+          {
+            "label": "compradores",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_mapping(t_address,t_struct(Comprador)12671_storage)",
+            "contract": "RegistroEntidades",
+            "src": "project\\contracts\\RegistroEntidades.sol:128"
+          },
+          {
+            "label": "identidadHashToWallet",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_mapping(t_bytes32,t_address)",
+            "contract": "RegistroEntidades",
+            "src": "project\\contracts\\RegistroEntidades.sol:132"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "RegistroEntidades",
+            "src": "project\\contracts\\RegistroEntidades.sol:288"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)24_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AccessControlStorage)34_storage": {
+            "label": "struct AccessControlUpgradeable.AccessControlStorage",
+            "members": [
+              {
+                "label": "_roles",
+                "type": "t_mapping(t_bytes32,t_struct(RoleData)24_storage)",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(InitializableStorage)1225_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(RoleData)24_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "hasRole",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_enum(Provincia)12463": {
+            "label": "enum Provincia",
+            "members": [
+              "SanJose",
+              "Alajuela",
+              "Cartago",
+              "Heredia",
+              "Guanacaste",
+              "Puntarenas",
+              "Limon"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_struct(Comprador)12671_storage)": {
+            "label": "mapping(address => struct RegistroEntidades.Comprador)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(Intermediario)12646_storage)": {
+            "label": "mapping(address => struct RegistroEntidades.Intermediario)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(Separador)12630_storage)": {
+            "label": "mapping(address => struct RegistroEntidades.Separador)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(Transformador)12660_storage)": {
+            "label": "mapping(address => struct RegistroEntidades.Transformador)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_address)": {
+            "label": "mapping(bytes32 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Comprador)12671_storage": {
+            "label": "struct RegistroEntidades.Comprador",
+            "members": [
+              {
+                "label": "nombreHash",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "cedulaHash",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "empresaObligadaLey9786",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "activo",
+                "type": "t_bool",
+                "offset": 1,
+                "slot": "2"
+              },
+              {
+                "label": "registradoEn",
+                "type": "t_uint64",
+                "offset": 2,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_struct(Intermediario)12646_storage": {
+            "label": "struct RegistroEntidades.Intermediario",
+            "members": [
+              {
+                "label": "nombreHash",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "cedulaHash",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "ubicacion",
+                "type": "t_struct(Ubicacion)12469_storage",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "subtipo",
+                "type": "t_uint8",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "verificado",
+                "type": "t_bool",
+                "offset": 1,
+                "slot": "3"
+              },
+              {
+                "label": "activo",
+                "type": "t_bool",
+                "offset": 2,
+                "slot": "3"
+              },
+              {
+                "label": "registradoEn",
+                "type": "t_uint64",
+                "offset": 3,
+                "slot": "3"
+              }
+            ],
+            "numberOfBytes": "128"
+          },
+          "t_struct(Separador)12630_storage": {
+            "label": "struct RegistroEntidades.Separador",
+            "members": [
+              {
+                "label": "identidadHash",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "wallet",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "ubicacion",
+                "type": "t_struct(Ubicacion)12469_storage",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "tipoSeparador",
+                "type": "t_uint8",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "activo",
+                "type": "t_bool",
+                "offset": 1,
+                "slot": "3"
+              },
+              {
+                "label": "registradoEn",
+                "type": "t_uint64",
+                "offset": 2,
+                "slot": "3"
+              }
+            ],
+            "numberOfBytes": "128"
+          },
+          "t_struct(Transformador)12660_storage": {
+            "label": "struct RegistroEntidades.Transformador",
+            "members": [
+              {
+                "label": "nombreHash",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "cedulaHash",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "ubicacion",
+                "type": "t_struct(Ubicacion)12469_storage",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "verificado",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "activo",
+                "type": "t_bool",
+                "offset": 1,
+                "slot": "3"
+              },
+              {
+                "label": "registradoEn",
+                "type": "t_uint64",
+                "offset": 2,
+                "slot": "3"
+              }
+            ],
+            "numberOfBytes": "128"
+          },
+          "t_struct(Ubicacion)12469_storage": {
+            "label": "struct Ubicacion",
+            "members": [
+              {
+                "label": "provincia",
+                "type": "t_enum(Provincia)12463",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "cantonId",
+                "type": "t_uint8",
+                "offset": 1,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.AccessControl": [
+            {
+              "contract": "AccessControlUpgradeable",
+              "label": "_roles",
+              "type": "t_mapping(t_bytes32,t_struct(RoleData)24_storage)",
+              "src": "npm\\@openzeppelin\\contracts-upgradeable@5.6.1\\access\\AccessControlUpgradeable.sol:61",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "npm\\@openzeppelin\\contracts@5.6.1\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "npm\\@openzeppelin\\contracts@5.6.1\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "40ebee4d8ed59500cdf879b5c3aee0d1acff01920566ba824ddb38f83b15c9ac": {
+      "address": "0x308487b7C1E076Bd16F3e10945d14a1514865A4E",
+      "txHash": "0xbcb313aea01edee8b19e1461dbe8fc1dc3add38e77edbe12a015ff4b93c3ce4a",
+      "layout": {
+        "solcVersion": "0.8.24",
+        "storage": [
+          {
+            "label": "registro",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_contract(IRegistroEntidades)12602",
+            "contract": "TokenCustodia",
+            "src": "project\\contracts\\TokenCustodia.sol:85"
+          },
+          {
+            "label": "nextLoteId",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256",
+            "contract": "TokenCustodia",
+            "src": "project\\contracts\\TokenCustodia.sol:86"
+          },
+          {
+            "label": "lotes",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_mapping(t_uint256,t_struct(Lote)13526_storage)",
+            "contract": "TokenCustodia",
+            "src": "project\\contracts\\TokenCustodia.sol:105"
+          },
+          {
+            "label": "aportePorSeparador",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_mapping(t_uint256,t_mapping(t_address,t_uint256))",
+            "contract": "TokenCustodia",
+            "src": "project\\contracts\\TokenCustodia.sol:111"
+          },
+          {
+            "label": "_separadoresDelLote",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_mapping(t_uint256,t_array(t_address)dyn_storage)",
+            "contract": "TokenCustodia",
+            "src": "project\\contracts\\TokenCustodia.sol:112"
+          },
+          {
+            "label": "_separadorListado",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_mapping(t_uint256,t_mapping(t_address,t_bool))",
+            "contract": "TokenCustodia",
+            "src": "project\\contracts\\TokenCustodia.sol:113"
+          },
+          {
+            "label": "mermaAtribuidaGramos",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_mapping(t_uint256,t_mapping(t_address,t_uint256))",
+            "contract": "TokenCustodia",
+            "src": "project\\contracts\\TokenCustodia.sol:117"
+          },
+          {
+            "label": "_intermediariosDelLote",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_mapping(t_uint256,t_array(t_address)dyn_storage)",
+            "contract": "TokenCustodia",
+            "src": "project\\contracts\\TokenCustodia.sol:118"
+          },
+          {
+            "label": "_intermediarioListado",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_mapping(t_uint256,t_mapping(t_address,t_bool))",
+            "contract": "TokenCustodia",
+            "src": "project\\contracts\\TokenCustodia.sol:119"
+          },
+          {
+            "label": "_aporteRestante",
+            "offset": 0,
+            "slot": "9",
+            "type": "t_mapping(t_uint256,t_mapping(t_address,t_uint256))",
+            "contract": "TokenCustodia",
+            "src": "project\\contracts\\TokenCustodia.sol:576"
+          },
+          {
+            "label": "_mermaRestante",
+            "offset": 0,
+            "slot": "10",
+            "type": "t_mapping(t_uint256,t_mapping(t_address,t_uint256))",
+            "contract": "TokenCustodia",
+            "src": "project\\contracts\\TokenCustodia.sol:577"
+          },
+          {
+            "label": "_aporteRestanteInicializado",
+            "offset": 0,
+            "slot": "11",
+            "type": "t_mapping(t_uint256,t_mapping(t_address,t_bool))",
+            "contract": "TokenCustodia",
+            "src": "project\\contracts\\TokenCustodia.sol:578"
+          },
+          {
+            "label": "_mermaRestanteInicializado",
+            "offset": 0,
+            "slot": "12",
+            "type": "t_mapping(t_uint256,t_mapping(t_address,t_bool))",
+            "contract": "TokenCustodia",
+            "src": "project\\contracts\\TokenCustodia.sol:579"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "13",
+            "type": "t_array(t_uint256)44_storage",
+            "contract": "TokenCustodia",
+            "src": "project\\contracts\\TokenCustodia.sol:628"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_bool))": {
+            "label": "mapping(address => mapping(address => bool))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)24_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_address,t_uint256))": {
+            "label": "mapping(uint256 => mapping(address => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AccessControlStorage)34_storage": {
+            "label": "struct AccessControlUpgradeable.AccessControlStorage",
+            "members": [
+              {
+                "label": "_roles",
+                "type": "t_mapping(t_bytes32,t_struct(RoleData)24_storage)",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(ERC1155Storage)197_storage": {
+            "label": "struct ERC1155Upgradeable.ERC1155Storage",
+            "members": [
+              {
+                "label": "_balances",
+                "type": "t_mapping(t_uint256,t_mapping(t_address,t_uint256))",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_operatorApprovals",
+                "type": "t_mapping(t_address,t_mapping(t_address,t_bool))",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "_uri",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_struct(InitializableStorage)1225_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PausableStorage)687_storage": {
+            "label": "struct PausableUpgradeable.PausableStorage",
+            "members": [
+              {
+                "label": "_paused",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(RoleData)24_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "hasRole",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_array(t_address)dyn_storage": {
+            "label": "address[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)44_storage": {
+            "label": "uint256[44]",
+            "numberOfBytes": "1408"
+          },
+          "t_contract(IRegistroEntidades)12602": {
+            "label": "contract IRegistroEntidades",
+            "numberOfBytes": "20"
+          },
+          "t_enum(Material)13311": {
+            "label": "enum Material",
+            "members": [
+              "Plastico",
+              "CartonPapel",
+              "Tetrapack",
+              "Vidrio",
+              "Metales"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_uint256,t_array(t_address)dyn_storage)": {
+            "label": "mapping(uint256 => address[])",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_address,t_bool))": {
+            "label": "mapping(uint256 => mapping(address => bool))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Lote)13526_storage)": {
+            "label": "mapping(uint256 => struct TokenCustodia.Lote)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Lote)13526_storage": {
+            "label": "struct TokenCustodia.Lote",
+            "members": [
+              {
+                "label": "material",
+                "type": "t_enum(Material)13311",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "varianteId",
+                "type": "t_uint8",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "custodioActual",
+                "type": "t_address",
+                "offset": 2,
+                "slot": "0"
+              },
+              {
+                "label": "pesoActual",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "pesoAceptadoOrigen",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "activo",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "pendienteDeConfirmacion",
+                "type": "t_bool",
+                "offset": 1,
+                "slot": "3"
+              },
+              {
+                "label": "destinatarioPendiente",
+                "type": "t_address",
+                "offset": 2,
+                "slot": "3"
+              },
+              {
+                "label": "pesoEnviadoPendiente",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "precioPendiente",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              }
+            ],
+            "numberOfBytes": "192"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Pausable": [
+            {
+              "contract": "PausableUpgradeable",
+              "label": "_paused",
+              "type": "t_bool",
+              "src": "npm\\@openzeppelin\\contracts-upgradeable@5.6.1\\utils\\PausableUpgradeable.sol:21",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.AccessControl": [
+            {
+              "contract": "AccessControlUpgradeable",
+              "label": "_roles",
+              "type": "t_mapping(t_bytes32,t_struct(RoleData)24_storage)",
+              "src": "npm\\@openzeppelin\\contracts-upgradeable@5.6.1\\access\\AccessControlUpgradeable.sol:61",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.ERC1155": [
+            {
+              "contract": "ERC1155Upgradeable",
+              "label": "_balances",
+              "type": "t_mapping(t_uint256,t_mapping(t_address,t_uint256))",
+              "src": "npm\\@openzeppelin\\contracts-upgradeable@5.6.1\\token\\ERC1155\\ERC1155Upgradeable.sol:27",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "ERC1155Upgradeable",
+              "label": "_operatorApprovals",
+              "type": "t_mapping(t_address,t_mapping(t_address,t_bool))",
+              "src": "npm\\@openzeppelin\\contracts-upgradeable@5.6.1\\token\\ERC1155\\ERC1155Upgradeable.sol:29",
+              "offset": 0,
+              "slot": "1"
+            },
+            {
+              "contract": "ERC1155Upgradeable",
+              "label": "_uri",
+              "type": "t_string_storage",
+              "src": "npm\\@openzeppelin\\contracts-upgradeable@5.6.1\\token\\ERC1155\\ERC1155Upgradeable.sol:32",
+              "offset": 0,
+              "slot": "2"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "npm\\@openzeppelin\\contracts@5.6.1\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "npm\\@openzeppelin\\contracts@5.6.1\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "59500c155474ee7b387d8b3e00916348ef0a05a9f792c7d78ec387e1729e7215": {
+      "address": "0x7372B0dfDE4c83007FE929115C6DD50aFCE035f7",
+      "txHash": "0xcb3063a16bfa995b1563977556806a20fec5675df467b5e2e106c30b1f572a3f",
+      "layout": {
+        "solcVersion": "0.8.24",
+        "storage": [
+          {
+            "label": "registro",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_contract(IRegistroEntidades)12602",
+            "contract": "MercadoCertificados",
+            "src": "project\\contracts\\MercadoCertificados.sol:32"
+          },
+          {
+            "label": "tokenCustodia",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_contract(ITokenCustodia)13476",
+            "contract": "MercadoCertificados",
+            "src": "project\\contracts\\MercadoCertificados.sol:33"
+          },
+          {
+            "label": "usdt",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_contract(IERC20)4165",
+            "contract": "MercadoCertificados",
+            "src": "project\\contracts\\MercadoCertificados.sol:34"
+          },
+          {
+            "label": "certificadoImplementacion",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_address",
+            "contract": "MercadoCertificados",
+            "src": "project\\contracts\\MercadoCertificados.sol:35"
+          },
+          {
+            "label": "plataforma",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_address",
+            "contract": "MercadoCertificados",
+            "src": "project\\contracts\\MercadoCertificados.sol:36"
+          },
+          {
+            "label": "certificados",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_mapping(t_enum(Material)13311,t_address)",
+            "contract": "MercadoCertificados",
+            "src": "project\\contracts\\MercadoCertificados.sol:38"
+          },
+          {
+            "label": "emisiones",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_mapping(t_uint256,t_struct(Emision)11179_storage)",
+            "contract": "MercadoCertificados",
+            "src": "project\\contracts\\MercadoCertificados.sol:54"
+          },
+          {
+            "label": "nextEmisionId",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_uint256",
+            "contract": "MercadoCertificados",
+            "src": "project\\contracts\\MercadoCertificados.sol:55"
+          },
+          {
+            "label": "_separadoresDeEmision",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_mapping(t_uint256,t_array(t_address)dyn_storage)",
+            "contract": "MercadoCertificados",
+            "src": "project\\contracts\\MercadoCertificados.sol:57"
+          },
+          {
+            "label": "aporteKgDeEmision",
+            "offset": 0,
+            "slot": "9",
+            "type": "t_mapping(t_uint256,t_mapping(t_address,t_uint256))",
+            "contract": "MercadoCertificados",
+            "src": "project\\contracts\\MercadoCertificados.sol:58"
+          },
+          {
+            "label": "_eslabonesDeEmision",
+            "offset": 0,
+            "slot": "10",
+            "type": "t_mapping(t_uint256,t_array(t_address)dyn_storage)",
+            "contract": "MercadoCertificados",
+            "src": "project\\contracts\\MercadoCertificados.sol:61"
+          },
+          {
+            "label": "mermaKgDeEmision",
+            "offset": 0,
+            "slot": "11",
+            "type": "t_mapping(t_uint256,t_mapping(t_address,t_uint256))",
+            "contract": "MercadoCertificados",
+            "src": "project\\contracts\\MercadoCertificados.sol:62"
+          },
+          {
+            "label": "saldoPendiente",
+            "offset": 0,
+            "slot": "12",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "MercadoCertificados",
+            "src": "project\\contracts\\MercadoCertificados.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "13",
+            "type": "t_array(t_uint256)44_storage",
+            "contract": "MercadoCertificados",
+            "src": "project\\contracts\\MercadoCertificados.sol:409"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)24_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AccessControlStorage)34_storage": {
+            "label": "struct AccessControlUpgradeable.AccessControlStorage",
+            "members": [
+              {
+                "label": "_roles",
+                "type": "t_mapping(t_bytes32,t_struct(RoleData)24_storage)",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(InitializableStorage)1225_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PausableStorage)687_storage": {
+            "label": "struct PausableUpgradeable.PausableStorage",
+            "members": [
+              {
+                "label": "_paused",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(RoleData)24_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "hasRole",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_array(t_address)dyn_storage": {
+            "label": "address[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)44_storage": {
+            "label": "uint256[44]",
+            "numberOfBytes": "1408"
+          },
+          "t_contract(IERC20)4165": {
+            "label": "contract IERC20",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IRegistroEntidades)12602": {
+            "label": "contract IRegistroEntidades",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ITokenCustodia)13476": {
+            "label": "contract ITokenCustodia",
+            "numberOfBytes": "20"
+          },
+          "t_enum(Material)13311": {
+            "label": "enum Material",
+            "members": [
+              "Plastico",
+              "CartonPapel",
+              "Tetrapack",
+              "Vidrio",
+              "Metales"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_enum(Material)13311,t_address)": {
+            "label": "mapping(enum Material => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_array(t_address)dyn_storage)": {
+            "label": "mapping(uint256 => address[])",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_address,t_uint256))": {
+            "label": "mapping(uint256 => mapping(address => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Emision)11179_storage)": {
+            "label": "mapping(uint256 => struct MercadoCertificados.Emision)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Emision)11179_storage": {
+            "label": "struct MercadoCertificados.Emision",
+            "members": [
+              {
+                "label": "material",
+                "type": "t_enum(Material)13311",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "transformador",
+                "type": "t_address",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "kgTransformadosOriginal",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "kgDisponiblesPrimario",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "pesoAceptadoOrigenTotal",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "precioUSDTporKg",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "loteConsolidadoId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "existe",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "6"
+              }
+            ],
+            "numberOfBytes": "224"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
           }
         },
         "namespaces": {

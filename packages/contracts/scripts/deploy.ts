@@ -20,6 +20,14 @@ async function main() {
   const [deployer] = await ethers.getSigners();
   console.log(`Desplegando en la red "${connection.networkName}" con la cuenta ${deployer.address}`);
 
+  // Se toma ANTES de la primera transaccion, no despues de la ultima -- el indexer arranca
+  // su backfill en este bloque, y varios eventos de dominio (CertificadoDesplegado) se
+  // emiten durante este mismo script (el loop de abajo). Tomarlo al final (como estaba
+  // antes) hacia que el indexer arrancara justo donde termino el deploy y se perdiera todo
+  // lo que paso durante el -- paso real en el primer deploy a Amoy (4 de 5
+  // CertificadoDesplegado nunca se indexaron).
+  const startBlock = await ethers.provider.getBlockNumber();
+
   // 1) MockUSDT (no upgradeable, solo para testnet)
   const MockUSDT = await ethers.getContractFactory("MockUSDT");
   const usdt = await MockUSDT.deploy(deployer.address);
@@ -88,13 +96,11 @@ async function main() {
     console.log(`Certificado ${material.simbolo} (material ${material.indice}) desplegado en ${cloneAddress}`);
   }
 
-  const deploymentBlock = await ethers.provider.getBlockNumber();
-
   const output = {
     network: connection.networkName,
     chainId: Number((await ethers.provider.getNetwork()).chainId),
     deployer: deployer.address,
-    startBlock: deploymentBlock,
+    startBlock,
     contracts: {
       MockUSDT: { address: usdtAddress },
       RegistroEntidades: { address: registroAddress },

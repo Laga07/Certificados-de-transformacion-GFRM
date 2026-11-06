@@ -6,9 +6,7 @@ import {
   useReadRegistroEntidadesHasRole,
   useReadRegistroEntidadesVerifierRole,
 } from "@/lib/generated";
-import { CentrosPendientesPanel } from "./CentrosPendientesPanel";
-import { RegistrarMunicipalidadForm } from "./RegistrarMunicipalidadForm";
-import { OtorgarRolForm } from "./OtorgarRolForm";
+import { PendientesPanel } from "./PendientesPanel";
 
 export function AdminDashboard({ registroAddress }: { registroAddress: `0x${string}` }) {
   const { address, isConnected } = useAccount();
@@ -19,27 +17,19 @@ export function AdminDashboard({ registroAddress }: { registroAddress: `0x${stri
   const esVerificador = useReadRegistroEntidadesHasRole({
     address: registroAddress,
     args: verifierRole.data && address ? ([verifierRole.data, address] as const) : undefined,
-    query: {
-      enabled: Boolean(verifierRole.data && address),
-      staleTime: 0,
-      refetchOnMount: "always",
-    },
+    query: { enabled: Boolean(verifierRole.data && address), staleTime: 0, refetchOnMount: "always" },
   });
 
   const esAdmin = useReadRegistroEntidadesHasRole({
     address: registroAddress,
     args: adminRole.data && address ? ([adminRole.data, address] as const) : undefined,
-    query: {
-      enabled: Boolean(adminRole.data && address),
-      staleTime: 0,
-      refetchOnMount: "always",
-    },
+    query: { enabled: Boolean(adminRole.data && address), staleTime: 0, refetchOnMount: "always" },
   });
 
   if (!isConnected) {
     return (
       <p className="text-neutral-500">
-        Conecta la wallet de administración (la que hizo el deploy, o una con rol de
+        Conectá la wallet de administración (la que hizo el deploy, o una con rol de
         verificador) para continuar.
       </p>
     );
@@ -63,30 +53,15 @@ export function AdminDashboard({ registroAddress }: { registroAddress: `0x${stri
 
   return (
     <div className="flex flex-col gap-10">
-      {esVerificador.data ? (
-        <section className="flex flex-col gap-3">
-          <h2 className="font-heading font-semibold text-navy">Centros pendientes de verificación</h2>
-          <CentrosPendientesPanel registroAddress={registroAddress} />
-        </section>
-      ) : null}
+      <section className="flex flex-col gap-3">
+        <h2 className="font-heading font-semibold text-navy">Intermediarios pendientes de verificación</h2>
+        <PendientesPanel registroAddress={registroAddress} tipo="intermediario" />
+      </section>
 
-      {esAdmin.data ? (
-        <>
-          <section className="flex flex-col gap-3">
-            <h2 className="font-heading font-semibold text-navy">Registrar municipalidad</h2>
-            <p className="text-sm text-neutral-500 max-w-md -mt-2">
-              No hay autoservicio para este rol: un administrador registra la wallet de cada
-              municipalidad a mano, una vez validada la institución.
-            </p>
-            <RegistrarMunicipalidadForm registroAddress={registroAddress} />
-          </section>
-
-          <section className="flex flex-col gap-3">
-            <h2 className="font-heading font-semibold text-navy">Otorgar rol de verificador</h2>
-            <OtorgarRolForm registroAddress={registroAddress} roleConstant={verifierRole.data} />
-          </section>
-        </>
-      ) : null}
+      <section className="flex flex-col gap-3">
+        <h2 className="font-heading font-semibold text-navy">Transformadores pendientes de verificación</h2>
+        <PendientesPanel registroAddress={registroAddress} tipo="transformador" />
+      </section>
     </div>
   );
 }

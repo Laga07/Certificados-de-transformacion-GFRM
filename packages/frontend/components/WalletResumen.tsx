@@ -1,15 +1,30 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { formatUnits } from "viem";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
 interface Resumen {
-  totales: {
-    transacciones: number;
-    pesoGramosTotal: string;
+  comoSeparador: { entregas: number; pesoGramosTotal: string };
+  comoIntermediarioOTransformador: { entregasRecibidas: number; pesoGramosTotal: string };
+  pagos: {
+    acreditados: number;
+    montoAcreditadoTotal: string;
+    retirados: number;
+    montoRetiradoTotal: string;
   };
-  porTipoPlastico: { tipoPlastico: string; transacciones: number; pesoGramosTotal: string }[];
+  comoComprador: {
+    ventas: number;
+    kgCompradosTotal: string;
+    valorPagadoTotal: string;
+    certificadosRetirados: number;
+    kgRetiradosTotal: string;
+  };
+}
+
+function kg(gramos: string) {
+  return Number(BigInt(gramos) / BigInt(1000)).toLocaleString("es-CR");
 }
 
 export function WalletResumen({ address }: { address: `0x${string}` }) {
@@ -39,52 +54,74 @@ export function WalletResumen({ address }: { address: `0x${string}` }) {
   }, [address]);
 
   if (cargando) {
-    return <p className="text-sm text-neutral-500">Cargando tu historial de reciclaje...</p>;
+    return <p className="text-sm text-neutral-500">Cargando tu historial...</p>;
   }
 
-  if (!resumen || resumen.totales.transacciones === 0) {
-    return (
-      <p className="text-sm text-neutral-500">
-        Todavía no tenés transacciones registradas en el indexer.
-      </p>
-    );
+  if (!resumen) {
+    return <p className="text-sm text-neutral-500">No se pudo cargar tu historial del indexer.</p>;
   }
 
-  const kg = Number(BigInt(resumen.totales.pesoGramosTotal) / BigInt(1000));
+  const sinActividad =
+    resumen.comoSeparador.entregas === 0 &&
+    resumen.comoIntermediarioOTransformador.entregasRecibidas === 0 &&
+    resumen.pagos.acreditados === 0 &&
+    resumen.comoComprador.ventas === 0;
+
+  if (sinActividad) {
+    return <p className="text-sm text-neutral-500">Todavía no tenés actividad registrada en el indexer.</p>;
+  }
 
   return (
     <div className="rounded-xl border border-neutral-200 p-5 flex flex-col gap-4">
       <div className="flex flex-wrap gap-6">
-        <div>
-          <p className="text-3xl font-heading font-semibold text-forest">
-            {kg.toLocaleString("es-CR")} kg
-          </p>
-          <p className="text-xs text-neutral-500 mt-1">Plástico total reciclado</p>
-        </div>
-        <div>
-          <p className="text-3xl font-heading font-semibold text-gold">
-            {resumen.totales.transacciones}
-          </p>
-          <p className="text-xs text-neutral-500 mt-1">Transacciones registradas</p>
-        </div>
+        {resumen.comoSeparador.entregas > 0 ? (
+          <Metrica
+            valor={`${kg(resumen.comoSeparador.pesoGramosTotal)} kg`}
+            etiqueta={`Entregado como separador (${resumen.comoSeparador.entregas})`}
+            color="forest"
+          />
+        ) : null}
+        {resumen.comoIntermediarioOTransformador.entregasRecibidas > 0 ? (
+          <Metrica
+            valor={`${kg(resumen.comoIntermediarioOTransformador.pesoGramosTotal)} kg`}
+            etiqueta={`Recibido como intermediario/transformador (${resumen.comoIntermediarioOTransformador.entregasRecibidas})`}
+            color="gold"
+          />
+        ) : null}
+        {resumen.pagos.acreditados > 0 ? (
+          <Metrica
+            valor={`${formatUnits(BigInt(resumen.pagos.montoAcreditadoTotal), 6)} USDT`}
+            etiqueta={`Acreditado en ventas (${resumen.pagos.acreditados})`}
+            color="forest"
+          />
+        ) : null}
+        {resumen.comoComprador.ventas > 0 ? (
+          <Metrica
+            valor={`${kg(resumen.comoComprador.kgCompradosTotal)} kg`}
+            etiqueta={`Certificados comprados (${resumen.comoComprador.ventas})`}
+            color="gold"
+          />
+        ) : null}
       </div>
+      <p className="text-xs text-neutral-500">
+        Retirado hasta ahora: {formatUnits(BigInt(resumen.pagos.montoRetiradoTotal), 6)} USDT &middot; ver saldo
+        pendiente en vivo en{" "}
+        <a href="/mercado/pagos" className="text-forest hover:underline">
+          Mis pagos
+        </a>
+        .
+      </p>
+    </div>
+  );
+}
 
-      {resumen.porTipoPlastico.length > 0 ? (
-        <div>
-          <p className="text-xs text-neutral-500 mb-2">Por tipo de plástico</p>
-          <ul className="flex flex-wrap gap-2">
-            {resumen.porTipoPlastico.map((row) => (
-              <li
-                key={row.tipoPlastico}
-                className="rounded-full border border-neutral-200 bg-surface-warm px-3 py-1 text-xs text-foreground/70"
-              >
-                <span className="font-medium text-navy">{row.tipoPlastico}</span>{" "}
-                &middot; {(Number(BigInt(row.pesoGramosTotal) / BigInt(1000))).toLocaleString("es-CR")} kg
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
+function Metrica({ valor, etiqueta, color }: { valor: string; etiqueta: string; color: "forest" | "gold" }) {
+  return (
+    <div>
+      <p className={`text-2xl font-heading font-semibold ${color === "forest" ? "text-forest" : "text-gold"}`}>
+        {valor}
+      </p>
+      <p className="text-xs text-neutral-500 mt-1">{etiqueta}</p>
     </div>
   );
 }

@@ -2,20 +2,24 @@
 
 import { useAccount } from "wagmi";
 import {
-  useReadRegistroEntidadesEsCentroVerificado,
-  useReadRegistroEntidadesEsMunicipalidad,
-  useReadRegistroEntidadesEsUsuario,
+  useReadRegistroEntidadesEsComprador,
+  useReadRegistroEntidadesEsIntermediarioVerificado,
+  useReadRegistroEntidadesEsSeparador,
+  useReadRegistroEntidadesEsTransformadorVerificado,
 } from "@/lib/generated";
+
+export type Rol = "separador" | "intermediario" | "transformador" | "comprador";
 
 export function RoleGate({
   role,
   registroAddress,
   children,
 }: {
-  role: "usuario" | "centro" | "municipalidad";
+  role: Rol | Rol[];
   registroAddress: `0x${string}`;
   children: React.ReactNode;
 }) {
+  const rolesPermitidos = Array.isArray(role) ? role : [role];
   const { address, isConnected } = useAccount();
 
   const options = {
@@ -24,28 +28,41 @@ export function RoleGate({
     query: { enabled: Boolean(address), staleTime: 0, refetchOnMount: "always" as const },
   };
 
-  const esUsuario = useReadRegistroEntidadesEsUsuario(options);
-  const esCentro = useReadRegistroEntidadesEsCentroVerificado(options);
-  const esMunicipalidad = useReadRegistroEntidadesEsMunicipalidad(options);
+  const esSeparador = useReadRegistroEntidadesEsSeparador(options);
+  const esIntermediario = useReadRegistroEntidadesEsIntermediarioVerificado(options);
+  const esTransformador = useReadRegistroEntidadesEsTransformadorVerificado(options);
+  const esComprador = useReadRegistroEntidadesEsComprador(options);
 
   if (!isConnected) {
-    return <p className="text-neutral-500">Conecta tu wallet para continuar.</p>;
+    return <p className="text-neutral-500">Conectá tu wallet para continuar.</p>;
   }
 
-  const loading = esUsuario.isLoading || esCentro.isLoading || esMunicipalidad.isLoading;
+  const loading =
+    esSeparador.isLoading || esIntermediario.isLoading || esTransformador.isLoading || esComprador.isLoading;
   if (loading) {
     return <p className="text-neutral-500">Verificando rol on-chain...</p>;
   }
 
-  const autorizado =
-    role === "usuario" ? esUsuario.data : role === "centro" ? esCentro.data : esMunicipalidad.data;
+  const porRol = {
+    separador: esSeparador.data,
+    intermediario: esIntermediario.data,
+    transformador: esTransformador.data,
+    comprador: esComprador.data,
+  };
+  const nombresRol = {
+    separador: "separador registrado",
+    intermediario: "intermediario verificado",
+    transformador: "transformador verificado",
+    comprador: "comprador registrado",
+  };
+
+  const autorizado = rolesPermitidos.some((r) => porRol[r]);
 
   if (!autorizado) {
-    const nombreRol =
-      role === "usuario" ? "usuario registrado" : role === "centro" ? "centro verificado" : "municipalidad";
     return (
       <p className="text-amber-700 text-sm">
-        Tu wallet conectada no tiene el rol requerido ({nombreRol}) para esta acción.
+        Tu wallet conectada no tiene ninguno de los roles requeridos (
+        {rolesPermitidos.map((r) => nombresRol[r]).join(" o ")}) para esta acción.
       </p>
     );
   }

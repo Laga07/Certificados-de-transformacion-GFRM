@@ -26,25 +26,31 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "Registrarse",
     items: [
-      { href: "/registro/usuario", label: "Usuario" },
-      { href: "/registro/centro", label: "Centro Recolector" },
+      { href: "/registro/separador", label: "Separador" },
+      { href: "/registro/intermediario", label: "Intermediario" },
+      { href: "/registro/transformador", label: "Transformador" },
+      { href: "/registro/comprador", label: "Comprador" },
     ],
   },
   {
     label: "Entregas",
     items: [
-      { href: "/transacciones/gratuita", label: "Gratuita" },
-      { href: "/transacciones/pagada", label: "Pagada" },
-      { href: "/transacciones/lote-municipal", label: "Municipal" },
+      { href: "/entregas/registrar", label: "Registrar entrega" },
+      { href: "/entregas/traspaso", label: "Traspaso de lote" },
+      { href: "/entregas/transformar", label: "Registrar transformación" },
       { href: "/guia-plasticos", label: "Guía de plásticos" },
     ],
   },
   {
-    label: "Administración",
+    label: "Mercado",
     items: [
-      { href: "/municipal/lotes", label: "Municipalidades" },
-      { href: "/admin", label: "Contrato" },
+      { href: "/mercado/comprar", label: "Comprar certificado" },
+      { href: "/mercado/pagos", label: "Mis pagos" },
     ],
+  },
+  {
+    label: "Administración",
+    items: [{ href: "/admin", label: "Verificaciones" }],
   },
 ];
 

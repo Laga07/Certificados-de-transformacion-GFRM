@@ -19,13 +19,12 @@ export default function PerfilPage() {
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-semibold text-navy">Perfil</h1>
       <p className="text-sm text-foreground/70 max-w-2xl">
-        Este es tu estado on-chain, la prueba verificable de tu aporte a la trazabilidad del
-        plástico reciclado en Costa Rica. Cada rol registrado aquí visibiliza y dignifica el
-        trabajo de quienes hoy operan, muchas veces, en la informalidad.
+        Este es tu estado on-chain: la prueba verificable de tu rol y tu aporte en la cadena de
+        trazabilidad.
       </p>
       <PerfilClient
         registroAddress={deployment.RegistroEntidades}
-        plasticoTokenAddress={deployment.PlasticoToken}
+        mercadoAddress={deployment.MercadoCertificados}
       />
     </div>
   );

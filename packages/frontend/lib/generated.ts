@@ -6,34 +6,123 @@ import {
 } from 'wagmi/codegen'
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// IPlasticoToken
+// CertificadoTransformacion
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export const iPlasticoTokenAbi = [
+export const certificadoTransformacionAbi = [
+  { type: 'constructor', inputs: [], stateMutability: 'nonpayable' },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'spender', internalType: 'address', type: 'address' },
+      { name: 'allowance', internalType: 'uint256', type: 'uint256' },
+      { name: 'needed', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'ERC20InsufficientAllowance',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'sender', internalType: 'address', type: 'address' },
+      { name: 'balance', internalType: 'uint256', type: 'uint256' },
+      { name: 'needed', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'ERC20InsufficientBalance',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'approver', internalType: 'address', type: 'address' }],
+    name: 'ERC20InvalidApprover',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'receiver', internalType: 'address', type: 'address' }],
+    name: 'ERC20InvalidReceiver',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'sender', internalType: 'address', type: 'address' }],
+    name: 'ERC20InvalidSender',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'spender', internalType: 'address', type: 'address' }],
+    name: 'ERC20InvalidSpender',
+  },
+  { type: 'error', inputs: [], name: 'InvalidInitialization' },
+  { type: 'error', inputs: [], name: 'NotInitializing' },
   {
     type: 'event',
     anonymous: false,
     inputs: [
       {
-        name: 'destinatario',
+        name: 'owner',
         internalType: 'address',
         type: 'address',
         indexed: true,
       },
       {
-        name: 'cantidad',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
+        name: 'spender',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
       },
       {
-        name: 'transaccionId',
+        name: 'value',
         internalType: 'uint256',
         type: 'uint256',
         indexed: false,
       },
     ],
-    name: 'TokensMinteados',
+    name: 'Approval',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'version',
+        internalType: 'uint64',
+        type: 'uint64',
+        indexed: false,
+      },
+    ],
+    name: 'Initialized',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'from', internalType: 'address', type: 'address', indexed: true },
+      { name: 'to', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'value',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'Transfer',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'owner', internalType: 'address', type: 'address' },
+      { name: 'spender', internalType: 'address', type: 'address' },
+    ],
+    name: 'allowance',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'spender', internalType: 'address', type: 'address' },
+      { name: 'value', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'approve',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'nonpayable',
   },
   {
     type: 'function',
@@ -45,10 +134,104 @@ export const iPlasticoTokenAbi = [
   {
     type: 'function',
     inputs: [
-      { name: 'account', internalType: 'address', type: 'address' },
+      { name: 'from', internalType: 'address', type: 'address' },
       { name: 'amount', internalType: 'uint256', type: 'uint256' },
     ],
-    name: 'burnFrom',
+    name: 'burn',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'decimals',
+    outputs: [{ name: '', internalType: 'uint8', type: 'uint8' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'nombre', internalType: 'string', type: 'string' },
+      { name: 'simbolo', internalType: 'string', type: 'string' },
+      { name: '_mercado', internalType: 'address', type: 'address' },
+    ],
+    name: 'initialize',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'mercado',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'to', internalType: 'address', type: 'address' },
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'mint',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'name',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'symbol',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'totalSupply',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'to', internalType: 'address', type: 'address' },
+      { name: 'value', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'transfer',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'from', internalType: 'address', type: 'address' },
+      { name: 'to', internalType: 'address', type: 'address' },
+      { name: 'value', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'transferFrom',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'nonpayable',
+  },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ICertificadoTransformacion
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const iCertificadoTransformacionAbi = [
+  {
+    type: 'function',
+    inputs: [
+      { name: 'from', internalType: 'address', type: 'address' },
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'burn',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -57,7 +240,6 @@ export const iPlasticoTokenAbi = [
     inputs: [
       { name: 'to', internalType: 'address', type: 'address' },
       { name: 'amount', internalType: 'uint256', type: 'uint256' },
-      { name: 'transaccionId', internalType: 'uint256', type: 'uint256' },
     ],
     name: 'mint',
     outputs: [],
@@ -86,15 +268,41 @@ export const iRegistroEntidadesAbi = [
         type: 'bytes32',
         indexed: false,
       },
+      {
+        name: 'empresaObligadaLey9786',
+        internalType: 'bool',
+        type: 'bool',
+        indexed: false,
+      },
     ],
-    name: 'CentroRegistrado',
+    name: 'CompradorRegistrado',
   },
   {
     type: 'event',
     anonymous: false,
     inputs: [
       {
-        name: 'centro',
+        name: 'wallet',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'nombreHash',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: false,
+      },
+      { name: 'subtipo', internalType: 'uint8', type: 'uint8', indexed: false },
+    ],
+    name: 'IntermediarioRegistrado',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'wallet',
         internalType: 'address',
         type: 'address',
         indexed: true,
@@ -106,7 +314,32 @@ export const iRegistroEntidadesAbi = [
         indexed: true,
       },
     ],
-    name: 'CentroVerificado',
+    name: 'IntermediarioVerificado',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'wallet',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'identidadHash',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: false,
+      },
+      {
+        name: 'tipoSeparador',
+        internalType: 'uint8',
+        type: 'uint8',
+        indexed: false,
+      },
+    ],
+    name: 'SeparadorRegistrado',
   },
   {
     type: 'event',
@@ -125,7 +358,7 @@ export const iRegistroEntidadesAbi = [
         indexed: false,
       },
     ],
-    name: 'MunicipalidadRegistrada',
+    name: 'TransformadorRegistrado',
   },
   {
     type: 'event',
@@ -138,32 +371,39 @@ export const iRegistroEntidadesAbi = [
         indexed: true,
       },
       {
-        name: 'identidadHash',
-        internalType: 'bytes32',
-        type: 'bytes32',
-        indexed: false,
+        name: 'verificador',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
       },
     ],
-    name: 'UsuarioRegistrado',
+    name: 'TransformadorVerificado',
   },
   {
     type: 'function',
     inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
-    name: 'esCentroVerificado',
+    name: 'esComprador',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
-    name: 'esMunicipalidad',
+    name: 'esIntermediarioVerificado',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
-    name: 'esUsuario',
+    name: 'esSeparador',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'esTransformadorVerificado',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
     stateMutability: 'view',
   },
@@ -172,25 +412,22 @@ export const iRegistroEntidadesAbi = [
     inputs: [
       { name: '_nombreHash', internalType: 'bytes32', type: 'bytes32' },
       { name: '_cedulaHash', internalType: 'bytes32', type: 'bytes32' },
-      { name: '_provinciaId', internalType: 'uint8', type: 'uint8' },
-      { name: '_cantonId', internalType: 'uint8', type: 'uint8' },
-      { name: '_loteM2', internalType: 'uint32', type: 'uint32' },
-      { name: '_tipoVivienda', internalType: 'uint8', type: 'uint8' },
-      { name: '_esPublico', internalType: 'bool', type: 'bool' },
+      { name: '_empresaObligadaLey9786', internalType: 'bool', type: 'bool' },
     ],
-    name: 'registrarCentroRecolector',
+    name: 'registrarComprador',
     outputs: [],
     stateMutability: 'nonpayable',
   },
   {
     type: 'function',
     inputs: [
-      { name: 'wallet', internalType: 'address', type: 'address' },
-      { name: 'nombreHash', internalType: 'bytes32', type: 'bytes32' },
+      { name: '_nombreHash', internalType: 'bytes32', type: 'bytes32' },
+      { name: '_cedulaHash', internalType: 'bytes32', type: 'bytes32' },
       { name: '_provinciaId', internalType: 'uint8', type: 'uint8' },
       { name: '_cantonId', internalType: 'uint8', type: 'uint8' },
+      { name: '_subtipo', internalType: 'uint8', type: 'uint8' },
     ],
-    name: 'registrarMunicipalidad',
+    name: 'registrarIntermediario',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -200,27 +437,52 @@ export const iRegistroEntidadesAbi = [
       { name: '_identidadHash', internalType: 'bytes32', type: 'bytes32' },
       { name: '_provinciaId', internalType: 'uint8', type: 'uint8' },
       { name: '_cantonId', internalType: 'uint8', type: 'uint8' },
-      { name: '_loteM2', internalType: 'uint32', type: 'uint32' },
-      { name: '_tipoVivienda', internalType: 'uint8', type: 'uint8' },
+      { name: '_tipoSeparador', internalType: 'uint8', type: 'uint8' },
     ],
-    name: 'registrarUsuario',
+    name: 'registrarSeparador',
     outputs: [],
     stateMutability: 'nonpayable',
   },
   {
     type: 'function',
-    inputs: [{ name: '_centro', internalType: 'address', type: 'address' }],
-    name: 'verificarCentro',
+    inputs: [
+      { name: '_nombreHash', internalType: 'bytes32', type: 'bytes32' },
+      { name: '_cedulaHash', internalType: 'bytes32', type: 'bytes32' },
+      { name: '_provinciaId', internalType: 'uint8', type: 'uint8' },
+      { name: '_cantonId', internalType: 'uint8', type: 'uint8' },
+    ],
+    name: 'registrarTransformador',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'rolDe',
+    outputs: [{ name: '', internalType: 'enum Rol', type: 'uint8' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'wallet', internalType: 'address', type: 'address' }],
+    name: 'verificarIntermediario',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'wallet', internalType: 'address', type: 'address' }],
+    name: 'verificarTransformador',
     outputs: [],
     stateMutability: 'nonpayable',
   },
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ITransaccionesPlastico
+// ITokenCustodia
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export const iTransaccionesPlasticoAbi = [
+export const iTokenCustodiaAbi = [
   {
     type: 'event',
     anonymous: false,
@@ -232,107 +494,28 @@ export const iTransaccionesPlasticoAbi = [
         indexed: true,
       },
       {
-        name: 'pesoOficial',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-      {
-        name: 'factorAjuste',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-    ],
-    name: 'LoteMunicipalCerrado',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'loteId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: true,
-      },
-      {
-        name: 'municipalidad',
+        name: 'separador',
         internalType: 'address',
         type: 'address',
-        indexed: false,
-      },
-      {
-        name: 'fechaRecoleccion',
-        internalType: 'uint64',
-        type: 'uint64',
-        indexed: false,
-      },
-      { name: 'rutaId', internalType: 'uint8', type: 'uint8', indexed: false },
-    ],
-    name: 'LoteMunicipalIniciado',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'loteId',
-        internalType: 'uint256',
-        type: 'uint256',
         indexed: true,
       },
       {
-        name: 'tipoPlastico',
-        internalType: 'enum TipoPlastico',
+        name: 'receptor',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'material',
+        internalType: 'enum Material',
         type: 'uint8',
         indexed: false,
       },
       {
-        name: 'pesoOficial',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: 'varianteId',
+        internalType: 'uint8',
+        type: 'uint8',
         indexed: false,
-      },
-      {
-        name: 'factorAjuste',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-    ],
-    name: 'LoteTipoCerrado',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      { name: 'id', internalType: 'uint256', type: 'uint256', indexed: true },
-      {
-        name: 'nuevoPesoGramos',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-    ],
-    name: 'TransaccionReconciliada',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      { name: 'id', internalType: 'uint256', type: 'uint256', indexed: true },
-      {
-        name: 'origen',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'destino',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
       },
       {
         name: 'pesoGramos',
@@ -341,124 +524,945 @@ export const iTransaccionesPlasticoAbi = [
         indexed: false,
       },
       {
-        name: 'usdtMonto',
+        name: 'modalidad',
+        internalType: 'enum ModalidadEntrega',
+        type: 'uint8',
+        indexed: false,
+      },
+      {
+        name: 'precioUSDTporKg',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'EntregaRegistrada',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'loteId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      { name: 'de', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'hacia',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'pesoEnviado',
         internalType: 'uint256',
         type: 'uint256',
         indexed: false,
       },
       {
-        name: 'tipo',
-        internalType: 'enum TipoTransaccion',
+        name: 'precioUSDTporKg',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'EnvioDeclarado',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'loteConsolidadoId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'loteIdsOrigen',
+        internalType: 'uint256[]',
+        type: 'uint256[]',
+        indexed: false,
+      },
+      {
+        name: 'transformador',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'pesoActualTotal',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'pesoAceptadoOrigenTotal',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'LoteConsumido',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'loteId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'material',
+        internalType: 'enum Material',
         type: 'uint8',
         indexed: false,
       },
       {
-        name: 'tipoPlastico',
-        internalType: 'enum TipoPlastico',
+        name: 'varianteId',
+        internalType: 'uint8',
+        type: 'uint8',
+        indexed: false,
+      },
+      {
+        name: 'custodioInicial',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'LoteCreado',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'loteIdOrigen',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'nuevosLoteIds',
+        internalType: 'uint256[]',
+        type: 'uint256[]',
+        indexed: false,
+      },
+      {
+        name: 'pesos',
+        internalType: 'uint256[]',
+        type: 'uint256[]',
+        indexed: false,
+      },
+    ],
+    name: 'LoteDividido',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'nuevoLoteId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'loteIdsOrigen',
+        internalType: 'uint256[]',
+        type: 'uint256[]',
+        indexed: false,
+      },
+      {
+        name: 'pesosOrigen',
+        internalType: 'uint256[]',
+        type: 'uint256[]',
+        indexed: false,
+      },
+      {
+        name: 'varianteResultante',
+        internalType: 'uint8',
         type: 'uint8',
         indexed: false,
       },
     ],
-    name: 'TransaccionRegistrada',
+    name: 'LoteUnido',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'loteId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      { name: 'de', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'hacia',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'pesoRecibido',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'merma',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'quienAbsorbe',
+        internalType: 'enum QuienAbsorbe',
+        type: 'uint8',
+        indexed: false,
+      },
+    ],
+    name: 'RecepcionConfirmada',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'loteId', internalType: 'uint256', type: 'uint256' }],
+    name: 'aportesDeLote',
+    outputs: [
+      { name: 'separadoresList', internalType: 'address[]', type: 'address[]' },
+      { name: 'kgPorSeparador', internalType: 'uint256[]', type: 'uint256[]' },
+    ],
+    stateMutability: 'view',
   },
   {
     type: 'function',
     inputs: [
-      { name: '_loteId', internalType: 'uint256', type: 'uint256' },
-      {
-        name: '_tipoPlastico',
-        internalType: 'enum TipoPlastico',
-        type: 'uint8',
-      },
-      { name: '_pesoOficialGramos', internalType: 'uint256', type: 'uint256' },
+      { name: 'loteIds', internalType: 'uint256[]', type: 'uint256[]' },
+      { name: 'transformador', internalType: 'address', type: 'address' },
     ],
-    name: 'cerrarLotePorTipo',
+    name: 'consumirParaTransformacion',
+    outputs: [
+      { name: 'loteConsolidadoId', internalType: 'uint256', type: 'uint256' },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'loteId', internalType: 'uint256', type: 'uint256' }],
+    name: 'loteInfo',
+    outputs: [
+      { name: 'material', internalType: 'enum Material', type: 'uint8' },
+      { name: 'varianteId', internalType: 'uint8', type: 'uint8' },
+      { name: 'custodioActual', internalType: 'address', type: 'address' },
+      { name: 'pesoActual', internalType: 'uint256', type: 'uint256' },
+      { name: 'pesoAceptadoOrigen', internalType: 'uint256', type: 'uint256' },
+      { name: 'activo', internalType: 'bool', type: 'bool' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'loteId', internalType: 'uint256', type: 'uint256' }],
+    name: 'mermaDeLote',
+    outputs: [
+      {
+        name: 'intermediariosList',
+        internalType: 'address[]',
+        type: 'address[]',
+      },
+      { name: 'gramosMerma', internalType: 'uint256[]', type: 'uint256[]' },
+    ],
+    stateMutability: 'view',
+  },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// MercadoCertificados
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const mercadoCertificadosAbi = [
+  { type: 'constructor', inputs: [], stateMutability: 'nonpayable' },
+  { type: 'error', inputs: [], name: 'AccessControlBadConfirmation' },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'account', internalType: 'address', type: 'address' },
+      { name: 'neededRole', internalType: 'bytes32', type: 'bytes32' },
+    ],
+    name: 'AccessControlUnauthorizedAccount',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'target', internalType: 'address', type: 'address' }],
+    name: 'AddressEmptyCode',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'implementation', internalType: 'address', type: 'address' },
+    ],
+    name: 'ERC1967InvalidImplementation',
+  },
+  { type: 'error', inputs: [], name: 'ERC1967NonPayable' },
+  { type: 'error', inputs: [], name: 'EnforcedPause' },
+  { type: 'error', inputs: [], name: 'ExpectedPause' },
+  { type: 'error', inputs: [], name: 'FailedCall' },
+  { type: 'error', inputs: [], name: 'FailedDeployment' },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'balance', internalType: 'uint256', type: 'uint256' },
+      { name: 'needed', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'InsufficientBalance',
+  },
+  { type: 'error', inputs: [], name: 'InvalidInitialization' },
+  { type: 'error', inputs: [], name: 'NotInitializing' },
+  { type: 'error', inputs: [], name: 'ReentrancyGuardReentrantCall' },
+  {
+    type: 'error',
+    inputs: [{ name: 'token', internalType: 'address', type: 'address' }],
+    name: 'SafeERC20FailedOperation',
+  },
+  { type: 'error', inputs: [], name: 'UUPSUnauthorizedCallContext' },
+  {
+    type: 'error',
+    inputs: [{ name: 'slot', internalType: 'bytes32', type: 'bytes32' }],
+    name: 'UUPSUnsupportedProxiableUUID',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'emisionId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'comprador',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'cantidadKg',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'valorTotal',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'CertificadoComprado',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'material',
+        internalType: 'enum Material',
+        type: 'uint8',
+        indexed: true,
+      },
+      {
+        name: 'clone',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'nombre',
+        internalType: 'string',
+        type: 'string',
+        indexed: false,
+      },
+      {
+        name: 'simbolo',
+        internalType: 'string',
+        type: 'string',
+        indexed: false,
+      },
+    ],
+    name: 'CertificadoDesplegado',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'comprador',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'material',
+        internalType: 'enum Material',
+        type: 'uint8',
+        indexed: false,
+      },
+      {
+        name: 'cantidadKg',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'informeRef',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: false,
+      },
+      {
+        name: 'periodo',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+    ],
+    name: 'CertificadoRetirado',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'version',
+        internalType: 'uint64',
+        type: 'uint64',
+        indexed: false,
+      },
+    ],
+    name: 'Initialized',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'emisionId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'destinatario',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'monto',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'PagoAcreditado',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'destinatario',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'monto',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'PagoRetirado',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'account',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'Paused',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32', indexed: true },
+      {
+        name: 'previousAdminRole',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: true,
+      },
+      {
+        name: 'newAdminRole',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: true,
+      },
+    ],
+    name: 'RoleAdminChanged',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32', indexed: true },
+      {
+        name: 'account',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'sender',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'RoleGranted',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32', indexed: true },
+      {
+        name: 'account',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'sender',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'RoleRevoked',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'emisionId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'transformador',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'material',
+        internalType: 'enum Material',
+        type: 'uint8',
+        indexed: false,
+      },
+      {
+        name: 'loteIdsConsumidos',
+        internalType: 'uint256[]',
+        type: 'uint256[]',
+        indexed: false,
+      },
+      {
+        name: 'loteConsolidadoId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'pesoConsumidoTotal',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'kgTransformados',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'mermaTransformador',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'precioUSDTporKg',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'TransformacionRegistrada',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'account',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'Unpaused',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'implementation',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'Upgraded',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'DEFAULT_ADMIN_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'PAUSER_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'UPGRADE_INTERFACE_VERSION',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'uint256', type: 'uint256' },
+      { name: '', internalType: 'address', type: 'address' },
+    ],
+    name: 'aporteKgDeEmision',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'certificadoImplementacion',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'enum Material', type: 'uint8' }],
+    name: 'certificados',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'emisionId', internalType: 'uint256', type: 'uint256' },
+      { name: 'cantidadKg', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'comprarCertificado',
     outputs: [],
     stateMutability: 'nonpayable',
   },
   {
     type: 'function',
     inputs: [
-      { name: '_fechaRecoleccion', internalType: 'uint64', type: 'uint64' },
-      { name: '_rutaId', internalType: 'uint8', type: 'uint8' },
+      { name: 'material', internalType: 'enum Material', type: 'uint8' },
+      { name: 'nombre', internalType: 'string', type: 'string' },
+      { name: 'simbolo', internalType: 'string', type: 'string' },
     ],
-    name: 'iniciarLoteMunicipal',
-    outputs: [{ name: 'loteId', internalType: 'uint256', type: 'uint256' }],
+    name: 'desplegarCertificado',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    name: 'emisiones',
+    outputs: [
+      { name: 'material', internalType: 'enum Material', type: 'uint8' },
+      { name: 'transformador', internalType: 'address', type: 'address' },
+      {
+        name: 'kgTransformadosOriginal',
+        internalType: 'uint256',
+        type: 'uint256',
+      },
+      {
+        name: 'kgDisponiblesPrimario',
+        internalType: 'uint256',
+        type: 'uint256',
+      },
+      {
+        name: 'pesoAceptadoOrigenTotal',
+        internalType: 'uint256',
+        type: 'uint256',
+      },
+      { name: 'precioUSDTporKg', internalType: 'uint256', type: 'uint256' },
+      { name: 'loteConsolidadoId', internalType: 'uint256', type: 'uint256' },
+      { name: 'existe', internalType: 'bool', type: 'bool' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'emisionId', internalType: 'uint256', type: 'uint256' }],
+    name: 'eslabonesDeEmision',
+    outputs: [{ name: '', internalType: 'address[]', type: 'address[]' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'role', internalType: 'bytes32', type: 'bytes32' }],
+    name: 'getRoleAdmin',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'account', internalType: 'address', type: 'address' },
+    ],
+    name: 'grantRole',
+    outputs: [],
     stateMutability: 'nonpayable',
   },
   {
     type: 'function',
     inputs: [
-      { name: '_loteId', internalType: 'uint256', type: 'uint256' },
-      { name: '_usuario', internalType: 'address', type: 'address' },
-      { name: '_pesoGramos', internalType: 'uint256', type: 'uint256' },
+      { name: 'role', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'account', internalType: 'address', type: 'address' },
+    ],
+    name: 'hasRole',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'admin', internalType: 'address', type: 'address' },
+      { name: '_registro', internalType: 'address', type: 'address' },
+      { name: '_tokenCustodia', internalType: 'address', type: 'address' },
+      { name: '_usdt', internalType: 'address', type: 'address' },
       {
-        name: '_tipoPlastico',
-        internalType: 'enum TipoPlastico',
-        type: 'uint8',
+        name: '_certificadoImplementacion',
+        internalType: 'address',
+        type: 'address',
       },
-      { name: '_rutaId', internalType: 'uint8', type: 'uint8' },
+      { name: '_plataforma', internalType: 'address', type: 'address' },
     ],
-    name: 'registrarEntregaMunicipal',
-    outputs: [
-      { name: 'transaccionId', internalType: 'uint256', type: 'uint256' },
-    ],
+    name: 'initialize',
+    outputs: [],
     stateMutability: 'nonpayable',
   },
   {
     type: 'function',
     inputs: [
-      { name: '_loteId', internalType: 'uint256', type: 'uint256' },
-      { name: '_pesoGramos', internalType: 'uint256', type: 'uint256' },
-      {
-        name: '_tipoPlastico',
-        internalType: 'enum TipoPlastico',
-        type: 'uint8',
-      },
-      { name: '_rutaId', internalType: 'uint8', type: 'uint8' },
+      { name: '', internalType: 'uint256', type: 'uint256' },
+      { name: '', internalType: 'address', type: 'address' },
     ],
-    name: 'registrarEntregaUsuario',
+    name: 'mermaKgDeEmision',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'nextEmisionId',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'pause',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'paused',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'plataforma',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'proxiableUUID',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'loteIds', internalType: 'uint256[]', type: 'uint256[]' },
+      { name: 'kgTransformados', internalType: 'uint256', type: 'uint256' },
+      { name: 'precioUSDTporKg', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'registrarTransformacion',
+    outputs: [{ name: 'emisionId', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'registro',
     outputs: [
-      { name: 'transaccionId', internalType: 'uint256', type: 'uint256' },
+      {
+        name: '',
+        internalType: 'contract IRegistroEntidades',
+        type: 'address',
+      },
     ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'callerConfirmation', internalType: 'address', type: 'address' },
+    ],
+    name: 'renounceRole',
+    outputs: [],
     stateMutability: 'nonpayable',
   },
   {
     type: 'function',
     inputs: [
-      { name: 'usuario', internalType: 'address', type: 'address' },
-      { name: 'pesoGramos', internalType: 'uint256', type: 'uint256' },
-      { name: 'tipo', internalType: 'enum TipoTransaccion', type: 'uint8' },
-      {
-        name: 'tipoPlastico',
-        internalType: 'enum TipoPlastico',
-        type: 'uint8',
-      },
+      { name: 'material', internalType: 'enum Material', type: 'uint8' },
+      { name: 'cantidadKg', internalType: 'uint256', type: 'uint256' },
+      { name: 'informeRef', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'periodo', internalType: 'uint32', type: 'uint32' },
     ],
-    name: 'registrarTransaccionGratuita',
-    outputs: [
-      { name: 'transaccionId', internalType: 'uint256', type: 'uint256' },
-    ],
+    name: 'retirarCertificado',
+    outputs: [],
     stateMutability: 'nonpayable',
   },
   {
     type: 'function',
     inputs: [
-      { name: 'contraparte', internalType: 'address', type: 'address' },
-      { name: 'pesoGramos', internalType: 'uint256', type: 'uint256' },
-      { name: 'montoUSDT', internalType: 'uint256', type: 'uint256' },
-      { name: 'usuarioPaga', internalType: 'bool', type: 'bool' },
-      {
-        name: 'tipoPlastico',
-        internalType: 'enum TipoPlastico',
-        type: 'uint8',
-      },
+      { name: 'destinatario', internalType: 'address', type: 'address' },
     ],
-    name: 'registrarTransaccionPagada',
-    outputs: [
-      { name: 'transaccionId', internalType: 'uint256', type: 'uint256' },
-    ],
+    name: 'retirarPago',
+    outputs: [],
     stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'account', internalType: 'address', type: 'address' },
+    ],
+    name: 'revokeRole',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'saldoPendiente',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'emisionId', internalType: 'uint256', type: 'uint256' }],
+    name: 'separadoresDeEmision',
+    outputs: [{ name: '', internalType: 'address[]', type: 'address[]' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'interfaceId', internalType: 'bytes4', type: 'bytes4' }],
+    name: 'supportsInterface',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'tokenCustodia',
+    outputs: [
+      { name: '', internalType: 'contract ITokenCustodia', type: 'address' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'unpause',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'newImplementation', internalType: 'address', type: 'address' },
+      { name: 'data', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'upgradeToAndCall',
+    outputs: [],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'usdt',
+    outputs: [{ name: '', internalType: 'contract IERC20', type: 'address' }],
+    stateMutability: 'view',
   },
 ] as const
 
@@ -705,490 +1709,6 @@ export const mockUsdtAbi = [
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// PlasticoToken
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-export const plasticoTokenAbi = [
-  { type: 'constructor', inputs: [], stateMutability: 'nonpayable' },
-  { type: 'error', inputs: [], name: 'AccessControlBadConfirmation' },
-  {
-    type: 'error',
-    inputs: [
-      { name: 'account', internalType: 'address', type: 'address' },
-      { name: 'neededRole', internalType: 'bytes32', type: 'bytes32' },
-    ],
-    name: 'AccessControlUnauthorizedAccount',
-  },
-  {
-    type: 'error',
-    inputs: [{ name: 'target', internalType: 'address', type: 'address' }],
-    name: 'AddressEmptyCode',
-  },
-  {
-    type: 'error',
-    inputs: [
-      { name: 'implementation', internalType: 'address', type: 'address' },
-    ],
-    name: 'ERC1967InvalidImplementation',
-  },
-  { type: 'error', inputs: [], name: 'ERC1967NonPayable' },
-  {
-    type: 'error',
-    inputs: [
-      { name: 'spender', internalType: 'address', type: 'address' },
-      { name: 'allowance', internalType: 'uint256', type: 'uint256' },
-      { name: 'needed', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'ERC20InsufficientAllowance',
-  },
-  {
-    type: 'error',
-    inputs: [
-      { name: 'sender', internalType: 'address', type: 'address' },
-      { name: 'balance', internalType: 'uint256', type: 'uint256' },
-      { name: 'needed', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'ERC20InsufficientBalance',
-  },
-  {
-    type: 'error',
-    inputs: [{ name: 'approver', internalType: 'address', type: 'address' }],
-    name: 'ERC20InvalidApprover',
-  },
-  {
-    type: 'error',
-    inputs: [{ name: 'receiver', internalType: 'address', type: 'address' }],
-    name: 'ERC20InvalidReceiver',
-  },
-  {
-    type: 'error',
-    inputs: [{ name: 'sender', internalType: 'address', type: 'address' }],
-    name: 'ERC20InvalidSender',
-  },
-  {
-    type: 'error',
-    inputs: [{ name: 'spender', internalType: 'address', type: 'address' }],
-    name: 'ERC20InvalidSpender',
-  },
-  { type: 'error', inputs: [], name: 'EnforcedPause' },
-  { type: 'error', inputs: [], name: 'ExpectedPause' },
-  { type: 'error', inputs: [], name: 'FailedCall' },
-  { type: 'error', inputs: [], name: 'InvalidInitialization' },
-  { type: 'error', inputs: [], name: 'NotInitializing' },
-  { type: 'error', inputs: [], name: 'UUPSUnauthorizedCallContext' },
-  {
-    type: 'error',
-    inputs: [{ name: 'slot', internalType: 'bytes32', type: 'bytes32' }],
-    name: 'UUPSUnsupportedProxiableUUID',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'owner',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'spender',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'value',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-    ],
-    name: 'Approval',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'version',
-        internalType: 'uint64',
-        type: 'uint64',
-        indexed: false,
-      },
-    ],
-    name: 'Initialized',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'account',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-    ],
-    name: 'Paused',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      { name: 'role', internalType: 'bytes32', type: 'bytes32', indexed: true },
-      {
-        name: 'previousAdminRole',
-        internalType: 'bytes32',
-        type: 'bytes32',
-        indexed: true,
-      },
-      {
-        name: 'newAdminRole',
-        internalType: 'bytes32',
-        type: 'bytes32',
-        indexed: true,
-      },
-    ],
-    name: 'RoleAdminChanged',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      { name: 'role', internalType: 'bytes32', type: 'bytes32', indexed: true },
-      {
-        name: 'account',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'sender',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-    ],
-    name: 'RoleGranted',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      { name: 'role', internalType: 'bytes32', type: 'bytes32', indexed: true },
-      {
-        name: 'account',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'sender',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-    ],
-    name: 'RoleRevoked',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'destinatario',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'cantidad',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-      {
-        name: 'transaccionId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-    ],
-    name: 'TokensMinteados',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      { name: 'from', internalType: 'address', type: 'address', indexed: true },
-      { name: 'to', internalType: 'address', type: 'address', indexed: true },
-      {
-        name: 'value',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-    ],
-    name: 'Transfer',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'account',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-    ],
-    name: 'Unpaused',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'implementation',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-    ],
-    name: 'Upgraded',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'DEFAULT_ADMIN_ROLE',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'MINTER_ROLE',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'PAUSER_ROLE',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'UPGRADE_INTERFACE_VERSION',
-    outputs: [{ name: '', internalType: 'string', type: 'string' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'owner', internalType: 'address', type: 'address' },
-      { name: 'spender', internalType: 'address', type: 'address' },
-    ],
-    name: 'allowance',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'spender', internalType: 'address', type: 'address' },
-      { name: 'value', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'approve',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
-    name: 'balanceOf',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'account', internalType: 'address', type: 'address' },
-      { name: 'amount', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'burnFrom',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'decimals',
-    outputs: [{ name: '', internalType: 'uint8', type: 'uint8' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'role', internalType: 'bytes32', type: 'bytes32' }],
-    name: 'getRoleAdmin',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'role', internalType: 'bytes32', type: 'bytes32' },
-      { name: 'account', internalType: 'address', type: 'address' },
-    ],
-    name: 'grantRole',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'role', internalType: 'bytes32', type: 'bytes32' },
-      { name: 'account', internalType: 'address', type: 'address' },
-    ],
-    name: 'hasRole',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'name_', internalType: 'string', type: 'string' },
-      { name: 'symbol_', internalType: 'string', type: 'string' },
-      { name: 'admin', internalType: 'address', type: 'address' },
-    ],
-    name: 'initialize',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'to', internalType: 'address', type: 'address' },
-      { name: 'amount', internalType: 'uint256', type: 'uint256' },
-      { name: 'transaccionId', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'mint',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'name',
-    outputs: [{ name: '', internalType: 'string', type: 'string' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'pause',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'paused',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'proxiableUUID',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'role', internalType: 'bytes32', type: 'bytes32' },
-      { name: 'callerConfirmation', internalType: 'address', type: 'address' },
-    ],
-    name: 'renounceRole',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'role', internalType: 'bytes32', type: 'bytes32' },
-      { name: 'account', internalType: 'address', type: 'address' },
-    ],
-    name: 'revokeRole',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'interfaceId', internalType: 'bytes4', type: 'bytes4' }],
-    name: 'supportsInterface',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'symbol',
-    outputs: [{ name: '', internalType: 'string', type: 'string' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'totalSupply',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'to', internalType: 'address', type: 'address' },
-      { name: 'value', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'transfer',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'from', internalType: 'address', type: 'address' },
-      { name: 'to', internalType: 'address', type: 'address' },
-      { name: 'value', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'transferFrom',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'unpause',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'newImplementation', internalType: 'address', type: 'address' },
-      { name: 'data', internalType: 'bytes', type: 'bytes' },
-    ],
-    name: 'upgradeToAndCall',
-    outputs: [],
-    stateMutability: 'payable',
-  },
-] as const
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // RegistroEntidades
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1241,27 +1761,14 @@ export const registroEntidadesAbi = [
         type: 'bytes32',
         indexed: false,
       },
-    ],
-    name: 'CentroRegistrado',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
       {
-        name: 'centro',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'verificador',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
+        name: 'empresaObligadaLey9786',
+        internalType: 'bool',
+        type: 'bool',
+        indexed: false,
       },
     ],
-    name: 'CentroVerificado',
+    name: 'CompradorRegistrado',
   },
   {
     type: 'event',
@@ -1292,8 +1799,28 @@ export const registroEntidadesAbi = [
         type: 'bytes32',
         indexed: false,
       },
+      { name: 'subtipo', internalType: 'uint8', type: 'uint8', indexed: false },
     ],
-    name: 'MunicipalidadRegistrada',
+    name: 'IntermediarioRegistrado',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'wallet',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'verificador',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'IntermediarioVerificado',
   },
   {
     type: 'event',
@@ -1360,13 +1887,25 @@ export const registroEntidadesAbi = [
     anonymous: false,
     inputs: [
       {
-        name: 'implementation',
+        name: 'wallet',
         internalType: 'address',
         type: 'address',
         indexed: true,
       },
+      {
+        name: 'identidadHash',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: false,
+      },
+      {
+        name: 'tipoSeparador',
+        internalType: 'uint8',
+        type: 'uint8',
+        indexed: false,
+      },
     ],
-    name: 'Upgraded',
+    name: 'SeparadorRegistrado',
   },
   {
     type: 'event',
@@ -1379,25 +1918,50 @@ export const registroEntidadesAbi = [
         indexed: true,
       },
       {
-        name: 'identidadHash',
+        name: 'nombreHash',
         internalType: 'bytes32',
         type: 'bytes32',
         indexed: false,
       },
     ],
-    name: 'UsuarioRegistrado',
+    name: 'TransformadorRegistrado',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'wallet',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'verificador',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'TransformadorVerificado',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'implementation',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'Upgraded',
   },
   {
     type: 'function',
     inputs: [],
     name: 'DEFAULT_ADMIN_ROLE',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'MUNICIPALIDAD_ROLE',
     outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
     stateMutability: 'view',
   },
@@ -1417,54 +1981,42 @@ export const registroEntidadesAbi = [
   },
   {
     type: 'function',
-    inputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    name: 'cedulaHashToWallet',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
     inputs: [{ name: '', internalType: 'address', type: 'address' }],
-    name: 'centros',
+    name: 'compradores',
     outputs: [
       { name: 'nombreHash', internalType: 'bytes32', type: 'bytes32' },
       { name: 'cedulaHash', internalType: 'bytes32', type: 'bytes32' },
-      {
-        name: 'ubicacion',
-        internalType: 'struct Residencia',
-        type: 'tuple',
-        components: [
-          { name: 'provincia', internalType: 'enum Provincia', type: 'uint8' },
-          { name: 'cantonId', internalType: 'uint8', type: 'uint8' },
-          { name: 'loteM2', internalType: 'uint32', type: 'uint32' },
-          { name: 'tipoVivienda', internalType: 'uint8', type: 'uint8' },
-        ],
-      },
-      { name: 'esPublico', internalType: 'bool', type: 'bool' },
-      { name: 'verificado', internalType: 'bool', type: 'bool' },
-      { name: 'verificadoEn', internalType: 'uint64', type: 'uint64' },
+      { name: 'empresaObligadaLey9786', internalType: 'bool', type: 'bool' },
       { name: 'activo', internalType: 'bool', type: 'bool' },
+      { name: 'registradoEn', internalType: 'uint64', type: 'uint64' },
     ],
     stateMutability: 'view',
   },
   {
     type: 'function',
     inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
-    name: 'esCentroVerificado',
+    name: 'esComprador',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
-    name: 'esMunicipalidad',
+    name: 'esIntermediarioVerificado',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
-    name: 'esUsuario',
+    name: 'esSeparador',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'esTransformadorVerificado',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
     stateMutability: 'view',
   },
@@ -1497,6 +2049,13 @@ export const registroEntidadesAbi = [
   },
   {
     type: 'function',
+    inputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    name: 'identidadHashToWallet',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [{ name: 'admin', internalType: 'address', type: 'address' }],
     name: 'initialize',
     outputs: [],
@@ -1505,13 +2064,23 @@ export const registroEntidadesAbi = [
   {
     type: 'function',
     inputs: [{ name: '', internalType: 'address', type: 'address' }],
-    name: 'municipalidades',
+    name: 'intermediarios',
     outputs: [
       { name: 'nombreHash', internalType: 'bytes32', type: 'bytes32' },
-      { name: 'wallet', internalType: 'address', type: 'address' },
+      { name: 'cedulaHash', internalType: 'bytes32', type: 'bytes32' },
+      {
+        name: 'ubicacion',
+        internalType: 'struct Ubicacion',
+        type: 'tuple',
+        components: [
+          { name: 'provincia', internalType: 'enum Provincia', type: 'uint8' },
+          { name: 'cantonId', internalType: 'uint8', type: 'uint8' },
+        ],
+      },
+      { name: 'subtipo', internalType: 'uint8', type: 'uint8' },
+      { name: 'verificado', internalType: 'bool', type: 'bool' },
       { name: 'activo', internalType: 'bool', type: 'bool' },
-      { name: 'provincia', internalType: 'enum Provincia', type: 'uint8' },
-      { name: 'cantonId', internalType: 'uint8', type: 'uint8' },
+      { name: 'registradoEn', internalType: 'uint64', type: 'uint64' },
     ],
     stateMutability: 'view',
   },
@@ -1527,25 +2096,22 @@ export const registroEntidadesAbi = [
     inputs: [
       { name: 'nombreHash', internalType: 'bytes32', type: 'bytes32' },
       { name: 'cedulaHash', internalType: 'bytes32', type: 'bytes32' },
-      { name: 'provinciaId', internalType: 'uint8', type: 'uint8' },
-      { name: 'cantonId', internalType: 'uint8', type: 'uint8' },
-      { name: 'loteM2', internalType: 'uint32', type: 'uint32' },
-      { name: 'tipoVivienda', internalType: 'uint8', type: 'uint8' },
-      { name: 'esPublico', internalType: 'bool', type: 'bool' },
+      { name: 'empresaObligadaLey9786', internalType: 'bool', type: 'bool' },
     ],
-    name: 'registrarCentroRecolector',
+    name: 'registrarComprador',
     outputs: [],
     stateMutability: 'nonpayable',
   },
   {
     type: 'function',
     inputs: [
-      { name: 'wallet', internalType: 'address', type: 'address' },
       { name: 'nombreHash', internalType: 'bytes32', type: 'bytes32' },
-      { name: '_provinciaId', internalType: 'uint8', type: 'uint8' },
-      { name: '_cantonId', internalType: 'uint8', type: 'uint8' },
+      { name: 'cedulaHash', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'provinciaId', internalType: 'uint8', type: 'uint8' },
+      { name: 'cantonId', internalType: 'uint8', type: 'uint8' },
+      { name: 'subtipo', internalType: 'uint8', type: 'uint8' },
     ],
-    name: 'registrarMunicipalidad',
+    name: 'registrarIntermediario',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -1555,10 +2121,21 @@ export const registroEntidadesAbi = [
       { name: 'identidadHash', internalType: 'bytes32', type: 'bytes32' },
       { name: 'provinciaId', internalType: 'uint8', type: 'uint8' },
       { name: 'cantonId', internalType: 'uint8', type: 'uint8' },
-      { name: 'loteM2', internalType: 'uint32', type: 'uint32' },
-      { name: 'tipoVivienda', internalType: 'uint8', type: 'uint8' },
+      { name: 'tipoSeparador', internalType: 'uint8', type: 'uint8' },
     ],
-    name: 'registrarUsuario',
+    name: 'registrarSeparador',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'nombreHash', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'cedulaHash', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'provinciaId', internalType: 'uint8', type: 'uint8' },
+      { name: 'cantonId', internalType: 'uint8', type: 'uint8' },
+    ],
+    name: 'registrarTransformador',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -1584,9 +2161,60 @@ export const registroEntidadesAbi = [
   },
   {
     type: 'function',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'rolDe',
+    outputs: [{ name: '', internalType: 'enum Rol', type: 'uint8' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'separadores',
+    outputs: [
+      { name: 'identidadHash', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'wallet', internalType: 'address', type: 'address' },
+      {
+        name: 'ubicacion',
+        internalType: 'struct Ubicacion',
+        type: 'tuple',
+        components: [
+          { name: 'provincia', internalType: 'enum Provincia', type: 'uint8' },
+          { name: 'cantonId', internalType: 'uint8', type: 'uint8' },
+        ],
+      },
+      { name: 'tipoSeparador', internalType: 'uint8', type: 'uint8' },
+      { name: 'activo', internalType: 'bool', type: 'bool' },
+      { name: 'registradoEn', internalType: 'uint64', type: 'uint64' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [{ name: 'interfaceId', internalType: 'bytes4', type: 'bytes4' }],
     name: 'supportsInterface',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'transformadores',
+    outputs: [
+      { name: 'nombreHash', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'cedulaHash', internalType: 'bytes32', type: 'bytes32' },
+      {
+        name: 'ubicacion',
+        internalType: 'struct Ubicacion',
+        type: 'tuple',
+        components: [
+          { name: 'provincia', internalType: 'enum Provincia', type: 'uint8' },
+          { name: 'cantonId', internalType: 'uint8', type: 'uint8' },
+        ],
+      },
+      { name: 'verificado', internalType: 'bool', type: 'bool' },
+      { name: 'activo', internalType: 'bool', type: 'bool' },
+      { name: 'registradoEn', internalType: 'uint64', type: 'uint64' },
+    ],
     stateMutability: 'view',
   },
   {
@@ -1601,41 +2229,25 @@ export const registroEntidadesAbi = [
   },
   {
     type: 'function',
-    inputs: [{ name: '', internalType: 'address', type: 'address' }],
-    name: 'usuarios',
-    outputs: [
-      { name: 'identidadHash', internalType: 'bytes32', type: 'bytes32' },
-      { name: 'wallet', internalType: 'address', type: 'address' },
-      {
-        name: 'residencia',
-        internalType: 'struct Residencia',
-        type: 'tuple',
-        components: [
-          { name: 'provincia', internalType: 'enum Provincia', type: 'uint8' },
-          { name: 'cantonId', internalType: 'uint8', type: 'uint8' },
-          { name: 'loteM2', internalType: 'uint32', type: 'uint32' },
-          { name: 'tipoVivienda', internalType: 'uint8', type: 'uint8' },
-        ],
-      },
-      { name: 'activo', internalType: 'bool', type: 'bool' },
-      { name: 'registradoEn', internalType: 'uint64', type: 'uint64' },
-    ],
-    stateMutability: 'view',
+    inputs: [{ name: 'wallet', internalType: 'address', type: 'address' }],
+    name: 'verificarIntermediario',
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
     type: 'function',
-    inputs: [{ name: 'centro', internalType: 'address', type: 'address' }],
-    name: 'verificarCentro',
+    inputs: [{ name: 'wallet', internalType: 'address', type: 'address' }],
+    name: 'verificarTransformador',
     outputs: [],
     stateMutability: 'nonpayable',
   },
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// TransaccionesPlastico
+// TokenCustodia
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export const transaccionesPlasticoAbi = [
+export const tokenCustodiaAbi = [
   { type: 'constructor', inputs: [], stateMutability: 'nonpayable' },
   { type: 'error', inputs: [], name: 'AccessControlBadConfirmation' },
   {
@@ -1654,6 +2266,52 @@ export const transaccionesPlasticoAbi = [
   {
     type: 'error',
     inputs: [
+      { name: 'sender', internalType: 'address', type: 'address' },
+      { name: 'balance', internalType: 'uint256', type: 'uint256' },
+      { name: 'needed', internalType: 'uint256', type: 'uint256' },
+      { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'ERC1155InsufficientBalance',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'approver', internalType: 'address', type: 'address' }],
+    name: 'ERC1155InvalidApprover',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'idsLength', internalType: 'uint256', type: 'uint256' },
+      { name: 'valuesLength', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'ERC1155InvalidArrayLength',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'operator', internalType: 'address', type: 'address' }],
+    name: 'ERC1155InvalidOperator',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'receiver', internalType: 'address', type: 'address' }],
+    name: 'ERC1155InvalidReceiver',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'sender', internalType: 'address', type: 'address' }],
+    name: 'ERC1155InvalidSender',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'operator', internalType: 'address', type: 'address' },
+      { name: 'owner', internalType: 'address', type: 'address' },
+    ],
+    name: 'ERC1155MissingApprovalForAll',
+  },
+  {
+    type: 'error',
+    inputs: [
       { name: 'implementation', internalType: 'address', type: 'address' },
     ],
     name: 'ERC1967InvalidImplementation',
@@ -1664,17 +2322,118 @@ export const transaccionesPlasticoAbi = [
   { type: 'error', inputs: [], name: 'FailedCall' },
   { type: 'error', inputs: [], name: 'InvalidInitialization' },
   { type: 'error', inputs: [], name: 'NotInitializing' },
-  { type: 'error', inputs: [], name: 'ReentrancyGuardReentrantCall' },
-  {
-    type: 'error',
-    inputs: [{ name: 'token', internalType: 'address', type: 'address' }],
-    name: 'SafeERC20FailedOperation',
-  },
   { type: 'error', inputs: [], name: 'UUPSUnauthorizedCallContext' },
   {
     type: 'error',
     inputs: [{ name: 'slot', internalType: 'bytes32', type: 'bytes32' }],
     name: 'UUPSUnsupportedProxiableUUID',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'account',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'operator',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'approved', internalType: 'bool', type: 'bool', indexed: false },
+    ],
+    name: 'ApprovalForAll',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'loteId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'separador',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'receptor',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'material',
+        internalType: 'enum Material',
+        type: 'uint8',
+        indexed: false,
+      },
+      {
+        name: 'varianteId',
+        internalType: 'uint8',
+        type: 'uint8',
+        indexed: false,
+      },
+      {
+        name: 'pesoGramos',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'modalidad',
+        internalType: 'enum ModalidadEntrega',
+        type: 'uint8',
+        indexed: false,
+      },
+      {
+        name: 'precioUSDTporKg',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'EntregaRegistrada',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'loteId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      { name: 'de', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'hacia',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'pesoEnviado',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'precioUSDTporKg',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'EnvioDeclarado',
   },
   {
     type: 'event',
@@ -1694,51 +2453,37 @@ export const transaccionesPlasticoAbi = [
     anonymous: false,
     inputs: [
       {
-        name: 'loteId',
+        name: 'loteConsolidadoId',
         internalType: 'uint256',
         type: 'uint256',
         indexed: true,
       },
       {
-        name: 'pesoOficial',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: 'loteIdsOrigen',
+        internalType: 'uint256[]',
+        type: 'uint256[]',
         indexed: false,
       },
       {
-        name: 'factorAjuste',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-    ],
-    name: 'LoteMunicipalCerrado',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'loteId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: true,
-      },
-      {
-        name: 'municipalidad',
+        name: 'transformador',
         internalType: 'address',
         type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'pesoActualTotal',
+        internalType: 'uint256',
+        type: 'uint256',
         indexed: false,
       },
       {
-        name: 'fechaRecoleccion',
-        internalType: 'uint64',
-        type: 'uint64',
+        name: 'pesoAceptadoOrigenTotal',
+        internalType: 'uint256',
+        type: 'uint256',
         indexed: false,
       },
-      { name: 'rutaId', internalType: 'uint8', type: 'uint8', indexed: false },
     ],
-    name: 'LoteMunicipalIniciado',
+    name: 'LoteConsumido',
   },
   {
     type: 'event',
@@ -1751,25 +2496,81 @@ export const transaccionesPlasticoAbi = [
         indexed: true,
       },
       {
-        name: 'tipoPlastico',
-        internalType: 'enum TipoPlastico',
+        name: 'material',
+        internalType: 'enum Material',
         type: 'uint8',
         indexed: false,
       },
       {
-        name: 'pesoOficial',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: 'varianteId',
+        internalType: 'uint8',
+        type: 'uint8',
         indexed: false,
       },
       {
-        name: 'factorAjuste',
+        name: 'custodioInicial',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'LoteCreado',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'loteIdOrigen',
         internalType: 'uint256',
         type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'nuevosLoteIds',
+        internalType: 'uint256[]',
+        type: 'uint256[]',
+        indexed: false,
+      },
+      {
+        name: 'pesos',
+        internalType: 'uint256[]',
+        type: 'uint256[]',
         indexed: false,
       },
     ],
-    name: 'LoteTipoCerrado',
+    name: 'LoteDividido',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'nuevoLoteId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'loteIdsOrigen',
+        internalType: 'uint256[]',
+        type: 'uint256[]',
+        indexed: false,
+      },
+      {
+        name: 'pesosOrigen',
+        internalType: 'uint256[]',
+        type: 'uint256[]',
+        indexed: false,
+      },
+      {
+        name: 'varianteResultante',
+        internalType: 'uint8',
+        type: 'uint8',
+        indexed: false,
+      },
+    ],
+    name: 'LoteUnido',
   },
   {
     type: 'event',
@@ -1783,6 +2584,44 @@ export const transaccionesPlasticoAbi = [
       },
     ],
     name: 'Paused',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'loteId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      { name: 'de', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'hacia',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'pesoRecibido',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'merma',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'quienAbsorbe',
+        internalType: 'enum QuienAbsorbe',
+        type: 'uint8',
+        indexed: false,
+      },
+    ],
+    name: 'RecepcionConfirmada',
   },
   {
     type: 'event',
@@ -1848,59 +2687,59 @@ export const transaccionesPlasticoAbi = [
     type: 'event',
     anonymous: false,
     inputs: [
-      { name: 'id', internalType: 'uint256', type: 'uint256', indexed: true },
       {
-        name: 'nuevoPesoGramos',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: 'operator',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'from', internalType: 'address', type: 'address', indexed: true },
+      { name: 'to', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'ids',
+        internalType: 'uint256[]',
+        type: 'uint256[]',
+        indexed: false,
+      },
+      {
+        name: 'values',
+        internalType: 'uint256[]',
+        type: 'uint256[]',
         indexed: false,
       },
     ],
-    name: 'TransaccionReconciliada',
+    name: 'TransferBatch',
   },
   {
     type: 'event',
     anonymous: false,
     inputs: [
-      { name: 'id', internalType: 'uint256', type: 'uint256', indexed: true },
       {
-        name: 'origen',
+        name: 'operator',
         internalType: 'address',
         type: 'address',
         indexed: true,
       },
+      { name: 'from', internalType: 'address', type: 'address', indexed: true },
+      { name: 'to', internalType: 'address', type: 'address', indexed: true },
+      { name: 'id', internalType: 'uint256', type: 'uint256', indexed: false },
       {
-        name: 'destino',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'pesoGramos',
+        name: 'value',
         internalType: 'uint256',
         type: 'uint256',
-        indexed: false,
-      },
-      {
-        name: 'usdtMonto',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-      {
-        name: 'tipo',
-        internalType: 'enum TipoTransaccion',
-        type: 'uint8',
-        indexed: false,
-      },
-      {
-        name: 'tipoPlastico',
-        internalType: 'enum TipoPlastico',
-        type: 'uint8',
         indexed: false,
       },
     ],
-    name: 'TransaccionRegistrada',
+    name: 'TransferSingle',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'value', internalType: 'string', type: 'string', indexed: false },
+      { name: 'id', internalType: 'uint256', type: 'uint256', indexed: true },
+    ],
+    name: 'URI',
   },
   {
     type: 'event',
@@ -1938,6 +2777,13 @@ export const transaccionesPlasticoAbi = [
   {
     type: 'function',
     inputs: [],
+    name: 'MERCADO_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
     name: 'PAUSER_ROLE',
     outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
     stateMutability: 'view',
@@ -1952,40 +2798,99 @@ export const transaccionesPlasticoAbi = [
   {
     type: 'function',
     inputs: [
-      { name: '_loteId', internalType: 'uint256', type: 'uint256' },
+      { name: '', internalType: 'uint256', type: 'uint256' },
+      { name: '', internalType: 'address', type: 'address' },
+    ],
+    name: 'aportePorSeparador',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'loteId', internalType: 'uint256', type: 'uint256' }],
+    name: 'aportesDeLote',
+    outputs: [
+      { name: 'separadoresList', internalType: 'address[]', type: 'address[]' },
+      { name: 'kgPorSeparador', internalType: 'uint256[]', type: 'uint256[]' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'account', internalType: 'address', type: 'address' },
+      { name: 'id', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'balanceOf',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'accounts', internalType: 'address[]', type: 'address[]' },
+      { name: 'ids', internalType: 'uint256[]', type: 'uint256[]' },
+    ],
+    name: 'balanceOfBatch',
+    outputs: [{ name: '', internalType: 'uint256[]', type: 'uint256[]' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'loteId', internalType: 'uint256', type: 'uint256' },
+      { name: 'pesoRecibido', internalType: 'uint256', type: 'uint256' },
       {
-        name: '_tipoPlastico',
-        internalType: 'enum TipoPlastico',
+        name: 'quienAbsorbe',
+        internalType: 'enum QuienAbsorbe',
         type: 'uint8',
       },
-      { name: '_pesoOficialGramos', internalType: 'uint256', type: 'uint256' },
     ],
-    name: 'cerrarLotePorTipo',
+    name: 'confirmarRecepcion',
     outputs: [],
     stateMutability: 'nonpayable',
   },
   {
     type: 'function',
     inputs: [
-      { name: '', internalType: 'uint256', type: 'uint256' },
-      { name: '', internalType: 'enum TipoPlastico', type: 'uint8' },
+      { name: 'loteIds', internalType: 'uint256[]', type: 'uint256[]' },
+      { name: 'transformador', internalType: 'address', type: 'address' },
     ],
-    name: 'factorAjustePorTipo',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
+    name: 'consumirParaTransformacion',
+    outputs: [
+      { name: 'loteConsolidadoId', internalType: 'uint256', type: 'uint256' },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'loteId', internalType: 'uint256', type: 'uint256' },
+      { name: 'destinatario', internalType: 'address', type: 'address' },
+      { name: 'pesoEnviado', internalType: 'uint256', type: 'uint256' },
+      { name: 'precioUSDTporKg', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'declararEnvio',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'loteId', internalType: 'uint256', type: 'uint256' },
+      { name: 'pesos', internalType: 'uint256[]', type: 'uint256[]' },
+    ],
+    name: 'dividirLote',
+    outputs: [
+      { name: 'nuevosLoteIds', internalType: 'uint256[]', type: 'uint256[]' },
+    ],
+    stateMutability: 'nonpayable',
   },
   {
     type: 'function',
     inputs: [{ name: 'role', internalType: 'bytes32', type: 'bytes32' }],
     name: 'getRoleAdmin',
     outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
-    name: 'getTransaccionesPorDireccion',
-    outputs: [{ name: '', internalType: 'uint256[]', type: 'uint256[]' }],
     stateMutability: 'view',
   },
   {
@@ -2011,20 +2916,8 @@ export const transaccionesPlasticoAbi = [
   {
     type: 'function',
     inputs: [
-      { name: 'fechaRecoleccion', internalType: 'uint64', type: 'uint64' },
-      { name: 'rutaId', internalType: 'uint8', type: 'uint8' },
-    ],
-    name: 'iniciarLoteMunicipal',
-    outputs: [{ name: 'loteId', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
       { name: 'admin', internalType: 'address', type: 'address' },
-      { name: '_plasticoToken', internalType: 'address', type: 'address' },
       { name: '_registro', internalType: 'address', type: 'address' },
-      { name: '_usdt', internalType: 'address', type: 'address' },
     ],
     name: 'initialize',
     outputs: [],
@@ -2032,16 +2925,75 @@ export const transaccionesPlasticoAbi = [
   },
   {
     type: 'function',
-    inputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    name: 'lotesMunicipales',
+    inputs: [
+      { name: 'account', internalType: 'address', type: 'address' },
+      { name: 'operator', internalType: 'address', type: 'address' },
+    ],
+    name: 'isApprovedForAll',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'loteId', internalType: 'uint256', type: 'uint256' }],
+    name: 'loteInfo',
     outputs: [
-      { name: 'id', internalType: 'uint256', type: 'uint256' },
-      { name: 'municipalidad', internalType: 'address', type: 'address' },
-      { name: 'fechaRecoleccion', internalType: 'uint64', type: 'uint64' },
-      { name: 'rutaId', internalType: 'uint8', type: 'uint8' },
-      { name: 'cerrado', internalType: 'bool', type: 'bool' },
-      { name: 'pesoOficialGramos', internalType: 'uint256', type: 'uint256' },
-      { name: 'factorAjuste', internalType: 'uint256', type: 'uint256' },
+      { name: 'material', internalType: 'enum Material', type: 'uint8' },
+      { name: 'varianteId', internalType: 'uint8', type: 'uint8' },
+      { name: 'custodioActual', internalType: 'address', type: 'address' },
+      { name: 'pesoActual', internalType: 'uint256', type: 'uint256' },
+      { name: 'pesoAceptadoOrigen', internalType: 'uint256', type: 'uint256' },
+      { name: 'activo', internalType: 'bool', type: 'bool' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    name: 'lotes',
+    outputs: [
+      { name: 'material', internalType: 'enum Material', type: 'uint8' },
+      { name: 'varianteId', internalType: 'uint8', type: 'uint8' },
+      { name: 'custodioActual', internalType: 'address', type: 'address' },
+      { name: 'pesoActual', internalType: 'uint256', type: 'uint256' },
+      { name: 'pesoAceptadoOrigen', internalType: 'uint256', type: 'uint256' },
+      { name: 'activo', internalType: 'bool', type: 'bool' },
+      { name: 'pendienteDeConfirmacion', internalType: 'bool', type: 'bool' },
+      {
+        name: 'destinatarioPendiente',
+        internalType: 'address',
+        type: 'address',
+      },
+      {
+        name: 'pesoEnviadoPendiente',
+        internalType: 'uint256',
+        type: 'uint256',
+      },
+      { name: 'precioPendiente', internalType: 'uint256', type: 'uint256' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'uint256', type: 'uint256' },
+      { name: '', internalType: 'address', type: 'address' },
+    ],
+    name: 'mermaAtribuidaGramos',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'loteId', internalType: 'uint256', type: 'uint256' }],
+    name: 'mermaDeLote',
+    outputs: [
+      {
+        name: 'intermediariosList',
+        internalType: 'address[]',
+        type: 'address[]',
+      },
+      { name: 'gramosMerma', internalType: 'uint256[]', type: 'uint256[]' },
     ],
     stateMutability: 'view',
   },
@@ -2049,13 +3001,6 @@ export const transaccionesPlasticoAbi = [
     type: 'function',
     inputs: [],
     name: 'nextLoteId',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'nextTransaccionId',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
   },
@@ -2075,25 +3020,6 @@ export const transaccionesPlasticoAbi = [
   },
   {
     type: 'function',
-    inputs: [
-      { name: '', internalType: 'uint256', type: 'uint256' },
-      { name: '', internalType: 'enum TipoPlastico', type: 'uint8' },
-    ],
-    name: 'pesoOficialPorTipo',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'plasticoToken',
-    outputs: [
-      { name: '', internalType: 'contract IPlasticoToken', type: 'address' },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
     inputs: [],
     name: 'proxiableUUID',
     outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
@@ -2102,71 +3028,20 @@ export const transaccionesPlasticoAbi = [
   {
     type: 'function',
     inputs: [
-      { name: '_loteId', internalType: 'uint256', type: 'uint256' },
-      { name: '_usuario', internalType: 'address', type: 'address' },
-      { name: '_pesoGramos', internalType: 'uint256', type: 'uint256' },
-      {
-        name: '_tipoPlastico',
-        internalType: 'enum TipoPlastico',
-        type: 'uint8',
-      },
-      { name: '_rutaId', internalType: 'uint8', type: 'uint8' },
-    ],
-    name: 'registrarEntregaMunicipal',
-    outputs: [
-      { name: 'transaccionId', internalType: 'uint256', type: 'uint256' },
-    ],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '_loteId', internalType: 'uint256', type: 'uint256' },
-      { name: '_pesoGramos', internalType: 'uint256', type: 'uint256' },
-      {
-        name: '_tipoPlastico',
-        internalType: 'enum TipoPlastico',
-        type: 'uint8',
-      },
-      { name: '_rutaId', internalType: 'uint8', type: 'uint8' },
-    ],
-    name: 'registrarEntregaUsuario',
-    outputs: [
-      { name: 'transaccionId', internalType: 'uint256', type: 'uint256' },
-    ],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'usuario', internalType: 'address', type: 'address' },
+      { name: 'separador', internalType: 'address', type: 'address' },
+      { name: 'material', internalType: 'enum Material', type: 'uint8' },
+      { name: 'varianteId', internalType: 'uint8', type: 'uint8' },
       { name: 'pesoGramos', internalType: 'uint256', type: 'uint256' },
-      { name: 'tipo', internalType: 'enum TipoTransaccion', type: 'uint8' },
+      { name: 'loteDestino', internalType: 'uint256', type: 'uint256' },
       {
-        name: 'tipoPlastico',
-        internalType: 'enum TipoPlastico',
+        name: 'modalidad',
+        internalType: 'enum ModalidadEntrega',
         type: 'uint8',
       },
+      { name: 'precioUSDTporKg', internalType: 'uint256', type: 'uint256' },
     ],
-    name: 'registrarTransaccionGratuita',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'contraparte', internalType: 'address', type: 'address' },
-      { name: 'pesoGramos', internalType: 'uint256', type: 'uint256' },
-      { name: 'montoUSDT', internalType: 'uint256', type: 'uint256' },
-      { name: 'usuarioPaga', internalType: 'bool', type: 'bool' },
-      {
-        name: 'tipoPlastico',
-        internalType: 'enum TipoPlastico',
-        type: 'uint8',
-      },
-    ],
-    name: 'registrarTransaccionPagada',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    name: 'registrarEntrega',
+    outputs: [{ name: 'loteId', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'nonpayable',
   },
   {
@@ -2195,27 +3070,46 @@ export const transaccionesPlasticoAbi = [
   {
     type: 'function',
     inputs: [
-      { name: '_loteId', internalType: 'uint256', type: 'uint256' },
-      { name: '_tipo', internalType: 'enum TipoPlastico', type: 'uint8' },
-    ],
-    name: 'resumenTipoEnLote',
-    outputs: [
-      { name: 'presente', internalType: 'bool', type: 'bool' },
-      { name: 'reconciliado', internalType: 'bool', type: 'bool' },
-      { name: 'pesoDeclaradoTotal', internalType: 'uint256', type: 'uint256' },
-      { name: 'pesoActualTotal', internalType: 'uint256', type: 'uint256' },
-      { name: 'pesoOficialGramos', internalType: 'uint256', type: 'uint256' },
-      { name: 'factorAjuste', internalType: 'uint256', type: 'uint256' },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
       { name: 'role', internalType: 'bytes32', type: 'bytes32' },
       { name: 'account', internalType: 'address', type: 'address' },
     ],
     name: 'revokeRole',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'from', internalType: 'address', type: 'address' },
+      { name: 'to', internalType: 'address', type: 'address' },
+      { name: 'ids', internalType: 'uint256[]', type: 'uint256[]' },
+      { name: 'values', internalType: 'uint256[]', type: 'uint256[]' },
+      { name: 'data', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'safeBatchTransferFrom',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'from', internalType: 'address', type: 'address' },
+      { name: 'to', internalType: 'address', type: 'address' },
+      { name: 'id', internalType: 'uint256', type: 'uint256' },
+      { name: 'value', internalType: 'uint256', type: 'uint256' },
+      { name: 'data', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'safeTransferFrom',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'operator', internalType: 'address', type: 'address' },
+      { name: 'approved', internalType: 'bool', type: 'bool' },
+    ],
+    name: 'setApprovalForAll',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -2229,46 +3123,14 @@ export const transaccionesPlasticoAbi = [
   {
     type: 'function',
     inputs: [
-      { name: '', internalType: 'uint256', type: 'uint256' },
-      { name: '', internalType: 'enum TipoPlastico', type: 'uint8' },
+      { name: 'loteIds', internalType: 'uint256[]', type: 'uint256[]' },
+      { name: 'varianteResultante', internalType: 'uint8', type: 'uint8' },
     ],
-    name: 'tipoReconciliadoDeLote',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    name: 'transacciones',
+    name: 'unirLotes',
     outputs: [
-      { name: 'id', internalType: 'uint256', type: 'uint256' },
-      { name: 'origen', internalType: 'address', type: 'address' },
-      { name: 'destino', internalType: 'address', type: 'address' },
-      { name: 'pesoGramos', internalType: 'uint216', type: 'uint216' },
-      { name: 'timestamp', internalType: 'uint32', type: 'uint32' },
-      { name: 'tokensMinteados', internalType: 'uint256', type: 'uint256' },
-      { name: 'usdtPagado', internalType: 'uint256', type: 'uint256' },
-      { name: 'tipo', internalType: 'enum TipoTransaccion', type: 'uint8' },
-      {
-        name: 'tipoPlastico',
-        internalType: 'enum TipoPlastico',
-        type: 'uint8',
-      },
-      { name: 'reconciliada', internalType: 'bool', type: 'bool' },
-      { name: 'loteId', internalType: 'uint256', type: 'uint256' },
-      { name: 'pesoGramosDeclarado', internalType: 'uint216', type: 'uint216' },
+      { name: 'nuevoLoteId', internalType: 'uint256', type: 'uint256' },
     ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '', internalType: 'address', type: 'address' },
-      { name: '', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'transaccionesPorDireccion',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
+    stateMutability: 'nonpayable',
   },
   {
     type: 'function',
@@ -2289,9 +3151,9 @@ export const transaccionesPlasticoAbi = [
   },
   {
     type: 'function',
-    inputs: [],
-    name: 'usdt',
-    outputs: [{ name: '', internalType: 'contract IERC20', type: 'address' }],
+    inputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    name: 'uri',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
     stateMutability: 'view',
   },
 ] as const
@@ -2301,82 +3163,277 @@ export const transaccionesPlasticoAbi = [
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link iPlasticoTokenAbi}__
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link certificadoTransformacionAbi}__
  */
-export const useReadIPlasticoToken = /*#__PURE__*/ createUseReadContract({
-  abi: iPlasticoTokenAbi,
-})
+export const useReadCertificadoTransformacion =
+  /*#__PURE__*/ createUseReadContract({ abi: certificadoTransformacionAbi })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link iPlasticoTokenAbi}__ and `functionName` set to `"balanceOf"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link certificadoTransformacionAbi}__ and `functionName` set to `"allowance"`
  */
-export const useReadIPlasticoTokenBalanceOf =
+export const useReadCertificadoTransformacionAllowance =
   /*#__PURE__*/ createUseReadContract({
-    abi: iPlasticoTokenAbi,
+    abi: certificadoTransformacionAbi,
+    functionName: 'allowance',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link certificadoTransformacionAbi}__ and `functionName` set to `"balanceOf"`
+ */
+export const useReadCertificadoTransformacionBalanceOf =
+  /*#__PURE__*/ createUseReadContract({
+    abi: certificadoTransformacionAbi,
     functionName: 'balanceOf',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iPlasticoTokenAbi}__
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link certificadoTransformacionAbi}__ and `functionName` set to `"decimals"`
  */
-export const useWriteIPlasticoToken = /*#__PURE__*/ createUseWriteContract({
-  abi: iPlasticoTokenAbi,
-})
+export const useReadCertificadoTransformacionDecimals =
+  /*#__PURE__*/ createUseReadContract({
+    abi: certificadoTransformacionAbi,
+    functionName: 'decimals',
+  })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iPlasticoTokenAbi}__ and `functionName` set to `"burnFrom"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link certificadoTransformacionAbi}__ and `functionName` set to `"mercado"`
  */
-export const useWriteIPlasticoTokenBurnFrom =
+export const useReadCertificadoTransformacionMercado =
+  /*#__PURE__*/ createUseReadContract({
+    abi: certificadoTransformacionAbi,
+    functionName: 'mercado',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link certificadoTransformacionAbi}__ and `functionName` set to `"name"`
+ */
+export const useReadCertificadoTransformacionName =
+  /*#__PURE__*/ createUseReadContract({
+    abi: certificadoTransformacionAbi,
+    functionName: 'name',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link certificadoTransformacionAbi}__ and `functionName` set to `"symbol"`
+ */
+export const useReadCertificadoTransformacionSymbol =
+  /*#__PURE__*/ createUseReadContract({
+    abi: certificadoTransformacionAbi,
+    functionName: 'symbol',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link certificadoTransformacionAbi}__ and `functionName` set to `"totalSupply"`
+ */
+export const useReadCertificadoTransformacionTotalSupply =
+  /*#__PURE__*/ createUseReadContract({
+    abi: certificadoTransformacionAbi,
+    functionName: 'totalSupply',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link certificadoTransformacionAbi}__
+ */
+export const useWriteCertificadoTransformacion =
+  /*#__PURE__*/ createUseWriteContract({ abi: certificadoTransformacionAbi })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link certificadoTransformacionAbi}__ and `functionName` set to `"approve"`
+ */
+export const useWriteCertificadoTransformacionApprove =
   /*#__PURE__*/ createUseWriteContract({
-    abi: iPlasticoTokenAbi,
-    functionName: 'burnFrom',
+    abi: certificadoTransformacionAbi,
+    functionName: 'approve',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iPlasticoTokenAbi}__ and `functionName` set to `"mint"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link certificadoTransformacionAbi}__ and `functionName` set to `"burn"`
  */
-export const useWriteIPlasticoTokenMint = /*#__PURE__*/ createUseWriteContract({
-  abi: iPlasticoTokenAbi,
-  functionName: 'mint',
-})
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iPlasticoTokenAbi}__
- */
-export const useSimulateIPlasticoToken =
-  /*#__PURE__*/ createUseSimulateContract({ abi: iPlasticoTokenAbi })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iPlasticoTokenAbi}__ and `functionName` set to `"burnFrom"`
- */
-export const useSimulateIPlasticoTokenBurnFrom =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: iPlasticoTokenAbi,
-    functionName: 'burnFrom',
+export const useWriteCertificadoTransformacionBurn =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: certificadoTransformacionAbi,
+    functionName: 'burn',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iPlasticoTokenAbi}__ and `functionName` set to `"mint"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link certificadoTransformacionAbi}__ and `functionName` set to `"initialize"`
  */
-export const useSimulateIPlasticoTokenMint =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: iPlasticoTokenAbi,
+export const useWriteCertificadoTransformacionInitialize =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: certificadoTransformacionAbi,
+    functionName: 'initialize',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link certificadoTransformacionAbi}__ and `functionName` set to `"mint"`
+ */
+export const useWriteCertificadoTransformacionMint =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: certificadoTransformacionAbi,
     functionName: 'mint',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iPlasticoTokenAbi}__
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link certificadoTransformacionAbi}__ and `functionName` set to `"transfer"`
  */
-export const useWatchIPlasticoTokenEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({ abi: iPlasticoTokenAbi })
+export const useWriteCertificadoTransformacionTransfer =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: certificadoTransformacionAbi,
+    functionName: 'transfer',
+  })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iPlasticoTokenAbi}__ and `eventName` set to `"TokensMinteados"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link certificadoTransformacionAbi}__ and `functionName` set to `"transferFrom"`
  */
-export const useWatchIPlasticoTokenTokensMinteadosEvent =
+export const useWriteCertificadoTransformacionTransferFrom =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: certificadoTransformacionAbi,
+    functionName: 'transferFrom',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link certificadoTransformacionAbi}__
+ */
+export const useSimulateCertificadoTransformacion =
+  /*#__PURE__*/ createUseSimulateContract({ abi: certificadoTransformacionAbi })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link certificadoTransformacionAbi}__ and `functionName` set to `"approve"`
+ */
+export const useSimulateCertificadoTransformacionApprove =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: certificadoTransformacionAbi,
+    functionName: 'approve',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link certificadoTransformacionAbi}__ and `functionName` set to `"burn"`
+ */
+export const useSimulateCertificadoTransformacionBurn =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: certificadoTransformacionAbi,
+    functionName: 'burn',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link certificadoTransformacionAbi}__ and `functionName` set to `"initialize"`
+ */
+export const useSimulateCertificadoTransformacionInitialize =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: certificadoTransformacionAbi,
+    functionName: 'initialize',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link certificadoTransformacionAbi}__ and `functionName` set to `"mint"`
+ */
+export const useSimulateCertificadoTransformacionMint =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: certificadoTransformacionAbi,
+    functionName: 'mint',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link certificadoTransformacionAbi}__ and `functionName` set to `"transfer"`
+ */
+export const useSimulateCertificadoTransformacionTransfer =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: certificadoTransformacionAbi,
+    functionName: 'transfer',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link certificadoTransformacionAbi}__ and `functionName` set to `"transferFrom"`
+ */
+export const useSimulateCertificadoTransformacionTransferFrom =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: certificadoTransformacionAbi,
+    functionName: 'transferFrom',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link certificadoTransformacionAbi}__
+ */
+export const useWatchCertificadoTransformacionEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: iPlasticoTokenAbi,
-    eventName: 'TokensMinteados',
+    abi: certificadoTransformacionAbi,
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link certificadoTransformacionAbi}__ and `eventName` set to `"Approval"`
+ */
+export const useWatchCertificadoTransformacionApprovalEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: certificadoTransformacionAbi,
+    eventName: 'Approval',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link certificadoTransformacionAbi}__ and `eventName` set to `"Initialized"`
+ */
+export const useWatchCertificadoTransformacionInitializedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: certificadoTransformacionAbi,
+    eventName: 'Initialized',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link certificadoTransformacionAbi}__ and `eventName` set to `"Transfer"`
+ */
+export const useWatchCertificadoTransformacionTransferEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: certificadoTransformacionAbi,
+    eventName: 'Transfer',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iCertificadoTransformacionAbi}__
+ */
+export const useWriteICertificadoTransformacion =
+  /*#__PURE__*/ createUseWriteContract({ abi: iCertificadoTransformacionAbi })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iCertificadoTransformacionAbi}__ and `functionName` set to `"burn"`
+ */
+export const useWriteICertificadoTransformacionBurn =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: iCertificadoTransformacionAbi,
+    functionName: 'burn',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iCertificadoTransformacionAbi}__ and `functionName` set to `"mint"`
+ */
+export const useWriteICertificadoTransformacionMint =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: iCertificadoTransformacionAbi,
+    functionName: 'mint',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iCertificadoTransformacionAbi}__
+ */
+export const useSimulateICertificadoTransformacion =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: iCertificadoTransformacionAbi,
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iCertificadoTransformacionAbi}__ and `functionName` set to `"burn"`
+ */
+export const useSimulateICertificadoTransformacionBurn =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: iCertificadoTransformacionAbi,
+    functionName: 'burn',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iCertificadoTransformacionAbi}__ and `functionName` set to `"mint"`
+ */
+export const useSimulateICertificadoTransformacionMint =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: iCertificadoTransformacionAbi,
+    functionName: 'mint',
   })
 
 /**
@@ -2387,30 +3444,48 @@ export const useReadIRegistroEntidades = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"esCentroVerificado"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"esComprador"`
  */
-export const useReadIRegistroEntidadesEsCentroVerificado =
+export const useReadIRegistroEntidadesEsComprador =
   /*#__PURE__*/ createUseReadContract({
     abi: iRegistroEntidadesAbi,
-    functionName: 'esCentroVerificado',
+    functionName: 'esComprador',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"esMunicipalidad"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"esIntermediarioVerificado"`
  */
-export const useReadIRegistroEntidadesEsMunicipalidad =
+export const useReadIRegistroEntidadesEsIntermediarioVerificado =
   /*#__PURE__*/ createUseReadContract({
     abi: iRegistroEntidadesAbi,
-    functionName: 'esMunicipalidad',
+    functionName: 'esIntermediarioVerificado',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"esUsuario"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"esSeparador"`
  */
-export const useReadIRegistroEntidadesEsUsuario =
+export const useReadIRegistroEntidadesEsSeparador =
   /*#__PURE__*/ createUseReadContract({
     abi: iRegistroEntidadesAbi,
-    functionName: 'esUsuario',
+    functionName: 'esSeparador',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"esTransformadorVerificado"`
+ */
+export const useReadIRegistroEntidadesEsTransformadorVerificado =
+  /*#__PURE__*/ createUseReadContract({
+    abi: iRegistroEntidadesAbi,
+    functionName: 'esTransformadorVerificado',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"rolDe"`
+ */
+export const useReadIRegistroEntidadesRolDe =
+  /*#__PURE__*/ createUseReadContract({
+    abi: iRegistroEntidadesAbi,
+    functionName: 'rolDe',
   })
 
 /**
@@ -2421,39 +3496,57 @@ export const useWriteIRegistroEntidades = /*#__PURE__*/ createUseWriteContract({
 })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"registrarCentroRecolector"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"registrarComprador"`
  */
-export const useWriteIRegistroEntidadesRegistrarCentroRecolector =
+export const useWriteIRegistroEntidadesRegistrarComprador =
   /*#__PURE__*/ createUseWriteContract({
     abi: iRegistroEntidadesAbi,
-    functionName: 'registrarCentroRecolector',
+    functionName: 'registrarComprador',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"registrarMunicipalidad"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"registrarIntermediario"`
  */
-export const useWriteIRegistroEntidadesRegistrarMunicipalidad =
+export const useWriteIRegistroEntidadesRegistrarIntermediario =
   /*#__PURE__*/ createUseWriteContract({
     abi: iRegistroEntidadesAbi,
-    functionName: 'registrarMunicipalidad',
+    functionName: 'registrarIntermediario',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"registrarUsuario"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"registrarSeparador"`
  */
-export const useWriteIRegistroEntidadesRegistrarUsuario =
+export const useWriteIRegistroEntidadesRegistrarSeparador =
   /*#__PURE__*/ createUseWriteContract({
     abi: iRegistroEntidadesAbi,
-    functionName: 'registrarUsuario',
+    functionName: 'registrarSeparador',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"verificarCentro"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"registrarTransformador"`
  */
-export const useWriteIRegistroEntidadesVerificarCentro =
+export const useWriteIRegistroEntidadesRegistrarTransformador =
   /*#__PURE__*/ createUseWriteContract({
     abi: iRegistroEntidadesAbi,
-    functionName: 'verificarCentro',
+    functionName: 'registrarTransformador',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"verificarIntermediario"`
+ */
+export const useWriteIRegistroEntidadesVerificarIntermediario =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: iRegistroEntidadesAbi,
+    functionName: 'verificarIntermediario',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"verificarTransformador"`
+ */
+export const useWriteIRegistroEntidadesVerificarTransformador =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: iRegistroEntidadesAbi,
+    functionName: 'verificarTransformador',
   })
 
 /**
@@ -2463,39 +3556,57 @@ export const useSimulateIRegistroEntidades =
   /*#__PURE__*/ createUseSimulateContract({ abi: iRegistroEntidadesAbi })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"registrarCentroRecolector"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"registrarComprador"`
  */
-export const useSimulateIRegistroEntidadesRegistrarCentroRecolector =
+export const useSimulateIRegistroEntidadesRegistrarComprador =
   /*#__PURE__*/ createUseSimulateContract({
     abi: iRegistroEntidadesAbi,
-    functionName: 'registrarCentroRecolector',
+    functionName: 'registrarComprador',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"registrarMunicipalidad"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"registrarIntermediario"`
  */
-export const useSimulateIRegistroEntidadesRegistrarMunicipalidad =
+export const useSimulateIRegistroEntidadesRegistrarIntermediario =
   /*#__PURE__*/ createUseSimulateContract({
     abi: iRegistroEntidadesAbi,
-    functionName: 'registrarMunicipalidad',
+    functionName: 'registrarIntermediario',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"registrarUsuario"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"registrarSeparador"`
  */
-export const useSimulateIRegistroEntidadesRegistrarUsuario =
+export const useSimulateIRegistroEntidadesRegistrarSeparador =
   /*#__PURE__*/ createUseSimulateContract({
     abi: iRegistroEntidadesAbi,
-    functionName: 'registrarUsuario',
+    functionName: 'registrarSeparador',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"verificarCentro"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"registrarTransformador"`
  */
-export const useSimulateIRegistroEntidadesVerificarCentro =
+export const useSimulateIRegistroEntidadesRegistrarTransformador =
   /*#__PURE__*/ createUseSimulateContract({
     abi: iRegistroEntidadesAbi,
-    functionName: 'verificarCentro',
+    functionName: 'registrarTransformador',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"verificarIntermediario"`
+ */
+export const useSimulateIRegistroEntidadesVerificarIntermediario =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: iRegistroEntidadesAbi,
+    functionName: 'verificarIntermediario',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"verificarTransformador"`
+ */
+export const useSimulateIRegistroEntidadesVerificarTransformador =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: iRegistroEntidadesAbi,
+    functionName: 'verificarTransformador',
   })
 
 /**
@@ -2505,210 +3616,739 @@ export const useWatchIRegistroEntidadesEvent =
   /*#__PURE__*/ createUseWatchContractEvent({ abi: iRegistroEntidadesAbi })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `eventName` set to `"CentroRegistrado"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `eventName` set to `"CompradorRegistrado"`
  */
-export const useWatchIRegistroEntidadesCentroRegistradoEvent =
+export const useWatchIRegistroEntidadesCompradorRegistradoEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: iRegistroEntidadesAbi,
-    eventName: 'CentroRegistrado',
+    eventName: 'CompradorRegistrado',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `eventName` set to `"CentroVerificado"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `eventName` set to `"IntermediarioRegistrado"`
  */
-export const useWatchIRegistroEntidadesCentroVerificadoEvent =
+export const useWatchIRegistroEntidadesIntermediarioRegistradoEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: iRegistroEntidadesAbi,
-    eventName: 'CentroVerificado',
+    eventName: 'IntermediarioRegistrado',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `eventName` set to `"MunicipalidadRegistrada"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `eventName` set to `"IntermediarioVerificado"`
  */
-export const useWatchIRegistroEntidadesMunicipalidadRegistradaEvent =
+export const useWatchIRegistroEntidadesIntermediarioVerificadoEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: iRegistroEntidadesAbi,
-    eventName: 'MunicipalidadRegistrada',
+    eventName: 'IntermediarioVerificado',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `eventName` set to `"UsuarioRegistrado"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `eventName` set to `"SeparadorRegistrado"`
  */
-export const useWatchIRegistroEntidadesUsuarioRegistradoEvent =
+export const useWatchIRegistroEntidadesSeparadorRegistradoEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: iRegistroEntidadesAbi,
-    eventName: 'UsuarioRegistrado',
+    eventName: 'SeparadorRegistrado',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iTransaccionesPlasticoAbi}__
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `eventName` set to `"TransformadorRegistrado"`
  */
-export const useWriteITransaccionesPlastico =
-  /*#__PURE__*/ createUseWriteContract({ abi: iTransaccionesPlasticoAbi })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iTransaccionesPlasticoAbi}__ and `functionName` set to `"cerrarLotePorTipo"`
- */
-export const useWriteITransaccionesPlasticoCerrarLotePorTipo =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: iTransaccionesPlasticoAbi,
-    functionName: 'cerrarLotePorTipo',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iTransaccionesPlasticoAbi}__ and `functionName` set to `"iniciarLoteMunicipal"`
- */
-export const useWriteITransaccionesPlasticoIniciarLoteMunicipal =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: iTransaccionesPlasticoAbi,
-    functionName: 'iniciarLoteMunicipal',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iTransaccionesPlasticoAbi}__ and `functionName` set to `"registrarEntregaMunicipal"`
- */
-export const useWriteITransaccionesPlasticoRegistrarEntregaMunicipal =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: iTransaccionesPlasticoAbi,
-    functionName: 'registrarEntregaMunicipal',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iTransaccionesPlasticoAbi}__ and `functionName` set to `"registrarEntregaUsuario"`
- */
-export const useWriteITransaccionesPlasticoRegistrarEntregaUsuario =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: iTransaccionesPlasticoAbi,
-    functionName: 'registrarEntregaUsuario',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iTransaccionesPlasticoAbi}__ and `functionName` set to `"registrarTransaccionGratuita"`
- */
-export const useWriteITransaccionesPlasticoRegistrarTransaccionGratuita =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: iTransaccionesPlasticoAbi,
-    functionName: 'registrarTransaccionGratuita',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iTransaccionesPlasticoAbi}__ and `functionName` set to `"registrarTransaccionPagada"`
- */
-export const useWriteITransaccionesPlasticoRegistrarTransaccionPagada =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: iTransaccionesPlasticoAbi,
-    functionName: 'registrarTransaccionPagada',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iTransaccionesPlasticoAbi}__
- */
-export const useSimulateITransaccionesPlastico =
-  /*#__PURE__*/ createUseSimulateContract({ abi: iTransaccionesPlasticoAbi })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iTransaccionesPlasticoAbi}__ and `functionName` set to `"cerrarLotePorTipo"`
- */
-export const useSimulateITransaccionesPlasticoCerrarLotePorTipo =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: iTransaccionesPlasticoAbi,
-    functionName: 'cerrarLotePorTipo',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iTransaccionesPlasticoAbi}__ and `functionName` set to `"iniciarLoteMunicipal"`
- */
-export const useSimulateITransaccionesPlasticoIniciarLoteMunicipal =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: iTransaccionesPlasticoAbi,
-    functionName: 'iniciarLoteMunicipal',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iTransaccionesPlasticoAbi}__ and `functionName` set to `"registrarEntregaMunicipal"`
- */
-export const useSimulateITransaccionesPlasticoRegistrarEntregaMunicipal =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: iTransaccionesPlasticoAbi,
-    functionName: 'registrarEntregaMunicipal',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iTransaccionesPlasticoAbi}__ and `functionName` set to `"registrarEntregaUsuario"`
- */
-export const useSimulateITransaccionesPlasticoRegistrarEntregaUsuario =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: iTransaccionesPlasticoAbi,
-    functionName: 'registrarEntregaUsuario',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iTransaccionesPlasticoAbi}__ and `functionName` set to `"registrarTransaccionGratuita"`
- */
-export const useSimulateITransaccionesPlasticoRegistrarTransaccionGratuita =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: iTransaccionesPlasticoAbi,
-    functionName: 'registrarTransaccionGratuita',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iTransaccionesPlasticoAbi}__ and `functionName` set to `"registrarTransaccionPagada"`
- */
-export const useSimulateITransaccionesPlasticoRegistrarTransaccionPagada =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: iTransaccionesPlasticoAbi,
-    functionName: 'registrarTransaccionPagada',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iTransaccionesPlasticoAbi}__
- */
-export const useWatchITransaccionesPlasticoEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({ abi: iTransaccionesPlasticoAbi })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iTransaccionesPlasticoAbi}__ and `eventName` set to `"LoteMunicipalCerrado"`
- */
-export const useWatchITransaccionesPlasticoLoteMunicipalCerradoEvent =
+export const useWatchIRegistroEntidadesTransformadorRegistradoEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: iTransaccionesPlasticoAbi,
-    eventName: 'LoteMunicipalCerrado',
+    abi: iRegistroEntidadesAbi,
+    eventName: 'TransformadorRegistrado',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iTransaccionesPlasticoAbi}__ and `eventName` set to `"LoteMunicipalIniciado"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `eventName` set to `"TransformadorVerificado"`
  */
-export const useWatchITransaccionesPlasticoLoteMunicipalIniciadoEvent =
+export const useWatchIRegistroEntidadesTransformadorVerificadoEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: iTransaccionesPlasticoAbi,
-    eventName: 'LoteMunicipalIniciado',
+    abi: iRegistroEntidadesAbi,
+    eventName: 'TransformadorVerificado',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iTransaccionesPlasticoAbi}__ and `eventName` set to `"LoteTipoCerrado"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link iTokenCustodiaAbi}__
  */
-export const useWatchITransaccionesPlasticoLoteTipoCerradoEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: iTransaccionesPlasticoAbi,
-    eventName: 'LoteTipoCerrado',
+export const useReadITokenCustodia = /*#__PURE__*/ createUseReadContract({
+  abi: iTokenCustodiaAbi,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link iTokenCustodiaAbi}__ and `functionName` set to `"aportesDeLote"`
+ */
+export const useReadITokenCustodiaAportesDeLote =
+  /*#__PURE__*/ createUseReadContract({
+    abi: iTokenCustodiaAbi,
+    functionName: 'aportesDeLote',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iTransaccionesPlasticoAbi}__ and `eventName` set to `"TransaccionReconciliada"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link iTokenCustodiaAbi}__ and `functionName` set to `"loteInfo"`
  */
-export const useWatchITransaccionesPlasticoTransaccionReconciliadaEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: iTransaccionesPlasticoAbi,
-    eventName: 'TransaccionReconciliada',
+export const useReadITokenCustodiaLoteInfo =
+  /*#__PURE__*/ createUseReadContract({
+    abi: iTokenCustodiaAbi,
+    functionName: 'loteInfo',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iTransaccionesPlasticoAbi}__ and `eventName` set to `"TransaccionRegistrada"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link iTokenCustodiaAbi}__ and `functionName` set to `"mermaDeLote"`
  */
-export const useWatchITransaccionesPlasticoTransaccionRegistradaEvent =
+export const useReadITokenCustodiaMermaDeLote =
+  /*#__PURE__*/ createUseReadContract({
+    abi: iTokenCustodiaAbi,
+    functionName: 'mermaDeLote',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iTokenCustodiaAbi}__
+ */
+export const useWriteITokenCustodia = /*#__PURE__*/ createUseWriteContract({
+  abi: iTokenCustodiaAbi,
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iTokenCustodiaAbi}__ and `functionName` set to `"consumirParaTransformacion"`
+ */
+export const useWriteITokenCustodiaConsumirParaTransformacion =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: iTokenCustodiaAbi,
+    functionName: 'consumirParaTransformacion',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iTokenCustodiaAbi}__
+ */
+export const useSimulateITokenCustodia =
+  /*#__PURE__*/ createUseSimulateContract({ abi: iTokenCustodiaAbi })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iTokenCustodiaAbi}__ and `functionName` set to `"consumirParaTransformacion"`
+ */
+export const useSimulateITokenCustodiaConsumirParaTransformacion =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: iTokenCustodiaAbi,
+    functionName: 'consumirParaTransformacion',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iTokenCustodiaAbi}__
+ */
+export const useWatchITokenCustodiaEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({ abi: iTokenCustodiaAbi })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iTokenCustodiaAbi}__ and `eventName` set to `"EntregaRegistrada"`
+ */
+export const useWatchITokenCustodiaEntregaRegistradaEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: iTransaccionesPlasticoAbi,
-    eventName: 'TransaccionRegistrada',
+    abi: iTokenCustodiaAbi,
+    eventName: 'EntregaRegistrada',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iTokenCustodiaAbi}__ and `eventName` set to `"EnvioDeclarado"`
+ */
+export const useWatchITokenCustodiaEnvioDeclaradoEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: iTokenCustodiaAbi,
+    eventName: 'EnvioDeclarado',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iTokenCustodiaAbi}__ and `eventName` set to `"LoteConsumido"`
+ */
+export const useWatchITokenCustodiaLoteConsumidoEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: iTokenCustodiaAbi,
+    eventName: 'LoteConsumido',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iTokenCustodiaAbi}__ and `eventName` set to `"LoteCreado"`
+ */
+export const useWatchITokenCustodiaLoteCreadoEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: iTokenCustodiaAbi,
+    eventName: 'LoteCreado',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iTokenCustodiaAbi}__ and `eventName` set to `"LoteDividido"`
+ */
+export const useWatchITokenCustodiaLoteDivididoEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: iTokenCustodiaAbi,
+    eventName: 'LoteDividido',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iTokenCustodiaAbi}__ and `eventName` set to `"LoteUnido"`
+ */
+export const useWatchITokenCustodiaLoteUnidoEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: iTokenCustodiaAbi,
+    eventName: 'LoteUnido',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iTokenCustodiaAbi}__ and `eventName` set to `"RecepcionConfirmada"`
+ */
+export const useWatchITokenCustodiaRecepcionConfirmadaEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: iTokenCustodiaAbi,
+    eventName: 'RecepcionConfirmada',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__
+ */
+export const useReadMercadoCertificados = /*#__PURE__*/ createUseReadContract({
+  abi: mercadoCertificadosAbi,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"DEFAULT_ADMIN_ROLE"`
+ */
+export const useReadMercadoCertificadosDefaultAdminRole =
+  /*#__PURE__*/ createUseReadContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'DEFAULT_ADMIN_ROLE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"PAUSER_ROLE"`
+ */
+export const useReadMercadoCertificadosPauserRole =
+  /*#__PURE__*/ createUseReadContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'PAUSER_ROLE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"UPGRADE_INTERFACE_VERSION"`
+ */
+export const useReadMercadoCertificadosUpgradeInterfaceVersion =
+  /*#__PURE__*/ createUseReadContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'UPGRADE_INTERFACE_VERSION',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"aporteKgDeEmision"`
+ */
+export const useReadMercadoCertificadosAporteKgDeEmision =
+  /*#__PURE__*/ createUseReadContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'aporteKgDeEmision',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"certificadoImplementacion"`
+ */
+export const useReadMercadoCertificadosCertificadoImplementacion =
+  /*#__PURE__*/ createUseReadContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'certificadoImplementacion',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"certificados"`
+ */
+export const useReadMercadoCertificadosCertificados =
+  /*#__PURE__*/ createUseReadContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'certificados',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"emisiones"`
+ */
+export const useReadMercadoCertificadosEmisiones =
+  /*#__PURE__*/ createUseReadContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'emisiones',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"eslabonesDeEmision"`
+ */
+export const useReadMercadoCertificadosEslabonesDeEmision =
+  /*#__PURE__*/ createUseReadContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'eslabonesDeEmision',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"getRoleAdmin"`
+ */
+export const useReadMercadoCertificadosGetRoleAdmin =
+  /*#__PURE__*/ createUseReadContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'getRoleAdmin',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"hasRole"`
+ */
+export const useReadMercadoCertificadosHasRole =
+  /*#__PURE__*/ createUseReadContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'hasRole',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"mermaKgDeEmision"`
+ */
+export const useReadMercadoCertificadosMermaKgDeEmision =
+  /*#__PURE__*/ createUseReadContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'mermaKgDeEmision',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"nextEmisionId"`
+ */
+export const useReadMercadoCertificadosNextEmisionId =
+  /*#__PURE__*/ createUseReadContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'nextEmisionId',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"paused"`
+ */
+export const useReadMercadoCertificadosPaused =
+  /*#__PURE__*/ createUseReadContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'paused',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"plataforma"`
+ */
+export const useReadMercadoCertificadosPlataforma =
+  /*#__PURE__*/ createUseReadContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'plataforma',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"proxiableUUID"`
+ */
+export const useReadMercadoCertificadosProxiableUuid =
+  /*#__PURE__*/ createUseReadContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'proxiableUUID',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"registro"`
+ */
+export const useReadMercadoCertificadosRegistro =
+  /*#__PURE__*/ createUseReadContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'registro',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"saldoPendiente"`
+ */
+export const useReadMercadoCertificadosSaldoPendiente =
+  /*#__PURE__*/ createUseReadContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'saldoPendiente',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"separadoresDeEmision"`
+ */
+export const useReadMercadoCertificadosSeparadoresDeEmision =
+  /*#__PURE__*/ createUseReadContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'separadoresDeEmision',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"supportsInterface"`
+ */
+export const useReadMercadoCertificadosSupportsInterface =
+  /*#__PURE__*/ createUseReadContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'supportsInterface',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"tokenCustodia"`
+ */
+export const useReadMercadoCertificadosTokenCustodia =
+  /*#__PURE__*/ createUseReadContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'tokenCustodia',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"usdt"`
+ */
+export const useReadMercadoCertificadosUsdt =
+  /*#__PURE__*/ createUseReadContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'usdt',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__
+ */
+export const useWriteMercadoCertificados = /*#__PURE__*/ createUseWriteContract(
+  { abi: mercadoCertificadosAbi },
+)
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"comprarCertificado"`
+ */
+export const useWriteMercadoCertificadosComprarCertificado =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'comprarCertificado',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"desplegarCertificado"`
+ */
+export const useWriteMercadoCertificadosDesplegarCertificado =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'desplegarCertificado',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"grantRole"`
+ */
+export const useWriteMercadoCertificadosGrantRole =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'grantRole',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"initialize"`
+ */
+export const useWriteMercadoCertificadosInitialize =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'initialize',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"pause"`
+ */
+export const useWriteMercadoCertificadosPause =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'pause',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"registrarTransformacion"`
+ */
+export const useWriteMercadoCertificadosRegistrarTransformacion =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'registrarTransformacion',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"renounceRole"`
+ */
+export const useWriteMercadoCertificadosRenounceRole =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'renounceRole',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"retirarCertificado"`
+ */
+export const useWriteMercadoCertificadosRetirarCertificado =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'retirarCertificado',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"retirarPago"`
+ */
+export const useWriteMercadoCertificadosRetirarPago =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'retirarPago',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"revokeRole"`
+ */
+export const useWriteMercadoCertificadosRevokeRole =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'revokeRole',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"unpause"`
+ */
+export const useWriteMercadoCertificadosUnpause =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'unpause',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"upgradeToAndCall"`
+ */
+export const useWriteMercadoCertificadosUpgradeToAndCall =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'upgradeToAndCall',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__
+ */
+export const useSimulateMercadoCertificados =
+  /*#__PURE__*/ createUseSimulateContract({ abi: mercadoCertificadosAbi })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"comprarCertificado"`
+ */
+export const useSimulateMercadoCertificadosComprarCertificado =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'comprarCertificado',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"desplegarCertificado"`
+ */
+export const useSimulateMercadoCertificadosDesplegarCertificado =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'desplegarCertificado',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"grantRole"`
+ */
+export const useSimulateMercadoCertificadosGrantRole =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'grantRole',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"initialize"`
+ */
+export const useSimulateMercadoCertificadosInitialize =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'initialize',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"pause"`
+ */
+export const useSimulateMercadoCertificadosPause =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'pause',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"registrarTransformacion"`
+ */
+export const useSimulateMercadoCertificadosRegistrarTransformacion =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'registrarTransformacion',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"renounceRole"`
+ */
+export const useSimulateMercadoCertificadosRenounceRole =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'renounceRole',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"retirarCertificado"`
+ */
+export const useSimulateMercadoCertificadosRetirarCertificado =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'retirarCertificado',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"retirarPago"`
+ */
+export const useSimulateMercadoCertificadosRetirarPago =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'retirarPago',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"revokeRole"`
+ */
+export const useSimulateMercadoCertificadosRevokeRole =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'revokeRole',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"unpause"`
+ */
+export const useSimulateMercadoCertificadosUnpause =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'unpause',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"upgradeToAndCall"`
+ */
+export const useSimulateMercadoCertificadosUpgradeToAndCall =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'upgradeToAndCall',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mercadoCertificadosAbi}__
+ */
+export const useWatchMercadoCertificadosEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({ abi: mercadoCertificadosAbi })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `eventName` set to `"CertificadoComprado"`
+ */
+export const useWatchMercadoCertificadosCertificadoCompradoEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: mercadoCertificadosAbi,
+    eventName: 'CertificadoComprado',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `eventName` set to `"CertificadoDesplegado"`
+ */
+export const useWatchMercadoCertificadosCertificadoDesplegadoEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: mercadoCertificadosAbi,
+    eventName: 'CertificadoDesplegado',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `eventName` set to `"CertificadoRetirado"`
+ */
+export const useWatchMercadoCertificadosCertificadoRetiradoEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: mercadoCertificadosAbi,
+    eventName: 'CertificadoRetirado',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `eventName` set to `"Initialized"`
+ */
+export const useWatchMercadoCertificadosInitializedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: mercadoCertificadosAbi,
+    eventName: 'Initialized',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `eventName` set to `"PagoAcreditado"`
+ */
+export const useWatchMercadoCertificadosPagoAcreditadoEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: mercadoCertificadosAbi,
+    eventName: 'PagoAcreditado',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `eventName` set to `"PagoRetirado"`
+ */
+export const useWatchMercadoCertificadosPagoRetiradoEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: mercadoCertificadosAbi,
+    eventName: 'PagoRetirado',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `eventName` set to `"Paused"`
+ */
+export const useWatchMercadoCertificadosPausedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: mercadoCertificadosAbi,
+    eventName: 'Paused',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `eventName` set to `"RoleAdminChanged"`
+ */
+export const useWatchMercadoCertificadosRoleAdminChangedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: mercadoCertificadosAbi,
+    eventName: 'RoleAdminChanged',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `eventName` set to `"RoleGranted"`
+ */
+export const useWatchMercadoCertificadosRoleGrantedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: mercadoCertificadosAbi,
+    eventName: 'RoleGranted',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `eventName` set to `"RoleRevoked"`
+ */
+export const useWatchMercadoCertificadosRoleRevokedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: mercadoCertificadosAbi,
+    eventName: 'RoleRevoked',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `eventName` set to `"TransformacionRegistrada"`
+ */
+export const useWatchMercadoCertificadosTransformacionRegistradaEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: mercadoCertificadosAbi,
+    eventName: 'TransformacionRegistrada',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `eventName` set to `"Unpaused"`
+ */
+export const useWatchMercadoCertificadosUnpausedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: mercadoCertificadosAbi,
+    eventName: 'Unpaused',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `eventName` set to `"Upgraded"`
+ */
+export const useWatchMercadoCertificadosUpgradedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: mercadoCertificadosAbi,
+    eventName: 'Upgraded',
   })
 
 /**
@@ -2952,466 +4592,6 @@ export const useWatchMockUsdtTransferEvent =
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plasticoTokenAbi}__
- */
-export const useReadPlasticoToken = /*#__PURE__*/ createUseReadContract({
-  abi: plasticoTokenAbi,
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"DEFAULT_ADMIN_ROLE"`
- */
-export const useReadPlasticoTokenDefaultAdminRole =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plasticoTokenAbi,
-    functionName: 'DEFAULT_ADMIN_ROLE',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"MINTER_ROLE"`
- */
-export const useReadPlasticoTokenMinterRole =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plasticoTokenAbi,
-    functionName: 'MINTER_ROLE',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"PAUSER_ROLE"`
- */
-export const useReadPlasticoTokenPauserRole =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plasticoTokenAbi,
-    functionName: 'PAUSER_ROLE',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"UPGRADE_INTERFACE_VERSION"`
- */
-export const useReadPlasticoTokenUpgradeInterfaceVersion =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plasticoTokenAbi,
-    functionName: 'UPGRADE_INTERFACE_VERSION',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"allowance"`
- */
-export const useReadPlasticoTokenAllowance =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plasticoTokenAbi,
-    functionName: 'allowance',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"balanceOf"`
- */
-export const useReadPlasticoTokenBalanceOf =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plasticoTokenAbi,
-    functionName: 'balanceOf',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"decimals"`
- */
-export const useReadPlasticoTokenDecimals = /*#__PURE__*/ createUseReadContract(
-  { abi: plasticoTokenAbi, functionName: 'decimals' },
-)
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"getRoleAdmin"`
- */
-export const useReadPlasticoTokenGetRoleAdmin =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plasticoTokenAbi,
-    functionName: 'getRoleAdmin',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"hasRole"`
- */
-export const useReadPlasticoTokenHasRole = /*#__PURE__*/ createUseReadContract({
-  abi: plasticoTokenAbi,
-  functionName: 'hasRole',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"name"`
- */
-export const useReadPlasticoTokenName = /*#__PURE__*/ createUseReadContract({
-  abi: plasticoTokenAbi,
-  functionName: 'name',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"paused"`
- */
-export const useReadPlasticoTokenPaused = /*#__PURE__*/ createUseReadContract({
-  abi: plasticoTokenAbi,
-  functionName: 'paused',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"proxiableUUID"`
- */
-export const useReadPlasticoTokenProxiableUuid =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plasticoTokenAbi,
-    functionName: 'proxiableUUID',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"supportsInterface"`
- */
-export const useReadPlasticoTokenSupportsInterface =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plasticoTokenAbi,
-    functionName: 'supportsInterface',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"symbol"`
- */
-export const useReadPlasticoTokenSymbol = /*#__PURE__*/ createUseReadContract({
-  abi: plasticoTokenAbi,
-  functionName: 'symbol',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"totalSupply"`
- */
-export const useReadPlasticoTokenTotalSupply =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plasticoTokenAbi,
-    functionName: 'totalSupply',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plasticoTokenAbi}__
- */
-export const useWritePlasticoToken = /*#__PURE__*/ createUseWriteContract({
-  abi: plasticoTokenAbi,
-})
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"approve"`
- */
-export const useWritePlasticoTokenApprove =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plasticoTokenAbi,
-    functionName: 'approve',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"burnFrom"`
- */
-export const useWritePlasticoTokenBurnFrom =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plasticoTokenAbi,
-    functionName: 'burnFrom',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"grantRole"`
- */
-export const useWritePlasticoTokenGrantRole =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plasticoTokenAbi,
-    functionName: 'grantRole',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"initialize"`
- */
-export const useWritePlasticoTokenInitialize =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plasticoTokenAbi,
-    functionName: 'initialize',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"mint"`
- */
-export const useWritePlasticoTokenMint = /*#__PURE__*/ createUseWriteContract({
-  abi: plasticoTokenAbi,
-  functionName: 'mint',
-})
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"pause"`
- */
-export const useWritePlasticoTokenPause = /*#__PURE__*/ createUseWriteContract({
-  abi: plasticoTokenAbi,
-  functionName: 'pause',
-})
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"renounceRole"`
- */
-export const useWritePlasticoTokenRenounceRole =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plasticoTokenAbi,
-    functionName: 'renounceRole',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"revokeRole"`
- */
-export const useWritePlasticoTokenRevokeRole =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plasticoTokenAbi,
-    functionName: 'revokeRole',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"transfer"`
- */
-export const useWritePlasticoTokenTransfer =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plasticoTokenAbi,
-    functionName: 'transfer',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"transferFrom"`
- */
-export const useWritePlasticoTokenTransferFrom =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plasticoTokenAbi,
-    functionName: 'transferFrom',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"unpause"`
- */
-export const useWritePlasticoTokenUnpause =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plasticoTokenAbi,
-    functionName: 'unpause',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"upgradeToAndCall"`
- */
-export const useWritePlasticoTokenUpgradeToAndCall =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plasticoTokenAbi,
-    functionName: 'upgradeToAndCall',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plasticoTokenAbi}__
- */
-export const useSimulatePlasticoToken = /*#__PURE__*/ createUseSimulateContract(
-  { abi: plasticoTokenAbi },
-)
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"approve"`
- */
-export const useSimulatePlasticoTokenApprove =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plasticoTokenAbi,
-    functionName: 'approve',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"burnFrom"`
- */
-export const useSimulatePlasticoTokenBurnFrom =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plasticoTokenAbi,
-    functionName: 'burnFrom',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"grantRole"`
- */
-export const useSimulatePlasticoTokenGrantRole =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plasticoTokenAbi,
-    functionName: 'grantRole',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"initialize"`
- */
-export const useSimulatePlasticoTokenInitialize =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plasticoTokenAbi,
-    functionName: 'initialize',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"mint"`
- */
-export const useSimulatePlasticoTokenMint =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plasticoTokenAbi,
-    functionName: 'mint',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"pause"`
- */
-export const useSimulatePlasticoTokenPause =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plasticoTokenAbi,
-    functionName: 'pause',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"renounceRole"`
- */
-export const useSimulatePlasticoTokenRenounceRole =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plasticoTokenAbi,
-    functionName: 'renounceRole',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"revokeRole"`
- */
-export const useSimulatePlasticoTokenRevokeRole =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plasticoTokenAbi,
-    functionName: 'revokeRole',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"transfer"`
- */
-export const useSimulatePlasticoTokenTransfer =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plasticoTokenAbi,
-    functionName: 'transfer',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"transferFrom"`
- */
-export const useSimulatePlasticoTokenTransferFrom =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plasticoTokenAbi,
-    functionName: 'transferFrom',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"unpause"`
- */
-export const useSimulatePlasticoTokenUnpause =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plasticoTokenAbi,
-    functionName: 'unpause',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plasticoTokenAbi}__ and `functionName` set to `"upgradeToAndCall"`
- */
-export const useSimulatePlasticoTokenUpgradeToAndCall =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plasticoTokenAbi,
-    functionName: 'upgradeToAndCall',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plasticoTokenAbi}__
- */
-export const useWatchPlasticoTokenEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({ abi: plasticoTokenAbi })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plasticoTokenAbi}__ and `eventName` set to `"Approval"`
- */
-export const useWatchPlasticoTokenApprovalEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: plasticoTokenAbi,
-    eventName: 'Approval',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plasticoTokenAbi}__ and `eventName` set to `"Initialized"`
- */
-export const useWatchPlasticoTokenInitializedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: plasticoTokenAbi,
-    eventName: 'Initialized',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plasticoTokenAbi}__ and `eventName` set to `"Paused"`
- */
-export const useWatchPlasticoTokenPausedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: plasticoTokenAbi,
-    eventName: 'Paused',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plasticoTokenAbi}__ and `eventName` set to `"RoleAdminChanged"`
- */
-export const useWatchPlasticoTokenRoleAdminChangedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: plasticoTokenAbi,
-    eventName: 'RoleAdminChanged',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plasticoTokenAbi}__ and `eventName` set to `"RoleGranted"`
- */
-export const useWatchPlasticoTokenRoleGrantedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: plasticoTokenAbi,
-    eventName: 'RoleGranted',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plasticoTokenAbi}__ and `eventName` set to `"RoleRevoked"`
- */
-export const useWatchPlasticoTokenRoleRevokedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: plasticoTokenAbi,
-    eventName: 'RoleRevoked',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plasticoTokenAbi}__ and `eventName` set to `"TokensMinteados"`
- */
-export const useWatchPlasticoTokenTokensMinteadosEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: plasticoTokenAbi,
-    eventName: 'TokensMinteados',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plasticoTokenAbi}__ and `eventName` set to `"Transfer"`
- */
-export const useWatchPlasticoTokenTransferEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: plasticoTokenAbi,
-    eventName: 'Transfer',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plasticoTokenAbi}__ and `eventName` set to `"Unpaused"`
- */
-export const useWatchPlasticoTokenUnpausedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: plasticoTokenAbi,
-    eventName: 'Unpaused',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plasticoTokenAbi}__ and `eventName` set to `"Upgraded"`
- */
-export const useWatchPlasticoTokenUpgradedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: plasticoTokenAbi,
-    eventName: 'Upgraded',
-  })
-
-/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link registroEntidadesAbi}__
  */
 export const useReadRegistroEntidades = /*#__PURE__*/ createUseReadContract({
@@ -3425,15 +4605,6 @@ export const useReadRegistroEntidadesDefaultAdminRole =
   /*#__PURE__*/ createUseReadContract({
     abi: registroEntidadesAbi,
     functionName: 'DEFAULT_ADMIN_ROLE',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"MUNICIPALIDAD_ROLE"`
- */
-export const useReadRegistroEntidadesMunicipalidadRole =
-  /*#__PURE__*/ createUseReadContract({
-    abi: registroEntidadesAbi,
-    functionName: 'MUNICIPALIDAD_ROLE',
   })
 
 /**
@@ -3455,48 +4626,48 @@ export const useReadRegistroEntidadesVerifierRole =
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"cedulaHashToWallet"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"compradores"`
  */
-export const useReadRegistroEntidadesCedulaHashToWallet =
+export const useReadRegistroEntidadesCompradores =
   /*#__PURE__*/ createUseReadContract({
     abi: registroEntidadesAbi,
-    functionName: 'cedulaHashToWallet',
+    functionName: 'compradores',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"centros"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"esComprador"`
  */
-export const useReadRegistroEntidadesCentros =
+export const useReadRegistroEntidadesEsComprador =
   /*#__PURE__*/ createUseReadContract({
     abi: registroEntidadesAbi,
-    functionName: 'centros',
+    functionName: 'esComprador',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"esCentroVerificado"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"esIntermediarioVerificado"`
  */
-export const useReadRegistroEntidadesEsCentroVerificado =
+export const useReadRegistroEntidadesEsIntermediarioVerificado =
   /*#__PURE__*/ createUseReadContract({
     abi: registroEntidadesAbi,
-    functionName: 'esCentroVerificado',
+    functionName: 'esIntermediarioVerificado',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"esMunicipalidad"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"esSeparador"`
  */
-export const useReadRegistroEntidadesEsMunicipalidad =
+export const useReadRegistroEntidadesEsSeparador =
   /*#__PURE__*/ createUseReadContract({
     abi: registroEntidadesAbi,
-    functionName: 'esMunicipalidad',
+    functionName: 'esSeparador',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"esUsuario"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"esTransformadorVerificado"`
  */
-export const useReadRegistroEntidadesEsUsuario =
+export const useReadRegistroEntidadesEsTransformadorVerificado =
   /*#__PURE__*/ createUseReadContract({
     abi: registroEntidadesAbi,
-    functionName: 'esUsuario',
+    functionName: 'esTransformadorVerificado',
   })
 
 /**
@@ -3518,12 +4689,21 @@ export const useReadRegistroEntidadesHasRole =
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"municipalidades"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"identidadHashToWallet"`
  */
-export const useReadRegistroEntidadesMunicipalidades =
+export const useReadRegistroEntidadesIdentidadHashToWallet =
   /*#__PURE__*/ createUseReadContract({
     abi: registroEntidadesAbi,
-    functionName: 'municipalidades',
+    functionName: 'identidadHashToWallet',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"intermediarios"`
+ */
+export const useReadRegistroEntidadesIntermediarios =
+  /*#__PURE__*/ createUseReadContract({
+    abi: registroEntidadesAbi,
+    functionName: 'intermediarios',
   })
 
 /**
@@ -3536,6 +4716,24 @@ export const useReadRegistroEntidadesProxiableUuid =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"rolDe"`
+ */
+export const useReadRegistroEntidadesRolDe =
+  /*#__PURE__*/ createUseReadContract({
+    abi: registroEntidadesAbi,
+    functionName: 'rolDe',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"separadores"`
+ */
+export const useReadRegistroEntidadesSeparadores =
+  /*#__PURE__*/ createUseReadContract({
+    abi: registroEntidadesAbi,
+    functionName: 'separadores',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"supportsInterface"`
  */
 export const useReadRegistroEntidadesSupportsInterface =
@@ -3545,12 +4743,12 @@ export const useReadRegistroEntidadesSupportsInterface =
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"usuarios"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"transformadores"`
  */
-export const useReadRegistroEntidadesUsuarios =
+export const useReadRegistroEntidadesTransformadores =
   /*#__PURE__*/ createUseReadContract({
     abi: registroEntidadesAbi,
-    functionName: 'usuarios',
+    functionName: 'transformadores',
   })
 
 /**
@@ -3579,30 +4777,39 @@ export const useWriteRegistroEntidadesInitialize =
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"registrarCentroRecolector"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"registrarComprador"`
  */
-export const useWriteRegistroEntidadesRegistrarCentroRecolector =
+export const useWriteRegistroEntidadesRegistrarComprador =
   /*#__PURE__*/ createUseWriteContract({
     abi: registroEntidadesAbi,
-    functionName: 'registrarCentroRecolector',
+    functionName: 'registrarComprador',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"registrarMunicipalidad"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"registrarIntermediario"`
  */
-export const useWriteRegistroEntidadesRegistrarMunicipalidad =
+export const useWriteRegistroEntidadesRegistrarIntermediario =
   /*#__PURE__*/ createUseWriteContract({
     abi: registroEntidadesAbi,
-    functionName: 'registrarMunicipalidad',
+    functionName: 'registrarIntermediario',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"registrarUsuario"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"registrarSeparador"`
  */
-export const useWriteRegistroEntidadesRegistrarUsuario =
+export const useWriteRegistroEntidadesRegistrarSeparador =
   /*#__PURE__*/ createUseWriteContract({
     abi: registroEntidadesAbi,
-    functionName: 'registrarUsuario',
+    functionName: 'registrarSeparador',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"registrarTransformador"`
+ */
+export const useWriteRegistroEntidadesRegistrarTransformador =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: registroEntidadesAbi,
+    functionName: 'registrarTransformador',
   })
 
 /**
@@ -3633,12 +4840,21 @@ export const useWriteRegistroEntidadesUpgradeToAndCall =
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"verificarCentro"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"verificarIntermediario"`
  */
-export const useWriteRegistroEntidadesVerificarCentro =
+export const useWriteRegistroEntidadesVerificarIntermediario =
   /*#__PURE__*/ createUseWriteContract({
     abi: registroEntidadesAbi,
-    functionName: 'verificarCentro',
+    functionName: 'verificarIntermediario',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"verificarTransformador"`
+ */
+export const useWriteRegistroEntidadesVerificarTransformador =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: registroEntidadesAbi,
+    functionName: 'verificarTransformador',
   })
 
 /**
@@ -3666,30 +4882,39 @@ export const useSimulateRegistroEntidadesInitialize =
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"registrarCentroRecolector"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"registrarComprador"`
  */
-export const useSimulateRegistroEntidadesRegistrarCentroRecolector =
+export const useSimulateRegistroEntidadesRegistrarComprador =
   /*#__PURE__*/ createUseSimulateContract({
     abi: registroEntidadesAbi,
-    functionName: 'registrarCentroRecolector',
+    functionName: 'registrarComprador',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"registrarMunicipalidad"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"registrarIntermediario"`
  */
-export const useSimulateRegistroEntidadesRegistrarMunicipalidad =
+export const useSimulateRegistroEntidadesRegistrarIntermediario =
   /*#__PURE__*/ createUseSimulateContract({
     abi: registroEntidadesAbi,
-    functionName: 'registrarMunicipalidad',
+    functionName: 'registrarIntermediario',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"registrarUsuario"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"registrarSeparador"`
  */
-export const useSimulateRegistroEntidadesRegistrarUsuario =
+export const useSimulateRegistroEntidadesRegistrarSeparador =
   /*#__PURE__*/ createUseSimulateContract({
     abi: registroEntidadesAbi,
-    functionName: 'registrarUsuario',
+    functionName: 'registrarSeparador',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"registrarTransformador"`
+ */
+export const useSimulateRegistroEntidadesRegistrarTransformador =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: registroEntidadesAbi,
+    functionName: 'registrarTransformador',
   })
 
 /**
@@ -3720,12 +4945,21 @@ export const useSimulateRegistroEntidadesUpgradeToAndCall =
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"verificarCentro"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"verificarIntermediario"`
  */
-export const useSimulateRegistroEntidadesVerificarCentro =
+export const useSimulateRegistroEntidadesVerificarIntermediario =
   /*#__PURE__*/ createUseSimulateContract({
     abi: registroEntidadesAbi,
-    functionName: 'verificarCentro',
+    functionName: 'verificarIntermediario',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"verificarTransformador"`
+ */
+export const useSimulateRegistroEntidadesVerificarTransformador =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: registroEntidadesAbi,
+    functionName: 'verificarTransformador',
   })
 
 /**
@@ -3735,21 +4969,12 @@ export const useWatchRegistroEntidadesEvent =
   /*#__PURE__*/ createUseWatchContractEvent({ abi: registroEntidadesAbi })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registroEntidadesAbi}__ and `eventName` set to `"CentroRegistrado"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registroEntidadesAbi}__ and `eventName` set to `"CompradorRegistrado"`
  */
-export const useWatchRegistroEntidadesCentroRegistradoEvent =
+export const useWatchRegistroEntidadesCompradorRegistradoEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: registroEntidadesAbi,
-    eventName: 'CentroRegistrado',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registroEntidadesAbi}__ and `eventName` set to `"CentroVerificado"`
- */
-export const useWatchRegistroEntidadesCentroVerificadoEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: registroEntidadesAbi,
-    eventName: 'CentroVerificado',
+    eventName: 'CompradorRegistrado',
   })
 
 /**
@@ -3762,12 +4987,21 @@ export const useWatchRegistroEntidadesInitializedEvent =
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registroEntidadesAbi}__ and `eventName` set to `"MunicipalidadRegistrada"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registroEntidadesAbi}__ and `eventName` set to `"IntermediarioRegistrado"`
  */
-export const useWatchRegistroEntidadesMunicipalidadRegistradaEvent =
+export const useWatchRegistroEntidadesIntermediarioRegistradoEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: registroEntidadesAbi,
-    eventName: 'MunicipalidadRegistrada',
+    eventName: 'IntermediarioRegistrado',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registroEntidadesAbi}__ and `eventName` set to `"IntermediarioVerificado"`
+ */
+export const useWatchRegistroEntidadesIntermediarioVerificadoEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: registroEntidadesAbi,
+    eventName: 'IntermediarioVerificado',
   })
 
 /**
@@ -3798,6 +5032,33 @@ export const useWatchRegistroEntidadesRoleRevokedEvent =
   })
 
 /**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registroEntidadesAbi}__ and `eventName` set to `"SeparadorRegistrado"`
+ */
+export const useWatchRegistroEntidadesSeparadorRegistradoEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: registroEntidadesAbi,
+    eventName: 'SeparadorRegistrado',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registroEntidadesAbi}__ and `eventName` set to `"TransformadorRegistrado"`
+ */
+export const useWatchRegistroEntidadesTransformadorRegistradoEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: registroEntidadesAbi,
+    eventName: 'TransformadorRegistrado',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registroEntidadesAbi}__ and `eventName` set to `"TransformadorVerificado"`
+ */
+export const useWatchRegistroEntidadesTransformadorVerificadoEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: registroEntidadesAbi,
+    eventName: 'TransformadorVerificado',
+  })
+
+/**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registroEntidadesAbi}__ and `eventName` set to `"Upgraded"`
  */
 export const useWatchRegistroEntidadesUpgradedEvent =
@@ -3807,566 +5068,658 @@ export const useWatchRegistroEntidadesUpgradedEvent =
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registroEntidadesAbi}__ and `eventName` set to `"UsuarioRegistrado"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__
  */
-export const useWatchRegistroEntidadesUsuarioRegistradoEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: registroEntidadesAbi,
-    eventName: 'UsuarioRegistrado',
-  })
+export const useReadTokenCustodia = /*#__PURE__*/ createUseReadContract({
+  abi: tokenCustodiaAbi,
+})
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"DEFAULT_ADMIN_ROLE"`
  */
-export const useReadTransaccionesPlastico = /*#__PURE__*/ createUseReadContract(
-  { abi: transaccionesPlasticoAbi },
-)
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"DEFAULT_ADMIN_ROLE"`
- */
-export const useReadTransaccionesPlasticoDefaultAdminRole =
+export const useReadTokenCustodiaDefaultAdminRole =
   /*#__PURE__*/ createUseReadContract({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
     functionName: 'DEFAULT_ADMIN_ROLE',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"PAUSER_ROLE"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"MERCADO_ROLE"`
  */
-export const useReadTransaccionesPlasticoPauserRole =
+export const useReadTokenCustodiaMercadoRole =
   /*#__PURE__*/ createUseReadContract({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
+    functionName: 'MERCADO_ROLE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"PAUSER_ROLE"`
+ */
+export const useReadTokenCustodiaPauserRole =
+  /*#__PURE__*/ createUseReadContract({
+    abi: tokenCustodiaAbi,
     functionName: 'PAUSER_ROLE',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"UPGRADE_INTERFACE_VERSION"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"UPGRADE_INTERFACE_VERSION"`
  */
-export const useReadTransaccionesPlasticoUpgradeInterfaceVersion =
+export const useReadTokenCustodiaUpgradeInterfaceVersion =
   /*#__PURE__*/ createUseReadContract({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
     functionName: 'UPGRADE_INTERFACE_VERSION',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"factorAjustePorTipo"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"aportePorSeparador"`
  */
-export const useReadTransaccionesPlasticoFactorAjustePorTipo =
+export const useReadTokenCustodiaAportePorSeparador =
   /*#__PURE__*/ createUseReadContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'factorAjustePorTipo',
+    abi: tokenCustodiaAbi,
+    functionName: 'aportePorSeparador',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"getRoleAdmin"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"aportesDeLote"`
  */
-export const useReadTransaccionesPlasticoGetRoleAdmin =
+export const useReadTokenCustodiaAportesDeLote =
   /*#__PURE__*/ createUseReadContract({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
+    functionName: 'aportesDeLote',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"balanceOf"`
+ */
+export const useReadTokenCustodiaBalanceOf =
+  /*#__PURE__*/ createUseReadContract({
+    abi: tokenCustodiaAbi,
+    functionName: 'balanceOf',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"balanceOfBatch"`
+ */
+export const useReadTokenCustodiaBalanceOfBatch =
+  /*#__PURE__*/ createUseReadContract({
+    abi: tokenCustodiaAbi,
+    functionName: 'balanceOfBatch',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"getRoleAdmin"`
+ */
+export const useReadTokenCustodiaGetRoleAdmin =
+  /*#__PURE__*/ createUseReadContract({
+    abi: tokenCustodiaAbi,
     functionName: 'getRoleAdmin',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"getTransaccionesPorDireccion"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"hasRole"`
  */
-export const useReadTransaccionesPlasticoGetTransaccionesPorDireccion =
+export const useReadTokenCustodiaHasRole = /*#__PURE__*/ createUseReadContract({
+  abi: tokenCustodiaAbi,
+  functionName: 'hasRole',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"isApprovedForAll"`
+ */
+export const useReadTokenCustodiaIsApprovedForAll =
   /*#__PURE__*/ createUseReadContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'getTransaccionesPorDireccion',
+    abi: tokenCustodiaAbi,
+    functionName: 'isApprovedForAll',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"hasRole"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"loteInfo"`
  */
-export const useReadTransaccionesPlasticoHasRole =
+export const useReadTokenCustodiaLoteInfo = /*#__PURE__*/ createUseReadContract(
+  { abi: tokenCustodiaAbi, functionName: 'loteInfo' },
+)
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"lotes"`
+ */
+export const useReadTokenCustodiaLotes = /*#__PURE__*/ createUseReadContract({
+  abi: tokenCustodiaAbi,
+  functionName: 'lotes',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"mermaAtribuidaGramos"`
+ */
+export const useReadTokenCustodiaMermaAtribuidaGramos =
   /*#__PURE__*/ createUseReadContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'hasRole',
+    abi: tokenCustodiaAbi,
+    functionName: 'mermaAtribuidaGramos',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"lotesMunicipales"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"mermaDeLote"`
  */
-export const useReadTransaccionesPlasticoLotesMunicipales =
+export const useReadTokenCustodiaMermaDeLote =
   /*#__PURE__*/ createUseReadContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'lotesMunicipales',
+    abi: tokenCustodiaAbi,
+    functionName: 'mermaDeLote',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"nextLoteId"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"nextLoteId"`
  */
-export const useReadTransaccionesPlasticoNextLoteId =
+export const useReadTokenCustodiaNextLoteId =
   /*#__PURE__*/ createUseReadContract({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
     functionName: 'nextLoteId',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"nextTransaccionId"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"paused"`
  */
-export const useReadTransaccionesPlasticoNextTransaccionId =
-  /*#__PURE__*/ createUseReadContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'nextTransaccionId',
-  })
+export const useReadTokenCustodiaPaused = /*#__PURE__*/ createUseReadContract({
+  abi: tokenCustodiaAbi,
+  functionName: 'paused',
+})
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"paused"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"proxiableUUID"`
  */
-export const useReadTransaccionesPlasticoPaused =
+export const useReadTokenCustodiaProxiableUuid =
   /*#__PURE__*/ createUseReadContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'paused',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"pesoOficialPorTipo"`
- */
-export const useReadTransaccionesPlasticoPesoOficialPorTipo =
-  /*#__PURE__*/ createUseReadContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'pesoOficialPorTipo',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"plasticoToken"`
- */
-export const useReadTransaccionesPlasticoPlasticoToken =
-  /*#__PURE__*/ createUseReadContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'plasticoToken',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"proxiableUUID"`
- */
-export const useReadTransaccionesPlasticoProxiableUuid =
-  /*#__PURE__*/ createUseReadContract({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
     functionName: 'proxiableUUID',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"registro"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"registro"`
  */
-export const useReadTransaccionesPlasticoRegistro =
-  /*#__PURE__*/ createUseReadContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'registro',
-  })
+export const useReadTokenCustodiaRegistro = /*#__PURE__*/ createUseReadContract(
+  { abi: tokenCustodiaAbi, functionName: 'registro' },
+)
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"resumenTipoEnLote"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"supportsInterface"`
  */
-export const useReadTransaccionesPlasticoResumenTipoEnLote =
+export const useReadTokenCustodiaSupportsInterface =
   /*#__PURE__*/ createUseReadContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'resumenTipoEnLote',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"supportsInterface"`
- */
-export const useReadTransaccionesPlasticoSupportsInterface =
-  /*#__PURE__*/ createUseReadContract({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
     functionName: 'supportsInterface',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"tipoReconciliadoDeLote"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"uri"`
  */
-export const useReadTransaccionesPlasticoTipoReconciliadoDeLote =
-  /*#__PURE__*/ createUseReadContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'tipoReconciliadoDeLote',
-  })
+export const useReadTokenCustodiaUri = /*#__PURE__*/ createUseReadContract({
+  abi: tokenCustodiaAbi,
+  functionName: 'uri',
+})
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"transacciones"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link tokenCustodiaAbi}__
  */
-export const useReadTransaccionesPlasticoTransacciones =
-  /*#__PURE__*/ createUseReadContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'transacciones',
-  })
+export const useWriteTokenCustodia = /*#__PURE__*/ createUseWriteContract({
+  abi: tokenCustodiaAbi,
+})
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"transaccionesPorDireccion"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"confirmarRecepcion"`
  */
-export const useReadTransaccionesPlasticoTransaccionesPorDireccion =
-  /*#__PURE__*/ createUseReadContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'transaccionesPorDireccion',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"usdt"`
- */
-export const useReadTransaccionesPlasticoUsdt =
-  /*#__PURE__*/ createUseReadContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'usdt',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__
- */
-export const useWriteTransaccionesPlastico =
-  /*#__PURE__*/ createUseWriteContract({ abi: transaccionesPlasticoAbi })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"cerrarLotePorTipo"`
- */
-export const useWriteTransaccionesPlasticoCerrarLotePorTipo =
+export const useWriteTokenCustodiaConfirmarRecepcion =
   /*#__PURE__*/ createUseWriteContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'cerrarLotePorTipo',
+    abi: tokenCustodiaAbi,
+    functionName: 'confirmarRecepcion',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"grantRole"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"consumirParaTransformacion"`
  */
-export const useWriteTransaccionesPlasticoGrantRole =
+export const useWriteTokenCustodiaConsumirParaTransformacion =
   /*#__PURE__*/ createUseWriteContract({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
+    functionName: 'consumirParaTransformacion',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"declararEnvio"`
+ */
+export const useWriteTokenCustodiaDeclararEnvio =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: tokenCustodiaAbi,
+    functionName: 'declararEnvio',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"dividirLote"`
+ */
+export const useWriteTokenCustodiaDividirLote =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: tokenCustodiaAbi,
+    functionName: 'dividirLote',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"grantRole"`
+ */
+export const useWriteTokenCustodiaGrantRole =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: tokenCustodiaAbi,
     functionName: 'grantRole',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"iniciarLoteMunicipal"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"initialize"`
  */
-export const useWriteTransaccionesPlasticoIniciarLoteMunicipal =
+export const useWriteTokenCustodiaInitialize =
   /*#__PURE__*/ createUseWriteContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'iniciarLoteMunicipal',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"initialize"`
- */
-export const useWriteTransaccionesPlasticoInitialize =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
     functionName: 'initialize',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"pause"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"pause"`
  */
-export const useWriteTransaccionesPlasticoPause =
+export const useWriteTokenCustodiaPause = /*#__PURE__*/ createUseWriteContract({
+  abi: tokenCustodiaAbi,
+  functionName: 'pause',
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"registrarEntrega"`
+ */
+export const useWriteTokenCustodiaRegistrarEntrega =
   /*#__PURE__*/ createUseWriteContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'pause',
+    abi: tokenCustodiaAbi,
+    functionName: 'registrarEntrega',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"registrarEntregaMunicipal"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"renounceRole"`
  */
-export const useWriteTransaccionesPlasticoRegistrarEntregaMunicipal =
+export const useWriteTokenCustodiaRenounceRole =
   /*#__PURE__*/ createUseWriteContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'registrarEntregaMunicipal',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"registrarEntregaUsuario"`
- */
-export const useWriteTransaccionesPlasticoRegistrarEntregaUsuario =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'registrarEntregaUsuario',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"registrarTransaccionGratuita"`
- */
-export const useWriteTransaccionesPlasticoRegistrarTransaccionGratuita =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'registrarTransaccionGratuita',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"registrarTransaccionPagada"`
- */
-export const useWriteTransaccionesPlasticoRegistrarTransaccionPagada =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'registrarTransaccionPagada',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"renounceRole"`
- */
-export const useWriteTransaccionesPlasticoRenounceRole =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
     functionName: 'renounceRole',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"revokeRole"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"revokeRole"`
  */
-export const useWriteTransaccionesPlasticoRevokeRole =
+export const useWriteTokenCustodiaRevokeRole =
   /*#__PURE__*/ createUseWriteContract({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
     functionName: 'revokeRole',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"unpause"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"safeBatchTransferFrom"`
  */
-export const useWriteTransaccionesPlasticoUnpause =
+export const useWriteTokenCustodiaSafeBatchTransferFrom =
   /*#__PURE__*/ createUseWriteContract({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
+    functionName: 'safeBatchTransferFrom',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"safeTransferFrom"`
+ */
+export const useWriteTokenCustodiaSafeTransferFrom =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: tokenCustodiaAbi,
+    functionName: 'safeTransferFrom',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"setApprovalForAll"`
+ */
+export const useWriteTokenCustodiaSetApprovalForAll =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: tokenCustodiaAbi,
+    functionName: 'setApprovalForAll',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"unirLotes"`
+ */
+export const useWriteTokenCustodiaUnirLotes =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: tokenCustodiaAbi,
+    functionName: 'unirLotes',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"unpause"`
+ */
+export const useWriteTokenCustodiaUnpause =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: tokenCustodiaAbi,
     functionName: 'unpause',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"upgradeToAndCall"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"upgradeToAndCall"`
  */
-export const useWriteTransaccionesPlasticoUpgradeToAndCall =
+export const useWriteTokenCustodiaUpgradeToAndCall =
   /*#__PURE__*/ createUseWriteContract({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
     functionName: 'upgradeToAndCall',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link tokenCustodiaAbi}__
  */
-export const useSimulateTransaccionesPlastico =
-  /*#__PURE__*/ createUseSimulateContract({ abi: transaccionesPlasticoAbi })
+export const useSimulateTokenCustodia = /*#__PURE__*/ createUseSimulateContract(
+  { abi: tokenCustodiaAbi },
+)
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"cerrarLotePorTipo"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"confirmarRecepcion"`
  */
-export const useSimulateTransaccionesPlasticoCerrarLotePorTipo =
+export const useSimulateTokenCustodiaConfirmarRecepcion =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'cerrarLotePorTipo',
+    abi: tokenCustodiaAbi,
+    functionName: 'confirmarRecepcion',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"grantRole"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"consumirParaTransformacion"`
  */
-export const useSimulateTransaccionesPlasticoGrantRole =
+export const useSimulateTokenCustodiaConsumirParaTransformacion =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
+    functionName: 'consumirParaTransformacion',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"declararEnvio"`
+ */
+export const useSimulateTokenCustodiaDeclararEnvio =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: tokenCustodiaAbi,
+    functionName: 'declararEnvio',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"dividirLote"`
+ */
+export const useSimulateTokenCustodiaDividirLote =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: tokenCustodiaAbi,
+    functionName: 'dividirLote',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"grantRole"`
+ */
+export const useSimulateTokenCustodiaGrantRole =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: tokenCustodiaAbi,
     functionName: 'grantRole',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"iniciarLoteMunicipal"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"initialize"`
  */
-export const useSimulateTransaccionesPlasticoIniciarLoteMunicipal =
+export const useSimulateTokenCustodiaInitialize =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'iniciarLoteMunicipal',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"initialize"`
- */
-export const useSimulateTransaccionesPlasticoInitialize =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
     functionName: 'initialize',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"pause"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"pause"`
  */
-export const useSimulateTransaccionesPlasticoPause =
+export const useSimulateTokenCustodiaPause =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
     functionName: 'pause',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"registrarEntregaMunicipal"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"registrarEntrega"`
  */
-export const useSimulateTransaccionesPlasticoRegistrarEntregaMunicipal =
+export const useSimulateTokenCustodiaRegistrarEntrega =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'registrarEntregaMunicipal',
+    abi: tokenCustodiaAbi,
+    functionName: 'registrarEntrega',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"registrarEntregaUsuario"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"renounceRole"`
  */
-export const useSimulateTransaccionesPlasticoRegistrarEntregaUsuario =
+export const useSimulateTokenCustodiaRenounceRole =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'registrarEntregaUsuario',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"registrarTransaccionGratuita"`
- */
-export const useSimulateTransaccionesPlasticoRegistrarTransaccionGratuita =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'registrarTransaccionGratuita',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"registrarTransaccionPagada"`
- */
-export const useSimulateTransaccionesPlasticoRegistrarTransaccionPagada =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: transaccionesPlasticoAbi,
-    functionName: 'registrarTransaccionPagada',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"renounceRole"`
- */
-export const useSimulateTransaccionesPlasticoRenounceRole =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
     functionName: 'renounceRole',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"revokeRole"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"revokeRole"`
  */
-export const useSimulateTransaccionesPlasticoRevokeRole =
+export const useSimulateTokenCustodiaRevokeRole =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
     functionName: 'revokeRole',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"unpause"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"safeBatchTransferFrom"`
  */
-export const useSimulateTransaccionesPlasticoUnpause =
+export const useSimulateTokenCustodiaSafeBatchTransferFrom =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
+    functionName: 'safeBatchTransferFrom',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"safeTransferFrom"`
+ */
+export const useSimulateTokenCustodiaSafeTransferFrom =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: tokenCustodiaAbi,
+    functionName: 'safeTransferFrom',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"setApprovalForAll"`
+ */
+export const useSimulateTokenCustodiaSetApprovalForAll =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: tokenCustodiaAbi,
+    functionName: 'setApprovalForAll',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"unirLotes"`
+ */
+export const useSimulateTokenCustodiaUnirLotes =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: tokenCustodiaAbi,
+    functionName: 'unirLotes',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"unpause"`
+ */
+export const useSimulateTokenCustodiaUnpause =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: tokenCustodiaAbi,
     functionName: 'unpause',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `functionName` set to `"upgradeToAndCall"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"upgradeToAndCall"`
  */
-export const useSimulateTransaccionesPlasticoUpgradeToAndCall =
+export const useSimulateTokenCustodiaUpgradeToAndCall =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
     functionName: 'upgradeToAndCall',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link transaccionesPlasticoAbi}__
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link tokenCustodiaAbi}__
  */
-export const useWatchTransaccionesPlasticoEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({ abi: transaccionesPlasticoAbi })
+export const useWatchTokenCustodiaEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({ abi: tokenCustodiaAbi })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `eventName` set to `"Initialized"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `eventName` set to `"ApprovalForAll"`
  */
-export const useWatchTransaccionesPlasticoInitializedEvent =
+export const useWatchTokenCustodiaApprovalForAllEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
+    eventName: 'ApprovalForAll',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `eventName` set to `"EntregaRegistrada"`
+ */
+export const useWatchTokenCustodiaEntregaRegistradaEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: tokenCustodiaAbi,
+    eventName: 'EntregaRegistrada',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `eventName` set to `"EnvioDeclarado"`
+ */
+export const useWatchTokenCustodiaEnvioDeclaradoEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: tokenCustodiaAbi,
+    eventName: 'EnvioDeclarado',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `eventName` set to `"Initialized"`
+ */
+export const useWatchTokenCustodiaInitializedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: tokenCustodiaAbi,
     eventName: 'Initialized',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `eventName` set to `"LoteMunicipalCerrado"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `eventName` set to `"LoteConsumido"`
  */
-export const useWatchTransaccionesPlasticoLoteMunicipalCerradoEvent =
+export const useWatchTokenCustodiaLoteConsumidoEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: transaccionesPlasticoAbi,
-    eventName: 'LoteMunicipalCerrado',
+    abi: tokenCustodiaAbi,
+    eventName: 'LoteConsumido',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `eventName` set to `"LoteMunicipalIniciado"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `eventName` set to `"LoteCreado"`
  */
-export const useWatchTransaccionesPlasticoLoteMunicipalIniciadoEvent =
+export const useWatchTokenCustodiaLoteCreadoEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: transaccionesPlasticoAbi,
-    eventName: 'LoteMunicipalIniciado',
+    abi: tokenCustodiaAbi,
+    eventName: 'LoteCreado',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `eventName` set to `"LoteTipoCerrado"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `eventName` set to `"LoteDividido"`
  */
-export const useWatchTransaccionesPlasticoLoteTipoCerradoEvent =
+export const useWatchTokenCustodiaLoteDivididoEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: transaccionesPlasticoAbi,
-    eventName: 'LoteTipoCerrado',
+    abi: tokenCustodiaAbi,
+    eventName: 'LoteDividido',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `eventName` set to `"Paused"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `eventName` set to `"LoteUnido"`
  */
-export const useWatchTransaccionesPlasticoPausedEvent =
+export const useWatchTokenCustodiaLoteUnidoEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
+    eventName: 'LoteUnido',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `eventName` set to `"Paused"`
+ */
+export const useWatchTokenCustodiaPausedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: tokenCustodiaAbi,
     eventName: 'Paused',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `eventName` set to `"RoleAdminChanged"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `eventName` set to `"RecepcionConfirmada"`
  */
-export const useWatchTransaccionesPlasticoRoleAdminChangedEvent =
+export const useWatchTokenCustodiaRecepcionConfirmadaEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
+    eventName: 'RecepcionConfirmada',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `eventName` set to `"RoleAdminChanged"`
+ */
+export const useWatchTokenCustodiaRoleAdminChangedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: tokenCustodiaAbi,
     eventName: 'RoleAdminChanged',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `eventName` set to `"RoleGranted"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `eventName` set to `"RoleGranted"`
  */
-export const useWatchTransaccionesPlasticoRoleGrantedEvent =
+export const useWatchTokenCustodiaRoleGrantedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
     eventName: 'RoleGranted',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `eventName` set to `"RoleRevoked"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `eventName` set to `"RoleRevoked"`
  */
-export const useWatchTransaccionesPlasticoRoleRevokedEvent =
+export const useWatchTokenCustodiaRoleRevokedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
     eventName: 'RoleRevoked',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `eventName` set to `"TransaccionReconciliada"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `eventName` set to `"TransferBatch"`
  */
-export const useWatchTransaccionesPlasticoTransaccionReconciliadaEvent =
+export const useWatchTokenCustodiaTransferBatchEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: transaccionesPlasticoAbi,
-    eventName: 'TransaccionReconciliada',
+    abi: tokenCustodiaAbi,
+    eventName: 'TransferBatch',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `eventName` set to `"TransaccionRegistrada"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `eventName` set to `"TransferSingle"`
  */
-export const useWatchTransaccionesPlasticoTransaccionRegistradaEvent =
+export const useWatchTokenCustodiaTransferSingleEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: transaccionesPlasticoAbi,
-    eventName: 'TransaccionRegistrada',
+    abi: tokenCustodiaAbi,
+    eventName: 'TransferSingle',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `eventName` set to `"Unpaused"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `eventName` set to `"URI"`
  */
-export const useWatchTransaccionesPlasticoUnpausedEvent =
+export const useWatchTokenCustodiaUriEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
+    eventName: 'URI',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `eventName` set to `"Unpaused"`
+ */
+export const useWatchTokenCustodiaUnpausedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: tokenCustodiaAbi,
     eventName: 'Unpaused',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link transaccionesPlasticoAbi}__ and `eventName` set to `"Upgraded"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `eventName` set to `"Upgraded"`
  */
-export const useWatchTransaccionesPlasticoUpgradedEvent =
+export const useWatchTokenCustodiaUpgradedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: transaccionesPlasticoAbi,
+    abi: tokenCustodiaAbi,
     eventName: 'Upgraded',
   })

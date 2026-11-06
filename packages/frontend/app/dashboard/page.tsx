@@ -5,25 +5,27 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
 interface Stats {
   totales: {
-    usuarios: number;
-    centros: number;
-    centrosVerificados: number;
-    municipalidades: number;
-    transacciones: number;
+    separadores: number;
+    intermediarios: number;
+    intermediariosVerificados: number;
+    transformadores: number;
+    transformadoresVerificados: number;
+    compradores: number;
     lotes: number;
-    lotesCerrados: number;
+    entregas: number;
+    emisiones: number;
+    ventas: number;
   };
-  porTipoPlastico: { tipoPlastico: string; transacciones: number; pesoGramosTotal: string }[];
-  porTipoTransaccion: { tipo: string; transacciones: number }[];
+  porMaterial: { material: string; emisiones: number; kgTransformadosTotal: string }[];
 }
 
-interface TransaccionRow {
+interface EmisionRow {
   id: string;
-  origen: string;
-  destino: string;
-  pesoGramos: string;
-  tipo: string;
-  tipoPlastico: string;
+  material: string;
+  transformadorWallet: string;
+  kgTransformadosOriginal: string;
+  kgDisponiblesPrimario: string;
+  precioUSDTporKg: string;
   txHash: string;
 }
 
@@ -42,9 +44,9 @@ function acortar(direccion: string) {
 }
 
 export default async function DashboardPage() {
-  const [stats, transacciones, geografia] = await Promise.all([
+  const [stats, emisiones, geografia] = await Promise.all([
     getJson<Stats>("/api/stats"),
-    getJson<{ data: TransaccionRow[] }>("/api/transacciones?pageSize=10"),
+    getJson<{ data: EmisionRow[] }>("/api/emisiones?pageSize=10"),
     getJson<{ data: CantonRow[] }>("/api/stats/geografia"),
   ]);
 
@@ -59,84 +61,72 @@ export default async function DashboardPage() {
     );
   }
 
-  const pesoPorTipo: StatsBarChartDatum[] = stats.porTipoPlastico
-    .filter((row) => row.transacciones > 0)
-    .map((row) => ({
-      categoria: row.tipoPlastico,
-      valor: Number(BigInt(row.pesoGramosTotal) / BigInt(1000)), // gramos -> kg
-    }));
-
-  const txPorTipo: StatsBarChartDatum[] = stats.porTipoTransaccion.map((row) => ({
-    categoria: row.tipo,
-    valor: row.transacciones,
-  }));
+  const kgPorMaterial: StatsBarChartDatum[] = stats.porMaterial
+    .filter((row) => row.emisiones > 0)
+    .map((row) => ({ categoria: row.material, valor: Number(row.kgTransformadosTotal) }));
 
   return (
     <div className="flex flex-col gap-8">
       <h1 className="text-2xl font-semibold text-navy">Dashboard</h1>
 
       <section className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        <StatTile label="Usuarios" value={stats.totales.usuarios} />
+        <StatTile label="Separadores" value={stats.totales.separadores} />
         <StatTile
-          label="Centros"
-          value={stats.totales.centros}
-          sub={`${stats.totales.centrosVerificados} verificados`}
+          label="Intermediarios"
+          value={stats.totales.intermediarios}
+          sub={`${stats.totales.intermediariosVerificados} verificados`}
         />
-        <StatTile label="Municipalidades" value={stats.totales.municipalidades} />
-        <StatTile label="Transacciones" value={stats.totales.transacciones} accent="gold" />
         <StatTile
-          label="Lotes municipales"
-          value={stats.totales.lotes}
-          sub={`${stats.totales.lotesCerrados} cerrados`}
+          label="Transformadores"
+          value={stats.totales.transformadores}
+          sub={`${stats.totales.transformadoresVerificados} verificados`}
         />
+        <StatTile label="Compradores" value={stats.totales.compradores} />
+        <StatTile label="Entregas" value={stats.totales.entregas} accent="gold" />
+        <StatTile label="Certificados emitidos" value={stats.totales.emisiones} sub={`${stats.totales.ventas} ventas`} />
       </section>
 
       <section>
-        <h2 className="font-medium mb-2 text-navy">Actividad por provincia y cantón</h2>
+        <h2 className="font-medium mb-2 text-navy">Separadores e intermediarios por provincia y cantón</h2>
         <p className="text-sm text-neutral-500 mb-3">
-          El peso se atribuye a la residencia del usuario que entregó el plástico. Toca una
-          provincia para ver el detalle por cantón.
+          El peso se atribuye a la residencia del separador que entregó el material.
         </p>
         <CantonMap data={geografia?.data ?? []} />
       </section>
 
-      <section className="grid gap-8 lg:grid-cols-2">
-        <div>
-          <h2 className="font-medium mb-2 text-navy">Peso reciclado por tipo de plástico (kg)</h2>
-          <StatsBarChart data={pesoPorTipo} valueLabel="kg" accent="gold" />
-        </div>
-        <div>
-          <h2 className="font-medium mb-2 text-navy">Transacciones por tipo</h2>
-          <StatsBarChart data={txPorTipo} valueLabel="transacciones" accent="forest" />
-        </div>
+      <section>
+        <h2 className="font-medium mb-2 text-navy">Kg transformados por material</h2>
+        <StatsBarChart data={kgPorMaterial} valueLabel="kg" accent="gold" />
       </section>
 
       <section>
-        <h2 className="font-medium mb-2 text-navy">Últimas transacciones</h2>
-        {!transacciones || transacciones.data.length === 0 ? (
-          <p className="text-sm text-neutral-500">Sin transacciones todavía.</p>
+        <h2 className="font-medium mb-2 text-navy">Últimas emisiones de certificado</h2>
+        {!emisiones || emisiones.data.length === 0 ? (
+          <p className="text-sm text-neutral-500">Sin emisiones todavía.</p>
         ) : (
           <div className="overflow-x-auto border border-neutral-300">
             <table className="w-full text-sm">
               <thead className="bg-surface-warm">
                 <tr>
                   <th className="text-left p-2 label-mono">ID</th>
-                  <th className="text-left p-2 label-mono">Origen</th>
-                  <th className="text-left p-2 label-mono">Destino</th>
-                  <th className="text-right p-2 label-mono">Peso (g)</th>
-                  <th className="text-left p-2 label-mono">Tipo</th>
-                  <th className="text-left p-2 label-mono">Plástico</th>
+                  <th className="text-left p-2 label-mono">Material</th>
+                  <th className="text-left p-2 label-mono">Transformador</th>
+                  <th className="text-right p-2 label-mono">Kg transformados</th>
+                  <th className="text-right p-2 label-mono">Disponible</th>
+                  <th className="text-right p-2 label-mono">Precio (USDT/kg)</th>
                 </tr>
               </thead>
               <tbody>
-                {transacciones.data.map((tx) => (
-                  <tr key={tx.id} className="border-t border-neutral-200">
-                    <td className="p-2 font-mono">{tx.id}</td>
-                    <td className="p-2 font-mono">{acortar(tx.origen)}</td>
-                    <td className="p-2 font-mono">{acortar(tx.destino)}</td>
-                    <td className="p-2 text-right tabular-nums">{tx.pesoGramos}</td>
-                    <td className="p-2">{tx.tipo}</td>
-                    <td className="p-2">{tx.tipoPlastico}</td>
+                {emisiones.data.map((emision) => (
+                  <tr key={emision.id} className="border-t border-neutral-200">
+                    <td className="p-2 font-mono">{emision.id}</td>
+                    <td className="p-2">{emision.material}</td>
+                    <td className="p-2 font-mono">{acortar(emision.transformadorWallet)}</td>
+                    <td className="p-2 text-right tabular-nums">{emision.kgTransformadosOriginal}</td>
+                    <td className="p-2 text-right tabular-nums">{emision.kgDisponiblesPrimario}</td>
+                    <td className="p-2 text-right tabular-nums">
+                      {(Number(emision.precioUSDTporKg) / 1_000_000).toFixed(2)}
+                    </td>
                   </tr>
                 ))}
               </tbody>

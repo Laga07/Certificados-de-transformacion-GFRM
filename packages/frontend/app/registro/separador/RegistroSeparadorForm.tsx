@@ -1,21 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { useWriteRegistroEntidadesRegistrarUsuario } from "@/lib/generated";
+import { useWriteRegistroEntidadesRegistrarSeparador } from "@/lib/generated";
 import { hashValue } from "@/lib/hash";
-import { PROVINCIAS, TIPOS_VIVIENDA } from "@/lib/catalogos";
+import { PROVINCIAS, TIPOS_SEPARADOR } from "@/lib/catalogos";
 import { TxButton } from "@/components/TxButton";
 import { useTxReceipt } from "@/lib/useTxReceipt";
 import { GAS_FEE_OVERRIDES } from "@/lib/gasOverrides";
 
-export function RegistroUsuarioForm({ registroAddress }: { registroAddress: `0x${string}` }) {
+export function RegistroSeparadorForm({ registroAddress }: { registroAddress: `0x${string}` }) {
   const [cedula, setCedula] = useState("");
   const [provinciaId, setProvinciaId] = useState(0);
   const [cantonId, setCantonId] = useState(1);
-  const [loteM2, setLoteM2] = useState(0);
-  const [tipoVivienda, setTipoVivienda] = useState(0);
+  const [tipoSeparador, setTipoSeparador] = useState(0);
 
-  const { writeContract, data: hash, isPending, error } = useWriteRegistroEntidadesRegistrarUsuario();
+  const { writeContract, data: hash, isPending, error } =
+    useWriteRegistroEntidadesRegistrarSeparador();
   const { isConfirming, isSuccess, revertedError } = useTxReceipt(hash);
 
   function handleSubmit() {
@@ -24,7 +24,7 @@ export function RegistroUsuarioForm({ registroAddress }: { registroAddress: `0x$
 
     writeContract({
       address: registroAddress,
-      args: [identidadHash, provinciaId, cantonId, loteM2, tipoVivienda],
+      args: [identidadHash, provinciaId, cantonId, tipoSeparador],
       ...GAS_FEE_OVERRIDES,
     });
   }
@@ -69,24 +69,13 @@ export function RegistroUsuarioForm({ registroAddress }: { registroAddress: `0x$
       </label>
 
       <label className="flex flex-col gap-1 text-sm">
-        Lote (m², opcional)
-        <input
-          type="number"
-          min={0}
-          value={loteM2}
-          onChange={(event) => setLoteM2(Number(event.target.value))}
-          className="rounded border border-neutral-300 bg-white px-3 py-2"
-        />
-      </label>
-
-      <label className="flex flex-col gap-1 text-sm">
-        Lugar de separación
+        Tipo de separador
         <select
-          value={tipoVivienda}
-          onChange={(event) => setTipoVivienda(Number(event.target.value))}
+          value={tipoSeparador}
+          onChange={(event) => setTipoSeparador(Number(event.target.value))}
           className="rounded border border-neutral-300 bg-white px-3 py-2"
         >
-          {TIPOS_VIVIENDA.map((nombre, index) => (
+          {TIPOS_SEPARADOR.map((nombre, index) => (
             <option key={nombre} value={index}>
               {nombre}
             </option>
@@ -102,7 +91,7 @@ export function RegistroUsuarioForm({ registroAddress }: { registroAddress: `0x$
         error={error ?? revertedError}
         disabled={!cedula.trim()}
       >
-        Registrarme como usuario
+        Registrarme como separador
       </TxButton>
     </div>
   );

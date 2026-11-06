@@ -3,8 +3,8 @@ import { PROVINCIAS, PROVINCIA_ENUM_KEYS } from "@/lib/catalogos";
 export interface CantonRow {
   provincia: string;
   cantonId: number;
-  usuarios: number;
-  centrosVerificados: number;
+  separadores: number;
+  intermediariosVerificados: number;
   pesoGramosTotal: string;
 }
 
@@ -16,11 +16,11 @@ export function CantonMap({ data }: { data: CantonRow[] }) {
 
     const totales = cantones.reduce(
       (acc, c) => ({
-        usuarios: acc.usuarios + c.usuarios,
-        centrosVerificados: acc.centrosVerificados + c.centrosVerificados,
+        separadores: acc.separadores + c.separadores,
+        intermediariosVerificados: acc.intermediariosVerificados + c.intermediariosVerificados,
         pesoGramos: acc.pesoGramos + BigInt(c.pesoGramosTotal),
       }),
-      { usuarios: 0, centrosVerificados: 0, pesoGramos: BigInt(0) },
+      { separadores: 0, intermediariosVerificados: 0, pesoGramos: BigInt(0) },
     );
 
     return { key, nombre: PROVINCIAS[index], cantones, totales };
@@ -42,10 +42,10 @@ export function CantonMap({ data }: { data: CantonRow[] }) {
             </div>
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-500">
               <span>
-                <strong className="text-forest">{p.totales.usuarios}</strong> usuarios
+                <strong className="text-forest">{p.totales.separadores}</strong> separadores
               </span>
               <span>
-                <strong className="text-forest">{p.totales.centrosVerificados}</strong> centros
+                <strong className="text-forest">{p.totales.intermediariosVerificados}</strong> intermediarios
               </span>
               <span>
                 <strong className="text-gold">
@@ -65,7 +65,7 @@ export function CantonMap({ data }: { data: CantonRow[] }) {
                   <li key={c.cantonId} className="flex justify-between gap-2">
                     <span>Cantón {c.cantonId}</span>
                     <span className="text-right">
-                      {c.usuarios} usuarios &middot; {c.centrosVerificados} centros &middot;{" "}
+                      {c.separadores} separadores &middot; {c.intermediariosVerificados} intermediarios &middot;{" "}
                       {Number(BigInt(c.pesoGramosTotal) / BigInt(1000)).toLocaleString("es-CR")} kg
                     </span>
                   </li>

@@ -13,13 +13,25 @@ const DEPLOYMENTS_DIR = path.join(process.cwd(), "..", "contracts", "deployments
 const DEPLOYMENT_CANDIDATES =
   process.env.NODE_ENV === "development" ? ["amoy.json", "localhost.json"] : ["amoy.json"];
 
+// Simbolos del catalogo inicial de certificados (ver packages/contracts/scripts/deploy.ts) --
+// coincide 1 a 1 con el enum Material (indice = posicion en este arreglo).
+export const MATERIAL_SIMBOLOS = [
+  "CERT-PLAST",
+  "CERT-CART",
+  "CERT-TETRA",
+  "CERT-VIDRIO",
+  "CERT-METAL",
+] as const;
+
 export interface DeploymentAddresses {
   chainId: number;
   startBlock: number;
   MockUSDT: `0x${string}`;
   RegistroEntidades: `0x${string}`;
-  PlasticoToken: `0x${string}`;
-  TransaccionesPlastico: `0x${string}`;
+  TokenCustodia: `0x${string}`;
+  MercadoCertificados: `0x${string}`;
+  // Direccion del clon de CertificadoTransformacion por indice de Material (0=Plastico...4=Metales).
+  Certificados: (`0x${string}` | undefined)[];
 }
 
 export function getDeploymentAddresses(): DeploymentAddresses | null {
@@ -29,16 +41,24 @@ export function getDeploymentAddresses(): DeploymentAddresses | null {
       const deployment = JSON.parse(raw) as {
         chainId: number;
         startBlock: number;
-        contracts: Record<string, { address: `0x${string}` }>;
+        contracts: Record<string, { address: `0x${string}` } | Record<string, `0x${string}`>>;
       };
+
+      const certificadosMap = deployment.contracts.Certificados as
+        | Record<string, `0x${string}`>
+        | undefined;
 
       return {
         chainId: deployment.chainId,
         startBlock: deployment.startBlock,
-        MockUSDT: deployment.contracts.MockUSDT.address,
-        RegistroEntidades: deployment.contracts.RegistroEntidades.address,
-        PlasticoToken: deployment.contracts.PlasticoToken.address,
-        TransaccionesPlastico: deployment.contracts.TransaccionesPlastico.address,
+        MockUSDT: (deployment.contracts.MockUSDT as { address: `0x${string}` }).address,
+        RegistroEntidades: (deployment.contracts.RegistroEntidades as { address: `0x${string}` })
+          .address,
+        TokenCustodia: (deployment.contracts.TokenCustodia as { address: `0x${string}` }).address,
+        MercadoCertificados: (
+          deployment.contracts.MercadoCertificados as { address: `0x${string}` }
+        ).address,
+        Certificados: MATERIAL_SIMBOLOS.map((simbolo) => certificadosMap?.[simbolo]),
       };
     } catch {
       continue;

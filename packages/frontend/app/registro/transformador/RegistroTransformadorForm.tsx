@@ -1,33 +1,29 @@
 "use client";
 
 import { useState } from "react";
-import { useWriteRegistroEntidadesRegistrarMunicipalidad } from "@/lib/generated";
+import { useWriteRegistroEntidadesRegistrarTransformador } from "@/lib/generated";
 import { hashValue } from "@/lib/hash";
 import { PROVINCIAS } from "@/lib/catalogos";
 import { TxButton } from "@/components/TxButton";
 import { useTxReceipt } from "@/lib/useTxReceipt";
 import { GAS_FEE_OVERRIDES } from "@/lib/gasOverrides";
 
-const WALLET_REGEX = /^0x[a-fA-F0-9]{40}$/;
-
-export function RegistrarMunicipalidadForm({ registroAddress }: { registroAddress: `0x${string}` }) {
-  const [wallet, setWallet] = useState("");
+export function RegistroTransformadorForm({ registroAddress }: { registroAddress: `0x${string}` }) {
   const [nombre, setNombre] = useState("");
+  const [cedula, setCedula] = useState("");
   const [provinciaId, setProvinciaId] = useState(0);
   const [cantonId, setCantonId] = useState(1);
 
   const { writeContract, data: hash, isPending, error } =
-    useWriteRegistroEntidadesRegistrarMunicipalidad();
+    useWriteRegistroEntidadesRegistrarTransformador();
   const { isConfirming, isSuccess, revertedError } = useTxReceipt(hash);
 
-  const walletValida = WALLET_REGEX.test(wallet.trim());
-  const puedeEnviar = walletValida && nombre.trim().length > 0;
-
   function handleSubmit() {
-    if (!puedeEnviar) return;
+    if (!nombre.trim() || !cedula.trim()) return;
+
     writeContract({
       address: registroAddress,
-      args: [wallet.trim() as `0x${string}`, hashValue(nombre), provinciaId, cantonId],
+      args: [hashValue(nombre), hashValue(cedula), provinciaId, cantonId],
       ...GAS_FEE_OVERRIDES,
     });
   }
@@ -35,26 +31,23 @@ export function RegistrarMunicipalidadForm({ registroAddress }: { registroAddres
   return (
     <div className="flex flex-col gap-4 max-w-md">
       <label className="flex flex-col gap-1 text-sm">
-        Wallet de la municipalidad
-        <input
-          type="text"
-          value={wallet}
-          onChange={(event) => setWallet(event.target.value)}
-          placeholder="0x..."
-          className="rounded border border-neutral-300 bg-white px-3 py-2 font-mono text-xs"
-        />
-        {wallet.trim() && !walletValida ? (
-          <span className="text-xs text-red-600">Dirección inválida</span>
-        ) : null}
-      </label>
-
-      <label className="flex flex-col gap-1 text-sm">
-        Nombre de la municipalidad
+        Nombre (solo se guarda su hash)
         <input
           type="text"
           value={nombre}
           onChange={(event) => setNombre(event.target.value)}
-          placeholder="Municipalidad de..."
+          placeholder="Recicladora Verde S.A."
+          className="rounded border border-neutral-300 bg-white px-3 py-2"
+        />
+      </label>
+
+      <label className="flex flex-col gap-1 text-sm">
+        Cédula jurídica (solo se guarda su hash)
+        <input
+          type="text"
+          value={cedula}
+          onChange={(event) => setCedula(event.target.value)}
+          placeholder="3-101-654321"
           className="rounded border border-neutral-300 bg-white px-3 py-2"
         />
       </label>
@@ -66,16 +59,16 @@ export function RegistrarMunicipalidadForm({ registroAddress }: { registroAddres
           onChange={(event) => setProvinciaId(Number(event.target.value))}
           className="rounded border border-neutral-300 bg-white px-3 py-2"
         >
-          {PROVINCIAS.map((p, index) => (
-            <option key={p} value={index}>
-              {p}
+          {PROVINCIAS.map((nombreP, index) => (
+            <option key={nombreP} value={index}>
+              {nombreP}
             </option>
           ))}
         </select>
       </label>
 
       <label className="flex flex-col gap-1 text-sm">
-        Cantón (ID numérico según la provincia)
+        Cantón (ID numérico según tu provincia)
         <input
           type="number"
           min={0}
@@ -91,9 +84,9 @@ export function RegistrarMunicipalidadForm({ registroAddress }: { registroAddres
         isConfirming={isConfirming}
         isSuccess={isSuccess}
         error={error ?? revertedError}
-        disabled={!puedeEnviar}
+        disabled={!nombre.trim() || !cedula.trim()}
       >
-        Registrar municipalidad
+        Registrarme como transformador
       </TxButton>
     </div>
   );

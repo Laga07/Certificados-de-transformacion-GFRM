@@ -12,7 +12,6 @@ import { ChainGuard } from "@/components/ChainGuard";
 import { Footer } from "@/components/Footer";
 import { NavMenu } from "@/components/NavMenu";
 import { wagmiServerConfig } from "@/lib/wagmiServer";
-import { getDeploymentAddresses } from "@/lib/addresses.server";
 import { logoutAction } from "./login/actions";
 import logo from "../public/GFRM-Logo.png";
 
@@ -72,7 +71,6 @@ export default async function RootLayout({
     initialState = undefined;
   }
   const sessionEmail = getSessionEmail((await cookies()).get("session")?.value);
-  const deployment = getDeploymentAddresses();
 
   return (
     <html
@@ -104,7 +102,7 @@ export default async function RootLayout({
               </Link>
               <NavMenu />
               <div className="flex items-center gap-3">
-                <ConnectWalletButton plasticoTokenAddress={deployment?.PlasticoToken} />
+                <ConnectWalletButton />
                 {sessionEmail ? (
                   <form action={logoutAction} className="flex items-center gap-2 text-xs text-neutral-500">
                     <span className="hidden sm:inline">{sessionEmail}</span>

@@ -1,3 +1,8 @@
+# Alternativa para quien SI tenga Docker instalado. Esta maquina de desarrollo no lo tiene,
+# asi que el setup real usa una segunda instancia nativa de PostgreSQL en vez de esto -- ver
+# scripts/db.mjs y "npm run db:up" en el README. Ambos caminos llegan al mismo lugar (DB
+# propia de este proyecto en localhost:5433, sin compartir nada con otros proyectos); si
+# tenes Docker y preferis containers, este archivo sigue siendo valido.
 services:
   postgres:
     image: postgres:16-alpine

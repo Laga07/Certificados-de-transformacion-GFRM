@@ -4,20 +4,23 @@ DApp de Green Foot para trazabilidad multi-material de residuos valorizables en 
 que concluye el ciclo con la emisión de un **Certificado de Transformación** (token ERC20,
 1 = 1 kg efectivamente transformado) sobre **Polygon Amoy testnet**.
 
-> **Estado: en diseño.** Este repo nació el 2026-11-03 como copia de trabajo de
-> [`DAPP Plástico Tesis`](../GreenMaterialsDAPP) (el entregable de la tesis de economía,
-> congelado y sin tocar). Son dos proyectos **totalmente separados**: carpetas, repos, base de
-> datos y contratos propios — no comparten nada en runtime.
->
-> El contrato heredado (`packages/contracts/contracts/PlasticExchange.sol`) es el de la tesis
-> (solo plástico, sin Certificado de Transformación) y sirve de punto de partida, no de
-> arquitectura final. El diseño del contrato nuevo — modelo de dos tokens, catálogo de 5
-> materiales, los 5 roles de la cadena, reparto no custodial y cascada de merma — está en
-> **[`docs/arquitectura-certificado-transformacion.md`](docs/arquitectura-certificado-transformacion.md)**.
-> Hasta que ese contrato se escriba y despliegue, el frontend/backend heredados no van a
-> funcionar en contra de datos reales de este proyecto.
+> Nació el 2026-11-03 como copia de trabajo de [`DAPP Plástico Tesis`](../GreenMaterialsDAPP)
+> (el entregable de la tesis de economía, congelado y sin tocar). Son dos proyectos
+> **totalmente separados**: carpetas, repos, contratos y base de datos propios — ni siquiera
+> comparten el servidor de PostgreSQL. Ver `docs/arquitectura-certificado-transformacion.md`
+> para el diseño completo del contrato.
 
-## Arquitectura (heredada de la base; ver doc de diseño para el estado objetivo)
+## Estado
+
+- **Contratos**: Fase 1 completa — `RegistroEntidades`, `TokenCustodia`, `CertificadoTransformacion`,
+  `MercadoCertificados`. Compilan limpio, 39/39 tests pasando (incluye una regresión que
+  reproduce el ejemplo numérico exacto del documento de arquitectura).
+- **Backend**: schema de Prisma + indexer + API reescritos contra los contratos nuevos.
+  Typecheck y lint limpios.
+- **Deploy a Amoy**: en curso.
+- **Frontend**: pendiente — todavía apunta al contrato heredado de la tesis.
+
+## Arquitectura
 
 ```
                          ┌─────────────────────┐
@@ -28,28 +31,53 @@ que concluye el ciclo con la emisión de un **Certificado de Transformación** (
                                     ▼
 ┌──────────────┐          ┌──────────────────┐          ┌──────────────────┐
 │   Frontend    │  REST    │   Backend         │  Prisma  │   PostgreSQL      │
-│   Next.js     │◄────────►│   Fastify API     │◄────────►│   (Docker)        │
-│   (wagmi +    │          │   + Indexer       │          │                   │
+│   Next.js     │◄────────►│   Fastify API     │◄────────►│   (instancia      │
+│   (wagmi +    │          │   + Indexer       │          │   nativa propia)  │
 │   RainbowKit) │          │   (ethers.js)     │          │                   │
 └───────┬───────┘          └──────────────────┘          └──────────────────┘
         │ lecturas directas (wagmi/viem)
         └─────────────────────────────────────► Polygon Amoy
 ```
 
-- **`packages/contracts`** — Hardhat 3, contratos upgradeables UUPS. Hoy todavía tiene el set
-  heredado de la tesis (`PlasticoToken`, `RegistroEntidades`, `TransaccionesPlastico`,
-  `MockUSDT`) — va a ser reemplazado por el diseño de dos tokens (custodia + certificado).
+- **`packages/contracts`** — Hardhat 3, contratos upgradeables UUPS (`RegistroEntidades`,
+  `TokenCustodia`, `MercadoCertificados`) + `CertificadoTransformacion` (implementación
+  clonada vía EIP-1167, una vez por material) + `MockUSDT`.
 - **`packages/backend`** — Node.js/TypeScript. Indexer (`src/indexer`) + API REST (Fastify)
   sobre Postgres vía Prisma.
-- **`packages/frontend`** — Next.js (App Router) + Tailwind + wagmi/RainbowKit.
+- **`packages/frontend`** — Next.js (App Router) + Tailwind + wagmi/RainbowKit (pendiente de
+  reconstruir contra los contratos nuevos).
 
 ## Requisitos
 
 - Node.js 22+
-- Docker Desktop (para PostgreSQL local — contenedor y puerto propios, ver abajo)
+- PostgreSQL 18 instalado en la máquina (sin Docker — ver "Base de datos" abajo). Si tenés
+  Docker Desktop, `docker-compose.yml` es una alternativa válida.
 - Una wallet de testnet con POL de Amoy (faucet: https://faucet.polygon.technology, red "Polygon Amoy")
 - Opcional: cuenta gratuita en [WalletConnect Cloud](https://cloud.walletconnect.com) para el
   `projectId` de RainbowKit
+
+## Base de datos
+
+Esta máquina no tiene Docker Desktop instalado. En vez de un contenedor, el proyecto corre su
+**propia instancia nativa de PostgreSQL** — proceso, carpeta de datos (`.pgdata/`, nunca se
+trackea) y puerto (5433) completamente separados de cualquier otro proyecto en la máquina,
+usando los mismos binarios de PostgreSQL ya instalados (`C:\Program Files\PostgreSQL\18\bin`).
+
+```bash
+npm run db:up      # arranca la instancia (scripts/db.mjs)
+npm run db:status  # confirma que esta corriendo
+npm run db:down    # la detiene
+```
+
+La primera vez hay que crearla (ya hecho en este checkout, documentado por si hace falta
+recrearla en otra máquina):
+
+```powershell
+& "C:\Program Files\PostgreSQL\18\bin\initdb.exe" -D .pgdata -U postgres --pwfile=<archivo-con-password>
+# editar .pgdata/postgresql.conf: port = 5433
+npm run db:up
+& "C:\Program Files\PostgreSQL\18\bin\createdb.exe" -U postgres -p 5433 -h localhost certificado_transformacion
+```
 
 ## Arranque desde cero
 
@@ -57,33 +85,53 @@ que concluye el ciclo con la emisión de un **Certificado de Transformación** (
 # 1. Instalar dependencias de los 3 workspaces
 npm install
 
-# 2. Levantar PostgreSQL (puerto de host 5433 -- distinto al de DAPP Plastico Tesis,
-#    para poder correr ambos proyectos al mismo tiempo sin que choquen)
+# 2. Levantar PostgreSQL (ver seccion de arriba)
 npm run db:up
 
 # 3. Configurar variables de entorno copiando cada .env.example
 cp packages/contracts/.env.example packages/contracts/.env
 cp packages/backend/.env.example packages/backend/.env
 cp packages/frontend/.env.local.example packages/frontend/.env.local
-# -> editar packages/backend/.env : DATABASE_URL debe apuntar al puerto 5433
+# -> packages/backend/.env: DATABASE_URL ya apunta al puerto 5433 en este checkout
 
-# 4-9: igual que antes (compilar/test/deploy/export/migrate/generate/dev) --
-# pendiente hasta que el contrato nuevo este escrito (ver docs/arquitectura-certificado-transformacion.md)
+# 4. Compilar y probar los contratos
+npm run contracts:compile
+npm run contracts:test
+
+# 5. Desplegar a Polygon Amoy (requiere AMOY_RPC_URL y DEPLOYER_PRIVATE_KEY en packages/contracts/.env)
+npm run contracts:deploy:amoy
+
+# 6. Exportar ABIs + direcciones para backend/frontend
+npm run contracts:export
+
+# 7. Migrar la base de datos
+npm run backend:migrate
+
+# 8. Generar los hooks tipados de wagmi para el frontend (pendiente: frontend aun no reconstruido)
+npm run frontend:generate
+
+# 9. Levantar todo (API + indexer + frontend) en paralelo
+npm run dev
 ```
 
 ## Variables de entorno
 
-Misma tabla que la base (ver `docs/arquitectura-certificado-transformacion.md` para lo que
-cambia: nuevas direcciones de contrato, posible `USDT_ADDRESS` para el pago del certificado).
-Diferencia clave ya aplicada: `packages/backend/.env` → `DATABASE_URL` debe usar el puerto
-**5433** (no 5432), y `POSTGRES_DB=certificado_transformacion` (ver `docker-compose.yml`).
+| Archivo | Variable | Descripción |
+|---|---|---|
+| `packages/contracts/.env` | `AMOY_RPC_URL` | RPC de Polygon Amoy. dRPC (`https://polygon-amoy.drpc.org`) es el que funciona de forma confiable en este entorno — el RPC público (`rpc-amoy.polygon.technology`) no resuelve DNS aquí |
+| | `DEPLOYER_PRIVATE_KEY` | Clave privada de una wallet **exclusiva para testnet** |
+| `packages/backend/.env` | `DATABASE_URL` | Apunta a `localhost:5433` (instancia propia, ver arriba) |
+| | `NETWORK_NAME` | `amoy` por default |
+| | `AMOY_RPC_URL` | dRPC, igual que en contracts |
+| | `INDEXER_BLOCK_WINDOW` | **50** — el límite real de dRPC gratis para `eth_getLogs` con filtro de address, no los 10,000 que dice su propio mensaje de error (ver comentario en `sync.ts`) |
 
-## Notas de seguridad del contrato (heredadas, siguen aplicando como principios de diseño)
+## Notas de seguridad del contrato
 
 - Reentrancy guard en toda función que mueve fondos/tokens.
-- Una wallet = un solo rol — evita autoasignación en ambos extremos de una transacción.
-- `pause()/unpause()` para poder congelar el contrato ante un incidente.
+- Una wallet = un solo rol — evita autoasignación en ambos extremos de una operación.
+- `pause()/unpause()` en los tres contratos UUPS, para poder congelar ante un incidente.
+- La plataforma no custodia fondos de terceros: el reparto de cada venta se acredita a un
+  ledger de saldos pendientes (patrón `PaymentSplitter`) con retiro permissionless, en vez de
+  empujar USDT a cada destinatario dentro de la misma venta — ver sección 2.3 de
+  `docs/arquitectura-certificado-transformacion.md` para el razonamiento completo.
 - Antes de manejar fondos reales: rol admin/upgrader en multisig, auditoría externa.
-- **Nuevo en este proyecto**: la plataforma no custodia fondos de terceros — el reparto del
-  valor del certificado tiene que salir en la misma transacción de la venta (push, no balance
-  acumulado). Ver el documento de diseño para el detalle.

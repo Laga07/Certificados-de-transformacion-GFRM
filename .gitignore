@@ -97,3 +97,7 @@ Thumbs.db
 # Misc
 # ==========================================
 *.log
+
+# Datos de la instancia nativa de PostgreSQL de este proyecto (ver scripts/db.mjs) --
+# binarios de datos, nunca se trackean.
+.pgdata/

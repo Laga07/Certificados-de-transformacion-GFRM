@@ -13,6 +13,12 @@ export default defineConfig({
         runs: 200,
       },
       evmVersion: "cancun",
+      // Necesario: TokenCustodia/MercadoCertificados tienen funciones con demasiadas
+      // variables locales (dividirLote, _repartirVenta -- la cascada de merma en varios
+      // pasos) para el pipeline de codegen clasico ("stack too deep"). viaIR es el pipeline
+      // recomendado por el equipo de Solidity para este caso -- compila mas lento, sin
+      // cambiar la semantica del codigo.
+      viaIR: true,
     },
   },
   paths: {

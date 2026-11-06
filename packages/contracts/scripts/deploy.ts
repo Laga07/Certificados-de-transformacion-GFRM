@@ -3,6 +3,15 @@ import path from "node:path";
 import hre, { network } from "hardhat";
 import { upgrades } from "@openzeppelin/hardhat-upgrades";
 
+// Catalogo inicial de materiales (Material enum en TiposComunes.sol) -- orden fijo, append-only.
+const MATERIALES = [
+  { indice: 0, nombre: "Certificado Plastico", simbolo: "CERT-PLAST" },
+  { indice: 1, nombre: "Certificado Carton y Papel", simbolo: "CERT-CART" },
+  { indice: 2, nombre: "Certificado Tetrapack", simbolo: "CERT-TETRA" },
+  { indice: 3, nombre: "Certificado Vidrio", simbolo: "CERT-VIDRIO" },
+  { indice: 4, nombre: "Certificado Metales", simbolo: "CERT-METAL" },
+];
+
 async function main() {
   const connection = await network.create();
   const { ethers } = connection;
@@ -25,35 +34,59 @@ async function main() {
   const registroAddress = await registro.getAddress();
   console.log(`RegistroEntidades (proxy) desplegado en ${registroAddress}`);
 
-  // 3) PlasticoToken (proxy UUPS)
-  const PlasticoToken = await ethers.getContractFactory("PlasticoToken");
-  const token = await upgradesApi.deployProxy(PlasticoToken, [
-    "Plastico Token",
-    "PLST",
-    deployer.address,
-  ]);
-  await token.waitForDeployment();
-  const tokenAddress = await token.getAddress();
-  console.log(`PlasticoToken (proxy) desplegado en ${tokenAddress}`);
+  // 3) TokenCustodia (proxy UUPS)
+  const TokenCustodia = await ethers.getContractFactory("TokenCustodia");
+  const tokenCustodia = await upgradesApi.deployProxy(TokenCustodia, [deployer.address, registroAddress]);
+  await tokenCustodia.waitForDeployment();
+  const tokenCustodiaAddress = await tokenCustodia.getAddress();
+  console.log(`TokenCustodia (proxy) desplegado en ${tokenCustodiaAddress}`);
 
-  // 4) TransaccionesPlastico (proxy UUPS)
-  const TransaccionesPlastico = await ethers.getContractFactory("TransaccionesPlastico");
-  const transacciones = await upgradesApi.deployProxy(TransaccionesPlastico, [
+  // 4) CertificadoTransformacion -- implementacion unica que se clona por material (EIP-1167).
+  // No es un proxy UUPS: es la plantilla que MercadoCertificados.desplegarCertificado() clona.
+  const CertificadoTransformacion = await ethers.getContractFactory("CertificadoTransformacion");
+  const certificadoImpl = await CertificadoTransformacion.deploy();
+  await certificadoImpl.waitForDeployment();
+  const certificadoImplAddress = await certificadoImpl.getAddress();
+  console.log(`CertificadoTransformacion (implementacion para clones) desplegado en ${certificadoImplAddress}`);
+
+  // 5) MercadoCertificados (proxy UUPS)
+  const MercadoCertificados = await ethers.getContractFactory("MercadoCertificados");
+  const mercado = await upgradesApi.deployProxy(MercadoCertificados, [
     deployer.address,
-    tokenAddress,
     registroAddress,
+    tokenCustodiaAddress,
     usdtAddress,
+    certificadoImplAddress,
+    deployer.address, // plataforma: por ahora la wallet del deployer: cambiar antes de operar con fondos reales
   ]);
-  await transacciones.waitForDeployment();
-  const transaccionesAddress = await transacciones.getAddress();
-  console.log(`TransaccionesPlastico (proxy) desplegado en ${transaccionesAddress}`);
+  await mercado.waitForDeployment();
+  const mercadoAddress = await mercado.getAddress();
+  console.log(`MercadoCertificados (proxy) desplegado en ${mercadoAddress}`);
 
-  // 5) Wiring de roles: sin esto, TransaccionesPlastico no puede mintear PlasticoToken.
-  // Es el paso que mas facil se olvida al desplegar manualmente.
-  const MINTER_ROLE = await token.MINTER_ROLE();
-  const wireTx = await token.connect(deployer).grantRole(MINTER_ROLE, transaccionesAddress);
+  // 6) Wiring de roles: sin esto, MercadoCertificados no puede consumir lotes al transformar.
+  const MERCADO_ROLE = await tokenCustodia.MERCADO_ROLE();
+  const wireTx = await tokenCustodia.connect(deployer).grantRole(MERCADO_ROLE, mercadoAddress);
   await wireTx.wait();
-  console.log(`MINTER_ROLE otorgado a TransaccionesPlastico (${transaccionesAddress})`);
+  console.log(`MERCADO_ROLE otorgado a MercadoCertificados (${mercadoAddress}) en TokenCustodia`);
+
+  // 7) Desplegar el clone de certificado para cada material del catalogo inicial.
+  const direccionesCertificados: Record<string, string> = {};
+  for (const material of MATERIALES) {
+    const tx = await mercado.connect(deployer).desplegarCertificado(material.indice, material.nombre, material.simbolo);
+    const receipt = await tx.wait();
+    const evento = receipt?.logs
+      .map((log: any) => {
+        try {
+          return mercado.interface.parseLog(log);
+        } catch {
+          return null;
+        }
+      })
+      .find((parsed: any) => parsed?.name === "CertificadoDesplegado");
+    const cloneAddress = evento?.args?.clone as string;
+    direccionesCertificados[material.simbolo] = cloneAddress;
+    console.log(`Certificado ${material.simbolo} (material ${material.indice}) desplegado en ${cloneAddress}`);
+  }
 
   const deploymentBlock = await ethers.provider.getBlockNumber();
 
@@ -65,8 +98,10 @@ async function main() {
     contracts: {
       MockUSDT: { address: usdtAddress },
       RegistroEntidades: { address: registroAddress },
-      PlasticoToken: { address: tokenAddress },
-      TransaccionesPlastico: { address: transaccionesAddress },
+      TokenCustodia: { address: tokenCustodiaAddress },
+      CertificadoTransformacionImpl: { address: certificadoImplAddress },
+      MercadoCertificados: { address: mercadoAddress },
+      Certificados: direccionesCertificados,
     },
   };
 

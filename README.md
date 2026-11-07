@@ -12,13 +12,16 @@ que concluye el ciclo con la emisión de un **Certificado de Transformación** (
 
 ## Estado
 
-- **Contratos**: Fase 1 completa — `RegistroEntidades`, `TokenCustodia`, `CertificadoTransformacion`,
-  `MercadoCertificados`. Compilan limpio, 39/39 tests pasando (incluye una regresión que
-  reproduce el ejemplo numérico exacto del documento de arquitectura).
-- **Backend**: schema de Prisma + indexer + API reescritos contra los contratos nuevos.
-  Typecheck y lint limpios.
-- **Deploy a Amoy**: en curso.
-- **Frontend**: pendiente — todavía apunta al contrato heredado de la tesis.
+- **Contratos**: Fase 1 completa y desplegada en Amoy — `RegistroEntidades`, `TokenCustodia`,
+  `CertificadoTransformacion`, `MercadoCertificados`. Compilan limpio, 39/39 tests pasando
+  (incluye una regresión que reproduce el ejemplo numérico exacto del documento de
+  arquitectura). Direcciones reales en `packages/contracts/deployments/amoy.json`.
+- **Backend**: schema de Prisma + indexer + API reescritos contra los contratos nuevos,
+  corriendo contra datos reales de Amoy. Typecheck y lint limpios.
+- **Frontend**: reconstruido contra los contratos nuevos (los 5 roles, entregas, traspasos,
+  transformación, compra de certificado). Typecheck y lint limpios, probado end-to-end.
+- Pendiente: panel de admin más completo, dashboard con más detalle, verificación del
+  contrato en Polygonscan (`hardhat verify`).
 
 ## Arquitectura
 
@@ -44,8 +47,23 @@ que concluye el ciclo con la emisión de un **Certificado de Transformación** (
   clonada vía EIP-1167, una vez por material) + `MockUSDT`.
 - **`packages/backend`** — Node.js/TypeScript. Indexer (`src/indexer`) + API REST (Fastify)
   sobre Postgres vía Prisma.
-- **`packages/frontend`** — Next.js (App Router) + Tailwind + wagmi/RainbowKit (pendiente de
-  reconstruir contra los contratos nuevos).
+- **`packages/frontend`** — Next.js (App Router) + Tailwind + wagmi/RainbowKit.
+
+## Puertos — separados a propósito de DAPP Plástico Tesis
+
+Los dos proyectos comparten el mismo stack (Next.js + Fastify), así que por *default* usan
+los mismos puertos (3000/4000). Para poder correr ambos al mismo tiempo sin que choquen, este
+proyecto usa puertos propios en todas partes:
+
+| | DAPP Plástico Tesis | **Este proyecto** |
+|---|---|---|
+| Frontend | `3000` | **`3001`** |
+| API | `4000` | **`4001`** |
+| PostgreSQL | `5432` (proceso nativo propio) | **`5433`** (otro proceso nativo, totalmente aparte) |
+
+Si alguna vez `curl localhost:3000` o `:4000` responde con algo de este proyecto, algo quedó
+mal configurado — ver `packages/frontend/package.json` (`dev`/`start` con `-p 3001`) y
+`PORT`/`NEXT_PUBLIC_API_URL` en los `.env`.
 
 ## Requisitos
 
@@ -107,7 +125,7 @@ npm run contracts:export
 # 7. Migrar la base de datos
 npm run backend:migrate
 
-# 8. Generar los hooks tipados de wagmi para el frontend (pendiente: frontend aun no reconstruido)
+# 8. Generar los hooks tipados de wagmi para el frontend
 npm run frontend:generate
 
 # 9. Levantar todo (API + indexer + frontend) en paralelo
@@ -124,6 +142,8 @@ npm run dev
 | | `NETWORK_NAME` | `amoy` por default |
 | | `AMOY_RPC_URL` | dRPC, igual que en contracts |
 | | `INDEXER_BLOCK_WINDOW` | **50** — el límite real de dRPC gratis para `eth_getLogs` con filtro de address, no los 10,000 que dice su propio mensaje de error (ver comentario en `sync.ts`) |
+| | `PORT` | **4001** (no 4000 — ver tabla de puertos arriba) |
+| `packages/frontend/.env.local` | `NEXT_PUBLIC_API_URL` | `http://localhost:4001` |
 
 ## Notas de seguridad del contrato
 

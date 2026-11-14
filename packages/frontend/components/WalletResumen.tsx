@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { formatUnits } from "viem";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+import { API_URL } from "@/lib/apiUrl";
 
 interface Resumen {
   comoSeparador: { entregas: number; pesoGramosTotal: string };

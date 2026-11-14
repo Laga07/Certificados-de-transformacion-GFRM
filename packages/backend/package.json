@@ -8,6 +8,7 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
+    "reset-indexed": "node scripts/reset-indexed.mjs --yes",
     "dev:indexer": "tsx watch src/indexer/run.ts",
     "dev:api": "tsx watch src/index.ts",
     "typecheck": "tsc --noEmit",

@@ -1,102 +1,82 @@
 import Image from "next/image";
 import Link from "next/link";
 import rioNuboso from "../public/rio nubosos 2.png";
+import { MATERIALES, VARIANTES_POR_MATERIAL } from "@/lib/catalogos";
 import {
   IconArrowRight,
   IconCoin,
   IconEye,
   IconFuel,
-  IconGift,
+  IconLayers,
+  IconRecyclingTriangle,
   IconRoute,
   IconShieldCheck,
   IconTruck,
   IconWallet,
 } from "@/components/icons";
 
-const DATOS_REGISTRO = [
-  { label: "Quién", detalle: "La wallet que entrega" },
-  { label: "Cuánto", detalle: "Peso en gramos" },
-  { label: "Dónde", detalle: "Centro o ruta municipal" },
-  { label: "Cuándo", detalle: "Fecha y hora exacta" },
-];
-
-const ENTREGAS = [
+// El ciclo completo que cubre el sistema. ES una secuencia real (cada paso depende del
+// anterior), por eso va numerado.
+const CICLO = [
   {
-    href: "/transacciones/gratuita",
-    icon: <IconGift className="h-6 w-6" />,
-    title: "Entrega gratuita",
-    description: "Entregás tu material a un centro recolector, registra tu colaboración con el ambiente.",
+    titulo: "Entrega",
+    detalle:
+      "Un separador entrega material a un intermediario o directo a un transformador. Quien recibe lo registra y paga el gas: el separador solo necesita su wallet.",
+    icon: <IconWallet className="h-6 w-6" />,
   },
   {
-    href: "/transacciones/pagada",
-    icon: <IconCoin className="h-6 w-6" />,
-    title: "Transacción pagada",
-    description:
-      "El centro te puede pagar en USDT por tu material -- los tokens PLST quedan para el centro que lo recibe.",
-  },
-  {
-    href: "/transacciones/lote-municipal",
+    titulo: "Traspaso",
+    detalle:
+      "El lote viaja entre intermediarios en dos pasos: quien envía declara el peso, quien recibe confirma el que de verdad llegó. La diferencia (merma) queda atribuida a alguien.",
     icon: <IconTruck className="h-6 w-6" />,
-    title: "Entrega a lote municipal",
-    description: "Reporta tu entrega a la ruta de recolección de tu municipalidad.",
+  },
+  {
+    titulo: "Transformación",
+    detalle:
+      "El transformador verificado consume los lotes, declara los kilos efectivamente transformados y fija el precio del certificado.",
+    icon: <IconRecyclingTriangle className="h-6 w-6" />,
+  },
+  {
+    titulo: "Certificado",
+    detalle:
+      "Un comprador paga en USDT y recibe el Certificado de Transformación: un token ERC-20 donde 1 unidad = 1 kg transformado, con todo su origen auditable.",
+    icon: <IconShieldCheck className="h-6 w-6" />,
   },
 ];
 
-const ODS = [
+const ROLES = [
   {
-    n: 6,
-    label: "Agua limpia y saneamiento",
-    detalle:
-      "La recuperación de plástico valorizable en Costa Rica cayó de 37% (2017) a 12% (2021) " +
-      "(PNGIR 2023, p. 12). Cada gramo trazado por esta dapp es un gramo con menos probabilidad " +
-      "de terminar obstruyendo ríos y quebradas de la GAM.",
+    href: "/registro/separador",
+    titulo: "Separador",
+    detalle: "Hogar, comercio, industria, institución o recuperador inclusivo. Entregás material y recibís el 35 % de cada venta del certificado que salga de él.",
+    nota: "Registro inmediato",
   },
   {
-    n: 9,
-    label: "Industria, innovación e infraestructura",
-    detalle:
-      "El registro on-chain es, en sí mismo, la infraestructura de datos que hoy le falta a la " +
-      "gestión de residuos en Costa Rica: un sistema resiliente y auditable, replicable en " +
-      "cualquier cantón del país sin depender de una sola entidad.",
+    href: "/registro/intermediario",
+    titulo: "Intermediario",
+    detalle: "Recolector, centro de acopio, ruta municipal, compactador o transportista. Recibís, unís, dividís y traspasás lotes.",
+    nota: "Requiere verificación",
   },
   {
-    n: 11,
-    label: "Ciudades y comunidades sostenibles",
-    detalle:
-      "Los datos se filtran por provincia y cantón (ver Panel Municipal) -- la misma " +
-      "granularidad con la que trabajan las municipalidades, para que la gestión de residuos " +
-      "urbanos deje de operar a ciegas.",
+    href: "/registro/transformador",
+    titulo: "Transformador",
+    detalle: "Convertís el material en materia prima y emitís el certificado. Fijás el precio por kilo.",
+    nota: "Requiere verificación",
   },
   {
-    n: 12,
-    label: "Producción y consumo responsable",
-    detalle:
-      "Cada transacción distingue el tipo de plástico (PET, HDPE, PVC, LDPE, PP, PS/EPS) y su " +
-      "valor técnico y ambiental, no solo su peso -- la base para decisiones informadas de " +
-      "consumo y producción.",
+    href: "/registro/comprador",
+    titulo: "Comprador",
+    detalle: "Empresa que necesita demostrar material transformado. Comprás certificados y los retirás en tu informe de cumplimiento.",
+    nota: "Registro inmediato",
   },
-  {
-    n: 13,
-    label: "Acción por el clima",
-    detalle:
-      "Menos plástico sin trazar significa menos quema informal e incineración no controlada, " +
-      "una fuente reconocida de emisiones dentro de la gestión actual de residuos.",
-  },
-  {
-    n: 14,
-    label: "Vida submarina",
-    detalle:
-      "Costa Rica limita con dos océanos. El plástico que hoy no se recupera en la GAM es una " +
-      "de las rutas más directas hacia ríos, playas y ecosistemas marinos costeros.",
-  },
-  {
-    n: 16,
-    label: "Paz, justicia e instituciones sólidas",
-    detalle:
-      "La asimetría de información entre los grandes centros de acopio y los recolectores base " +
-      "es, en el fondo, un problema de trazabilidad de mercado -- el mismo que un registro " +
-      "inmutable y auditable ataca directamente.",
-  },
+];
+
+// Tabla 11 del documento de arquitectura. Porcentajes fijos del contrato.
+const REPARTO = [
+  { quien: "Separadores", pct: 35, detalle: "pro rata a los kilos aportados" },
+  { quien: "Intermediarios", pct: 20, detalle: "en partes iguales entre quienes movieron el lote" },
+  { quien: "Transformador", pct: 30, detalle: "quien emite el certificado" },
+  { quien: "Plataforma", pct: 15, detalle: "Green Foot" },
 ];
 
 export default function Home() {
@@ -104,20 +84,21 @@ export default function Home() {
     <div className="flex flex-col gap-16">
       <section className="grid gap-8 lg:grid-cols-2 lg:items-center pt-2">
         <div className="flex flex-col gap-5">
-          <span className="tag-mono">Espécimen 001 &middot; Polygon Amoy, GAM Costa Rica</span>
+          <span className="tag-mono">Polygon Amoy &middot; red de prueba &middot; Costa Rica</span>
           <h1 className="text-4xl font-heading italic font-semibold leading-tight text-navy">
-            Trazabilidad real para el plástico que Costa Rica recupera
+            Del residuo al certificado, con cada kilo rastreado
           </h1>
           <p className="text-foreground/70 max-w-lg">
-            Detrás de cada kilogramo recuperado hay alguien que hoy no aparece en ninguna
-            estadística. Aquí ese trabajo queda registrado y se puede comprobar.
+            Plástico, cartón, tetrapack, vidrio y metales: desde quien los separa hasta quien los
+            transforma, cada paso queda registrado en la cadena. Al final, un Certificado de
+            Transformación que una empresa puede comprar, auditar y presentar.
           </p>
           <div className="flex flex-wrap gap-3">
             <Link
-              href="/registro/usuario"
+              href="#roles"
               className="rounded-sm bg-forest px-5 py-2.5 font-mono text-xs uppercase tracking-wider text-white hover:bg-forest-light"
             >
-              Registrarme y empezar
+              Registrarme
             </Link>
             <Link
               href="/dashboard"
@@ -130,7 +111,7 @@ export default function Home() {
         <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-lg">
           <Image
             src={rioNuboso}
-            alt="Rio en un bosque nuboso de Costa Rica"
+            alt="Río en un bosque nuboso de Costa Rica"
             fill
             priority
             sizes="(min-width: 1024px) 50vw, 100vw"
@@ -139,25 +120,55 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="flex flex-col gap-4">
+      <section className="flex flex-col gap-6">
         <div>
-          <h2 className="text-2xl font-heading font-semibold text-navy">Registra tu entrega</h2>
+          <h2 className="text-2xl font-heading font-semibold text-navy">Cómo funciona</h2>
           <p className="text-foreground/70 mt-1 max-w-2xl">
-            Elegí cómo entregaste tu material -- a un clic de registrar la transacción on-chain.
+            Cuatro pasos, cada uno firmado por quien lo hace. El certificado hereda la historia
+            completa del material que lo respalda.
           </p>
         </div>
-        <div className="grid gap-4 sm:grid-cols-3">
-          {ENTREGAS.map((entrega) => (
+        <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {CICLO.map((paso, index) => (
+            <li
+              key={paso.titulo}
+              className="border-t-2 border-forest pt-4 flex flex-col gap-2"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-clay">{paso.icon}</span>
+                <span className="font-heading italic text-2xl text-gold">{index + 1}</span>
+              </div>
+              <h3 className="font-heading font-semibold text-navy">{paso.titulo}</h3>
+              <p className="text-sm text-foreground/70">{paso.detalle}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section id="roles" className="flex flex-col gap-6 scroll-mt-6">
+        <div>
+          <span className="tag-mono">Quién participa</span>
+          <p className="text-foreground/70 mt-3 max-w-2xl">
+            Una wallet, un rol. Elegí el tuyo para registrarte. Intermediarios y transformadores
+            pasan por una verificación de Green Foot antes de poder operar, porque reciben
+            material de terceros.
+          </p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {ROLES.map((rol) => (
             <Link
-              key={entrega.href}
-              href={entrega.href}
+              key={rol.href}
+              href={rol.href}
               className="group border border-neutral-300 bg-surface-warm p-5 flex flex-col gap-3 hover:border-forest transition-colors"
             >
-              <span className="text-clay group-hover:text-forest transition-colors">
-                {entrega.icon}
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="font-heading font-semibold text-navy">{rol.titulo}</h3>
+                <span className="label-mono">{rol.nota}</span>
+              </div>
+              <p className="text-sm text-foreground/70">{rol.detalle}</p>
+              <span className="mt-auto flex items-center gap-1 label-mono text-forest group-hover:underline">
+                Registrarme <IconArrowRight className="h-3 w-3" />
               </span>
-              <h3 className="font-heading font-semibold text-navy">{entrega.title}</h3>
-              <p className="text-sm text-foreground/70">{entrega.description}</p>
             </Link>
           ))}
         </div>
@@ -165,165 +176,130 @@ export default function Home() {
 
       <section className="flex flex-col gap-6">
         <div>
-          <span className="tag-mono">Qué queda registrado</span>
-          <p className="text-foreground/70 mt-3 max-w-2xl">
-            Cada recolección queda registrada mediante un token: quién, cuánto, dónde y
-            cuándo. Un registro inmutable, que dignifica el trabajo de los recolectores
-            base y otorga datos confiables a municipalidades e instituciones.
-          </p>
-        </div>
-
-        <div className="border border-neutral-300 bg-surface-warm p-6 sm:p-8">
-          <div className="grid gap-6 lg:grid-cols-[1fr_auto_1fr_auto_1fr] lg:items-center">
-            <div className="grid grid-cols-2 gap-3">
-              {DATOS_REGISTRO.map((dato) => (
-                <div
-                  key={dato.label}
-                  className="border border-neutral-300 bg-background px-3 py-2.5 flex flex-col gap-0.5"
-                >
-                  <span className="label-mono text-forest">{dato.label}</span>
-                  <span className="text-xs text-foreground/70">{dato.detalle}</span>
-                </div>
-              ))}
-            </div>
-
-            <ArrowConnector />
-
-            <div className="border-2 border-forest bg-background px-5 py-6 flex flex-col items-center gap-2 text-center">
-              <IconShieldCheck className="h-7 w-7 text-forest" />
-              <p className="font-heading font-semibold text-navy">Token PLST</p>
-              <p className="label-mono">Registro inmutable</p>
-            </div>
-
-            <ArrowConnector />
-
-            <div className="border border-neutral-300 px-5 py-6 flex flex-col items-center gap-2 text-center">
-              <IconEye className="h-7 w-7 text-clay" />
-              <p className="font-heading font-semibold text-navy">
-                Municipalidades e instituciones
-              </p>
-              <p className="label-mono">Datos confiables</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="flex flex-col gap-6">
-        <div>
-          <h2 className="text-2xl font-heading font-semibold text-navy">Cómo funciona</h2>
+          <h2 className="text-2xl font-heading font-semibold text-navy">Cinco materiales, un certificado por cada uno</h2>
           <p className="text-foreground/70 mt-1 max-w-2xl">
-            Un token ERC-20 respalda cada recolección registrada. Tres garantías técnicas
-            resuelven el problema de fondo.
+            Cada material tiene su propio token de certificado. Las variantes se registran en cada
+            entrega para que el comprador sepa exactamente qué respalda su certificado.
           </p>
         </div>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <FeatureCard
-            icon={<IconRoute className="h-6 w-6" />}
-            title="Trazabilidad"
-            description="El origen de cada lote es verificable: usuario, centro o municipalidad, y ruta de recolección."
-          />
-          <FeatureCard
-            icon={<IconEye className="h-6 w-6" />}
-            title="Transparencia"
-            description="Cualquier institución o ciudadano puede auditar el histórico de transacciones."
-          />
-          <FeatureCard
-            icon={<IconShieldCheck className="h-6 w-6" />}
-            title="Inmutabilidad"
-            description="Nadie altera un registro después de creado: no hay doble conteo de plástico recuperado."
-          />
-        </div>
-      </section>
-
-      <section className="grid gap-4 sm:grid-cols-2">
-        <RoleCard
-          href="/registro/usuario"
-          title="Soy un Usuario"
-          description="Registrate para poder entregar plástico y recibir tokens PLST."
-        />
-        <RoleCard
-          href="/registro/centro"
-          title="Soy un Centro Recolector"
-          description="Registra tu centro; un verificador debe aprobarlo antes de operar."
-        />
-        <RoleCard
-          href="/dashboard"
-          title="Ver Dashboard"
-          description="Estadísticas y transacciones históricas indexadas desde la chain."
-        />
-        <RoleCard
-          href="/perfil"
-          title="Mi Perfil"
-          description="Estado on-chain de tu wallet: usuario, centro verificado o municipalidad."
-        />
-      </section>
-
-      <section className="flex flex-col gap-4 pb-4">
-        <div>
-          <h2 className="text-2xl font-heading font-semibold text-navy">
-            Marco institucional y Objetivos de Desarrollo Sostenible
-          </h2>
-          <p className="text-foreground/70 mt-1 max-w-2xl">
-            Alineado con la Ley 8839 y la Política Nacional para la Gestión Integral de Residuos
-            (PNGIR 2023-2033). Toca cada ODS para ver cómo se conecta con esta investigación.
-          </p>
-        </div>
-        <div className="grid gap-3 sm:grid-cols-2">
-          {ODS.map((ods) => (
-            <details
-              key={ods.n}
-              className="group border border-neutral-300 open:border-forest transition-colors"
-            >
-              <summary className="cursor-pointer list-none flex items-center gap-4 p-4">
-                <span className="text-3xl font-heading italic font-semibold text-gold shrink-0">
-                  {ods.n}
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          {MATERIALES.map((material) => {
+            const variantes = VARIANTES_POR_MATERIAL[material];
+            return (
+              <div key={material} className="border border-neutral-300 p-4 flex flex-col gap-2">
+                <span className="text-clay">
+                  <IconLayers className="h-5 w-5" />
                 </span>
-                <span className="font-medium text-navy">{ods.label}</span>
-                <span className="ml-auto text-foreground/40 group-open:rotate-180 transition-transform">
-                  &darr;
-                </span>
-              </summary>
-              <p className="px-4 pb-4 text-sm text-foreground/70">{ods.detalle}</p>
-            </details>
-          ))}
+                <h3 className="font-heading font-semibold text-navy">{material}</h3>
+                <p className="text-xs text-foreground/60">
+                  {variantes.length > 0 ? variantes.join(" · ") : "Sin subcategorías"}
+                </p>
+              </div>
+            );
+          })}
         </div>
+        <Link href="/guia-plasticos" className="w-fit label-mono text-forest hover:underline">
+          Ver la guía de plásticos &rarr;
+        </Link>
       </section>
 
       <section className="border border-neutral-300 bg-surface-warm p-6 sm:p-8 flex flex-col gap-6">
         <div>
-          <span className="tag-mono">Cómo funciona el gas</span>
-          <p className="mt-3 text-foreground/70 max-w-2xl">
-            En las entregas gratuitas,{" "}
-            <strong className="text-forest">quien recibe el material paga el gas</strong> (el
-            Centro Recolector o la Municipalidad). El Usuario final solo necesita su wallet
-            conectada, sin necesidad de fondos en POL, para entregar su material.
+          <h2 className="text-2xl font-heading font-semibold text-navy">Cómo se reparte cada venta</h2>
+          <p className="text-foreground/70 mt-1 max-w-2xl">
+            Cuando un comprador paga un certificado, el contrato acredita el valor en el mismo
+            instante a cada participante del lote. Nadie custodia el dinero de nadie: cada quien
+            retira lo suyo cuando quiere.
           </p>
         </div>
+        <div className="flex flex-col gap-3">
+          <div className="flex h-8 w-full overflow-hidden rounded-sm border border-neutral-300">
+            {REPARTO.map((parte, index) => (
+              <div
+                key={parte.quien}
+                style={{ width: `${parte.pct}%` }}
+                className={`flex items-center justify-center font-mono text-xs text-white ${
+                  ["bg-forest", "bg-forest-light", "bg-clay", "bg-gold"][index]
+                }`}
+                title={`${parte.quien}: ${parte.pct} %`}
+              >
+                {parte.pct} %
+              </div>
+            ))}
+          </div>
+          <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4 text-sm">
+            {REPARTO.map((parte, index) => (
+              <li key={parte.quien} className="flex items-start gap-2">
+                <span
+                  className={`mt-1 h-3 w-3 shrink-0 rounded-sm ${
+                    ["bg-forest", "bg-forest-light", "bg-clay", "bg-gold"][index]
+                  }`}
+                />
+                <span>
+                  <strong className="text-navy">{parte.quien}</strong>
+                  <br />
+                  <span className="text-foreground/60 text-xs">{parte.detalle}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <p className="text-sm text-foreground/70 max-w-2xl">
+          <strong className="text-forest">La merma la paga quien la genera.</strong> Si un
+          intermediario recibió 10 000 kg y entregó 9 800, esos 200 kg se le descuentan de su
+          parte, no de la de los demás. Los separadores nunca generan merma y la plataforma nunca
+          se beneficia de la pérdida de otro.
+        </p>
+      </section>
 
+      <section className="grid gap-4 sm:grid-cols-3">
+        <FeatureCard
+          icon={<IconRoute className="h-6 w-6" />}
+          title="Trazabilidad"
+          description="Cada certificado conserva qué separadores aportaron, por qué manos pasó el lote y cuánto se perdió en cada tramo."
+        />
+        <FeatureCard
+          icon={<IconEye className="h-6 w-6" />}
+          title="Transparencia"
+          description="Cualquier institución o ciudadano puede auditar el histórico en el explorador de Polygon o en el dashboard."
+        />
+        <FeatureCard
+          icon={<IconCoin className="h-6 w-6" />}
+          title="Pago automático"
+          description="El reparto ocurre dentro de la misma transacción de compra. Sin intermediarios financieros ni cuentas por cobrar."
+        />
+      </section>
+
+      <section className="border border-neutral-300 p-6 sm:p-8 flex flex-col gap-4">
+        <div>
+          <span className="tag-mono">Cómo funciona el gas</span>
+          <p className="mt-3 text-foreground/70 max-w-2xl">
+            <strong className="text-forest">Quien recibe el material paga la transacción.</strong>{" "}
+            El separador solo necesita una wallet conectada, sin POL. Intermediarios,
+            transformadores y compradores sí necesitan POL para sus propias operaciones.
+          </p>
+        </div>
         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 py-2">
-          <GasFlowNode
-            icon={<IconWallet className="h-6 w-6" />}
-            title="Usuario"
-            caption="Sin POL en su wallet"
-          />
-
+          <GasFlowNode icon={<IconWallet className="h-6 w-6" />} title="Separador" caption="Sin POL" />
           <GasFlowConnector />
-
           <GasFlowNode
             icon={<IconFuel className="h-6 w-6" />}
-            title="Centro / Municipalidad"
-            caption="Paga el gas de la transacción"
+            title="Intermediario / Transformador"
+            caption="Paga el gas"
             highlight
           />
-
           <GasFlowConnector animado />
-
-          <GasFlowNode
-            icon={<IconShieldCheck className="h-6 w-6" />}
-            title="Blockchain"
-            caption="Registro confirmado"
-          />
+          <GasFlowNode icon={<IconShieldCheck className="h-6 w-6" />} title="Polygon" caption="Registro confirmado" />
         </div>
+      </section>
+
+      <section className="border border-amber-300 bg-amber-50 p-5 text-sm text-amber-900 flex flex-col gap-2">
+        <strong className="font-heading">Esto es una red de prueba.</strong>
+        <p>
+          El sistema corre sobre Polygon Amoy. El USDT que se usa es de prueba y los certificados
+          no tienen valor económico todavía. Sirve para probar el flujo completo con datos reales
+          de operación antes de pasar a la red principal.
+        </p>
       </section>
     </div>
   );
@@ -371,9 +347,6 @@ function GasFlowNode({
   );
 }
 
-// Linea que conecta dos nodos del flujo de gas: horizontal en desktop, vertical apilada
-// en mobile. `animado` agrega el punto dorado que recorre el tramo donde efectivamente
-// se paga el gas (Centro/Municipalidad -> Blockchain), en loop continuo.
 function GasFlowConnector({ animado }: { animado?: boolean }) {
   return (
     <>
@@ -384,34 +357,5 @@ function GasFlowConnector({ animado }: { animado?: boolean }) {
         {animado ? <span className="gas-flow-dot-vertical" aria-hidden="true" /> : null}
       </div>
     </>
-  );
-}
-
-function ArrowConnector() {
-  return (
-    <div className="flex items-center justify-center text-neutral-400">
-      <IconArrowRight className="hidden lg:block h-6 w-6" />
-      <IconArrowRight className="lg:hidden h-6 w-6 rotate-90" />
-    </div>
-  );
-}
-
-function RoleCard({
-  href,
-  title,
-  description,
-}: {
-  href: string;
-  title: string;
-  description: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="border border-neutral-300 p-4 hover:border-forest transition-colors"
-    >
-      <h3 className="font-heading font-medium text-navy">{title}</h3>
-      <p className="text-sm text-foreground/70 mt-1">{description}</p>
-    </Link>
   );
 }

@@ -34,7 +34,7 @@ const transports = {
 // modal de conexion.
 export const wagmiConfig = projectId
   ? getDefaultConfig({
-      appName: "GreenMaterialsDAPP",
+      appName: "DAPP Certificado de Transformación",
       projectId,
       chains,
       transports,

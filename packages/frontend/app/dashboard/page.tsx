@@ -1,7 +1,6 @@
 import { StatsBarChart, type StatsBarChartDatum } from "@/components/StatsBarChart";
 import { CantonMap, type CantonRow } from "@/components/CantonMap";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+import { API_URL } from "@/lib/apiUrl";
 
 interface Stats {
   totales: {

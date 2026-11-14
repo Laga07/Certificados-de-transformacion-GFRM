@@ -16,6 +16,7 @@
     "contracts:export": "npm run export-abi --workspace=packages/contracts",
     "backend:migrate": "npm run prisma:migrate --workspace=packages/backend",
     "backend:generate": "npm run prisma:generate --workspace=packages/backend",
+    "backend:reset-indexed": "npm run reset-indexed --workspace=packages/backend",
     "frontend:generate": "npm run generate --workspace=packages/frontend",
     "dev": "concurrently -n api,indexer,web -c blue,yellow,green \"npm run dev:api --workspace=packages/backend\" \"npm run dev:indexer --workspace=packages/backend\" \"npm run dev --workspace=packages/frontend\"",
     "backend:typecheck": "npm run typecheck --workspace=packages/backend",

@@ -123,6 +123,43 @@ export async function handleTransformadorVerificado(
   });
 }
 
+// Rol enum de TiposComunes.sol: 0 Ninguno, 1 Separador, 2 Intermediario, 3 Transformador,
+// 4 Comprador. Los eventos de gobernanza traen el rol para no tener que adivinar en que
+// tabla vive la wallet.
+const ROL_SEPARADOR = 1;
+const ROL_INTERMEDIARIO = 2;
+const ROL_TRANSFORMADOR = 3;
+const ROL_COMPRADOR = 4;
+
+export async function handleEntidadActivoCambiado(prisma: Prisma, log: ethers.EventLog, activo: boolean) {
+  const [wallet, rol] = log.args as unknown as [string, bigint, string];
+  const data = { activo };
+  switch (Number(rol)) {
+    case ROL_SEPARADOR:
+      return prisma.separador.updateMany({ where: { wallet }, data });
+    case ROL_INTERMEDIARIO:
+      return prisma.intermediario.updateMany({ where: { wallet }, data });
+    case ROL_TRANSFORMADOR:
+      return prisma.transformador.updateMany({ where: { wallet }, data });
+    case ROL_COMPRADOR:
+      return prisma.comprador.updateMany({ where: { wallet }, data });
+    default:
+      throw new Error(`Rol desconocido ${rol} en evento de activacion para ${wallet}`);
+  }
+}
+
+export async function handleVerificacionRevocada(prisma: Prisma, log: ethers.EventLog) {
+  const [wallet, rol] = log.args as unknown as [string, bigint, string];
+  const data = { verificado: false, verificadoPor: null, verificadoEn: null };
+  if (Number(rol) === ROL_INTERMEDIARIO) {
+    return prisma.intermediario.updateMany({ where: { wallet }, data });
+  }
+  if (Number(rol) === ROL_TRANSFORMADOR) {
+    return prisma.transformador.updateMany({ where: { wallet }, data });
+  }
+  throw new Error(`VerificacionRevocada con rol inesperado ${rol} para ${wallet}`);
+}
+
 export async function handleCompradorRegistrado(
   prisma: Prisma,
   contracts: IndexedContracts,

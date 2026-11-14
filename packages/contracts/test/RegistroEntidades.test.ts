@@ -163,4 +163,99 @@ describe("RegistroEntidades", function () {
     expect(await registro.rolDe(comprador.address)).to.equal(4n); // Rol.Comprador
     expect(await registro.rolDe(otraCuenta.address)).to.equal(0n); // Rol.Ninguno
   });
+
+  describe("gobernanza operativa (desactivar / reactivar / revocar)", function () {
+    it("desactivar un separador lo saca de esSeparador pero conserva su rol registrado", async function () {
+      const { registro, admin, separador } = await connection.networkHelpers.loadFixture(deployRegistroFixture);
+      await registro.connect(separador).registrarSeparador(hashOf("c1"), PROVINCIA_SAN_JOSE, 1, 0);
+
+      await expect(registro.connect(admin).desactivarEntidad(separador.address))
+        .to.emit(registro, "EntidadDesactivada")
+        .withArgs(separador.address, 1n, admin.address);
+
+      expect(await registro.esSeparador(separador.address)).to.equal(false);
+      expect(await registro.estaActiva(separador.address)).to.equal(false);
+      expect(await registro.rolDe(separador.address)).to.equal(1n); // sigue registrado como Separador
+
+      // No puede "escaparse" registrandose con otra identidad desde la misma wallet.
+      await expect(
+        registro.connect(separador).registrarComprador(hashOf("n"), hashOf("c-otra"), false),
+      ).to.be.revertedWith("La wallet ya tiene un rol asignado");
+
+      await expect(registro.connect(admin).desactivarEntidad(separador.address)).to.be.revertedWith(
+        "Ya esta desactivada",
+      );
+
+      await expect(registro.connect(admin).reactivarEntidad(separador.address))
+        .to.emit(registro, "EntidadReactivada")
+        .withArgs(separador.address, 1n, admin.address);
+      expect(await registro.esSeparador(separador.address)).to.equal(true);
+    });
+
+    it("desactivar un intermediario verificado lo saca de esIntermediarioVerificado sin perder la verificacion", async function () {
+      const { registro, admin, intermediario } = await connection.networkHelpers.loadFixture(deployRegistroFixture);
+      await registro
+        .connect(intermediario)
+        .registrarIntermediario(hashOf("n"), hashOf("c"), PROVINCIA_SAN_JOSE, 1, 1);
+      await registro.connect(admin).verificarIntermediario(intermediario.address);
+
+      await registro.connect(admin).desactivarEntidad(intermediario.address);
+      expect(await registro.esIntermediarioVerificado(intermediario.address)).to.equal(false);
+
+      await registro.connect(admin).reactivarEntidad(intermediario.address);
+      expect(await registro.esIntermediarioVerificado(intermediario.address)).to.equal(true);
+    });
+
+    it("revocarVerificacion vuelve a un transformador al estado 'registrado sin verificar'", async function () {
+      const { registro, admin, transformador, comprador } = await connection.networkHelpers.loadFixture(
+        deployRegistroFixture,
+      );
+      await registro
+        .connect(transformador)
+        .registrarTransformador(hashOf("n"), hashOf("c"), PROVINCIA_SAN_JOSE, 1);
+
+      await expect(registro.connect(admin).revocarVerificacion(transformador.address)).to.be.revertedWith(
+        "No esta verificado",
+      );
+
+      await registro.connect(admin).verificarTransformador(transformador.address);
+      await expect(registro.connect(admin).revocarVerificacion(transformador.address))
+        .to.emit(registro, "VerificacionRevocada")
+        .withArgs(transformador.address, 3n, admin.address);
+
+      expect(await registro.esTransformadorVerificado(transformador.address)).to.equal(false);
+      expect(await registro.estaActiva(transformador.address)).to.equal(true);
+
+      // Se puede volver a verificar despues de revocar.
+      await registro.connect(admin).verificarTransformador(transformador.address);
+      expect(await registro.esTransformadorVerificado(transformador.address)).to.equal(true);
+
+      // Un comprador no tiene verificacion que revocar.
+      await registro.connect(comprador).registrarComprador(hashOf("n2"), hashOf("c2"), false);
+      await expect(registro.connect(admin).revocarVerificacion(comprador.address)).to.be.revertedWith(
+        "Solo intermediarios y transformadores se verifican",
+      );
+    });
+
+    it("solo VERIFIER_ROLE puede desactivar, reactivar o revocar; una wallet sin rol no se puede tocar", async function () {
+      const { registro, admin, separador, otraCuenta } = await connection.networkHelpers.loadFixture(
+        deployRegistroFixture,
+      );
+      await registro.connect(separador).registrarSeparador(hashOf("c1"), PROVINCIA_SAN_JOSE, 1, 0);
+
+      await expect(
+        registro.connect(otraCuenta).desactivarEntidad(separador.address),
+      ).to.be.revertedWithCustomError(registro, "AccessControlUnauthorizedAccount");
+      await expect(
+        registro.connect(otraCuenta).reactivarEntidad(separador.address),
+      ).to.be.revertedWithCustomError(registro, "AccessControlUnauthorizedAccount");
+      await expect(
+        registro.connect(otraCuenta).revocarVerificacion(separador.address),
+      ).to.be.revertedWithCustomError(registro, "AccessControlUnauthorizedAccount");
+
+      await expect(registro.connect(admin).desactivarEntidad(otraCuenta.address)).to.be.revertedWith(
+        "Wallet sin rol registrado",
+      );
+    });
+  });
 });

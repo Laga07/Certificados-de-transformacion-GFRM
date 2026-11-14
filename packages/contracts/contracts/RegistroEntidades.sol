@@ -60,11 +60,24 @@ interface IRegistroEntidades {
     function verificarIntermediario(address wallet) external;
     function verificarTransformador(address wallet) external;
 
+    // Gobernanza operativa (VERIFIER_ROLE): sacar del sistema a una entidad que incumple y
+    // volverla a habilitar. Una entidad desactivada conserva su registro (no puede volver a
+    // registrarse con otra identidad desde la misma wallet) pero deja de pasar los chequeos
+    // esSeparador / esIntermediarioVerificado / esTransformadorVerificado / esComprador, asi
+    // que no puede recibir ni mover material, ni transformar, ni comprar.
+    function desactivarEntidad(address wallet) external;
+    function reactivarEntidad(address wallet) external;
+    // Solo Intermediario/Transformador: vuelve a "registrado, sin verificar". Para volver a
+    // operar hace falta una nueva verificacion.
+    function revocarVerificacion(address wallet) external;
+
     function esSeparador(address account) external view returns (bool);
     function esIntermediarioVerificado(address account) external view returns (bool);
     function esTransformadorVerificado(address account) external view returns (bool);
     function esComprador(address account) external view returns (bool);
+    // Rol REGISTRADO para la wallet (sin importar si esta activa) -- ver estaActiva.
     function rolDe(address account) external view returns (Rol);
+    function estaActiva(address account) external view returns (bool);
 
     event SeparadorRegistrado(address indexed wallet, bytes32 identidadHash, uint8 tipoSeparador);
     event IntermediarioRegistrado(address indexed wallet, bytes32 nombreHash, uint8 subtipo);
@@ -72,6 +85,9 @@ interface IRegistroEntidades {
     event TransformadorRegistrado(address indexed wallet, bytes32 nombreHash);
     event TransformadorVerificado(address indexed wallet, address indexed verificador);
     event CompradorRegistrado(address indexed wallet, bytes32 nombreHash, bool empresaObligadaLey9786);
+    event EntidadDesactivada(address indexed wallet, Rol rol, address indexed por);
+    event EntidadReactivada(address indexed wallet, Rol rol, address indexed por);
+    event VerificacionRevocada(address indexed wallet, Rol rol, address indexed por);
 }
 
 /// @notice Generaliza RegistroEntidades de DAPP Plastico Tesis de 3 a 5 roles (Separador,
@@ -247,6 +263,40 @@ contract RegistroEntidades is
         emit TransformadorVerificado(wallet, msg.sender);
     }
 
+    // ==== GOBERNANZA OPERATIVA (VERIFIER_ROLE) ====
+
+    function desactivarEntidad(address wallet) external override onlyRole(VERIFIER_ROLE) {
+        Rol rol = _rolRegistrado(wallet);
+        require(rol != Rol.Ninguno, "Wallet sin rol registrado");
+        require(_estaActiva(wallet, rol), "Ya esta desactivada");
+        _setActivo(wallet, rol, false);
+        emit EntidadDesactivada(wallet, rol, msg.sender);
+    }
+
+    function reactivarEntidad(address wallet) external override onlyRole(VERIFIER_ROLE) {
+        Rol rol = _rolRegistrado(wallet);
+        require(rol != Rol.Ninguno, "Wallet sin rol registrado");
+        require(!_estaActiva(wallet, rol), "Ya esta activa");
+        _setActivo(wallet, rol, true);
+        emit EntidadReactivada(wallet, rol, msg.sender);
+    }
+
+    function revocarVerificacion(address wallet) external override onlyRole(VERIFIER_ROLE) {
+        Rol rol = _rolRegistrado(wallet);
+        if (rol == Rol.Intermediario) {
+            require(intermediarios[wallet].verificado, "No esta verificado");
+            intermediarios[wallet].verificado = false;
+        } else if (rol == Rol.Transformador) {
+            require(transformadores[wallet].verificado, "No esta verificado");
+            transformadores[wallet].verificado = false;
+        } else {
+            revert("Solo intermediarios y transformadores se verifican");
+        }
+        emit VerificacionRevocada(wallet, rol, msg.sender);
+    }
+
+    // ==== VISTAS ====
+
     function esSeparador(address account) external view override returns (bool) {
         return separadores[account].activo;
     }
@@ -263,19 +313,44 @@ contract RegistroEntidades is
         return compradores[account].activo;
     }
 
+    /// @notice Rol registrado para la wallet, activa o no. Para saber si puede operar hoy,
+    /// usar estaActiva() o los chequeos es*() de arriba.
     function rolDe(address account) external view override returns (Rol) {
-        if (separadores[account].activo) return Rol.Separador;
-        if (intermediarios[account].activo) return Rol.Intermediario;
-        if (transformadores[account].activo) return Rol.Transformador;
-        if (compradores[account].activo) return Rol.Comprador;
+        return _rolRegistrado(account);
+    }
+
+    function estaActiva(address account) external view override returns (bool) {
+        Rol rol = _rolRegistrado(account);
+        return rol != Rol.Ninguno && _estaActiva(account, rol);
+    }
+
+    // ==== INTERNAS ====
+
+    function _rolRegistrado(address wallet) internal view returns (Rol) {
+        if (separadores[wallet].wallet != address(0)) return Rol.Separador;
+        if (intermediarios[wallet].cedulaHash != bytes32(0)) return Rol.Intermediario;
+        if (transformadores[wallet].cedulaHash != bytes32(0)) return Rol.Transformador;
+        if (compradores[wallet].cedulaHash != bytes32(0)) return Rol.Comprador;
         return Rol.Ninguno;
     }
 
+    function _estaActiva(address wallet, Rol rol) internal view returns (bool) {
+        if (rol == Rol.Separador) return separadores[wallet].activo;
+        if (rol == Rol.Intermediario) return intermediarios[wallet].activo;
+        if (rol == Rol.Transformador) return transformadores[wallet].activo;
+        if (rol == Rol.Comprador) return compradores[wallet].activo;
+        return false;
+    }
+
+    function _setActivo(address wallet, Rol rol, bool activo) internal {
+        if (rol == Rol.Separador) separadores[wallet].activo = activo;
+        else if (rol == Rol.Intermediario) intermediarios[wallet].activo = activo;
+        else if (rol == Rol.Transformador) transformadores[wallet].activo = activo;
+        else if (rol == Rol.Comprador) compradores[wallet].activo = activo;
+    }
+
     function _tieneAlgunRol(address wallet) internal view returns (bool) {
-        return separadores[wallet].wallet != address(0)
-            || intermediarios[wallet].cedulaHash != bytes32(0)
-            || transformadores[wallet].cedulaHash != bytes32(0)
-            || compradores[wallet].cedulaHash != bytes32(0);
+        return _rolRegistrado(wallet) != Rol.Ninguno;
     }
 
     function _authorizeUpgrade(address newImplementation)

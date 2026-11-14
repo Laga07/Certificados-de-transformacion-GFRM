@@ -4,6 +4,8 @@ import { logger } from "../lib/logger.js";
 import type { IndexedContracts } from "../lib/contracts.js";
 import {
   handleCompradorRegistrado,
+  handleEntidadActivoCambiado,
+  handleVerificacionRevocada,
   handleIntermediarioRegistrado,
   handleIntermediarioVerificado,
   handleSeparadorRegistrado,
@@ -46,6 +48,9 @@ const REGISTRO_EVENTS = [
   "TransformadorRegistrado",
   "TransformadorVerificado",
   "CompradorRegistrado",
+  "EntidadDesactivada",
+  "EntidadReactivada",
+  "VerificacionRevocada",
 ];
 const CUSTODIA_EVENTS = [
   "EntregaRegistrada",
@@ -163,6 +168,9 @@ async function dispatch(
     if (eventName === "TransformadorVerificado")
       return handleTransformadorVerificado(prisma, provider, log);
     if (eventName === "CompradorRegistrado") return handleCompradorRegistrado(prisma, contracts, log);
+    if (eventName === "EntidadDesactivada") return handleEntidadActivoCambiado(prisma, log, false);
+    if (eventName === "EntidadReactivada") return handleEntidadActivoCambiado(prisma, log, true);
+    if (eventName === "VerificacionRevocada") return handleVerificacionRevocada(prisma, log);
   }
 
   if (contractName === "custodia") {

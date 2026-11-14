@@ -122,6 +122,66 @@ describe("MercadoCertificados", function () {
     );
   });
 
+  describe("gobernanza: setPlataforma y rescatarRemanente", function () {
+    it("setPlataforma cambia el destinatario del 15% solo para ventas futuras", async function () {
+      const { mercado, usdt, admin, plataforma, transformador, comprador, otraCuenta } =
+        await connection.networkHelpers.loadFixture(cadenaTabla12Fixture);
+      await mercado.connect(transformador).registrarTransformacion([1n], 9_506n, 1n);
+      await usdt.connect(admin).mint(comprador.address, 1_000_000_000n);
+      await usdt.connect(comprador).approve(await mercado.getAddress(), 1_000_000_000n);
+
+      // Primera mitad con la plataforma original.
+      await mercado.connect(comprador).comprarCertificado(1n, 4_753n);
+      const saldoPlataformaVieja = await mercado.saldoPendiente(plataforma.address);
+      expect(saldoPlataformaVieja).to.be.greaterThan(0n);
+
+      await expect(mercado.connect(otraCuenta).setPlataforma(otraCuenta.address)).to.be.revertedWithCustomError(
+        mercado,
+        "AccessControlUnauthorizedAccount",
+      );
+      await expect(mercado.connect(admin).setPlataforma(ethers.ZeroAddress)).to.be.revertedWith(
+        "plataforma invalida",
+      );
+
+      await expect(mercado.connect(admin).setPlataforma(otraCuenta.address))
+        .to.emit(mercado, "PlataformaActualizada")
+        .withArgs(plataforma.address, otraCuenta.address);
+      expect(await mercado.plataforma()).to.equal(otraCuenta.address);
+
+      // Segunda mitad: el 15% va a la nueva; el saldo viejo no se mueve y sigue retirable.
+      await mercado.connect(comprador).comprarCertificado(1n, 4_753n);
+      expect(await mercado.saldoPendiente(plataforma.address)).to.equal(saldoPlataformaVieja);
+      expect(await mercado.saldoPendiente(otraCuenta.address)).to.be.greaterThan(0n);
+
+      await mercado.connect(otraCuenta).retirarPago(plataforma.address); // permissionless
+      expect(await usdt.balanceOf(plataforma.address)).to.equal(saldoPlataformaVieja);
+    });
+
+    it("rescatarRemanente solo lo puede llamar el admin y revierte si no hay remanente", async function () {
+      const { mercado, admin, otraCuenta } = await connection.networkHelpers.loadFixture(deployFixture);
+
+      expect(await mercado.remanenteNoAcreditado()).to.equal(0n);
+      await expect(
+        mercado.connect(otraCuenta).rescatarRemanente(otraCuenta.address),
+      ).to.be.revertedWithCustomError(mercado, "AccessControlUnauthorizedAccount");
+      await expect(mercado.connect(admin).rescatarRemanente(ethers.ZeroAddress)).to.be.revertedWith(
+        "destino invalido",
+      );
+      await expect(mercado.connect(admin).rescatarRemanente(admin.address)).to.be.revertedWith("Sin remanente");
+    });
+
+    it("una venta normal no deja remanente: lo cobrado se acredita completo", async function () {
+      const { mercado, usdt, admin, transformador, comprador } =
+        await connection.networkHelpers.loadFixture(cadenaTabla12Fixture);
+      await mercado.connect(transformador).registrarTransformacion([1n], 9_506n, 1n);
+      await usdt.connect(admin).mint(comprador.address, 1_000_000_000n);
+      await usdt.connect(comprador).approve(await mercado.getAddress(), 1_000_000_000n);
+
+      await mercado.connect(comprador).comprarCertificado(1n, 9_506n);
+      expect(await mercado.remanenteNoAcreditado()).to.equal(0n);
+    });
+  });
+
   describe("venta primaria -- reproduce el ejemplo de la Tabla 12 del documento", function () {
     async function emisionFixture() {
       const base = await connection.networkHelpers.loadFixture(cadenaTabla12Fixture);

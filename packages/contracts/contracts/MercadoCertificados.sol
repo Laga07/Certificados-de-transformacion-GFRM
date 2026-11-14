@@ -66,6 +66,12 @@ contract MercadoCertificados is
     /// `transfer` a cada destinatario dentro de la venta.
     mapping(address => uint256) public saldoPendiente;
 
+    /// @notice USDT cobrado en ventas que la cascada de merma no pudo acreditar a nadie (caso
+    /// extremo: el faltante supera incluso la base completa de los separadores -- ver
+    /// _repartirVenta). Se lleva la cuenta explicita para que ese dinero nunca quede
+    /// "atrapado" sin dueño en el contrato: el admin lo puede rescatar con rescatarRemanente.
+    uint256 public remanenteNoAcreditado;
+
     /// @notice Lista de separadores que aportaron a una emision -- el indexer la usa junto
     /// con aporteKgDeEmision para reconstruir el reparto de cada venta sin tener que leer
     /// storage interno directamente.
@@ -95,6 +101,9 @@ contract MercadoCertificados is
     event PagoAcreditado(uint256 indexed emisionId, address indexed destinatario, uint256 monto);
     event PagoRetirado(address indexed destinatario, uint256 monto);
     event CertificadoRetirado(address indexed comprador, Material material, uint256 cantidadKg, bytes32 informeRef, uint32 periodo);
+    event PlataformaActualizada(address indexed anterior, address indexed nueva);
+    event RemanenteRegistrado(uint256 indexed emisionId, uint256 monto);
+    event RemanenteRescatado(address indexed destino, uint256 monto);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -132,6 +141,17 @@ contract MercadoCertificados is
         _unpause();
     }
 
+    /// @notice Cambia la direccion que recibe el 15% de la plataforma en las ventas FUTURAS.
+    /// El saldo ya acreditado a la direccion anterior sigue siendo retirable por ella (es un
+    /// ledger por direccion, no se mueve). Pensado para apuntar a un Safe multisig antes de
+    /// operar con fondos reales sin tener que redesplegar.
+    function setPlataforma(address nueva) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(nueva != address(0), "plataforma invalida");
+        address anterior = plataforma;
+        plataforma = nueva;
+        emit PlataformaActualizada(anterior, nueva);
+    }
+
     // ==== CATALOGO: UN CERTIFICADO ERC20 POR MATERIAL ====
 
     function desplegarCertificado(
@@ -157,7 +177,7 @@ contract MercadoCertificados is
         uint256[] calldata loteIds,
         uint256 kgTransformados,
         uint256 precioUSDTporKg
-    ) external whenNotPaused returns (uint256 emisionId) {
+    ) external whenNotPaused nonReentrant returns (uint256 emisionId) {
         require(registro.esTransformadorVerificado(msg.sender), "No es transformador verificado");
         require(kgTransformados > 0, "kgTransformados debe ser > 0");
         require(precioUSDTporKg > 0, "precio debe ser > 0");
@@ -260,9 +280,10 @@ contract MercadoCertificados is
         // es explicita en que "la plataforma no participa" de cubrir merma de nadie. Si fuera
         // residuo contra valorTotal, un faltante tan grande que ni el grupo de separadores
         // alcance a cubrirlo (ver mas abajo) terminaria pagandoselo a la plataforma como un
-        // sobrante no merecido. Con este diseno, ese caso extremo simplemente deja el
-        // remanente sin acreditar a nadie (se queda como balance del contrato) -- mas seguro
-        // que premiar a la plataforma por una perdida ajena.
+        // sobrante no merecido. Con este diseno, ese caso extremo deja el remanente sin
+        // acreditar a nadie: se contabiliza aparte en remanenteNoAcreditado (ver el final de
+        // esta funcion) para que el admin lo pueda rescatar -- mas seguro que premiar a la
+        // plataforma automaticamente por una perdida ajena.
         uint256 basePlataforma = valorBaseTotal - baseSeparadores - baseIntermediariosTotal - baseTransformador;
 
         address[] storage eslabones = _eslabonesDeEmision[emisionId];
@@ -370,6 +391,12 @@ contract MercadoCertificados is
 
         saldoPendiente[plataforma] += pagoPlataforma;
         emit PagoAcreditado(emisionId, plataforma, pagoPlataforma);
+
+        uint256 remanente = valorTotal - totalAcreditado;
+        if (remanente > 0) {
+            remanenteNoAcreditado += remanente;
+            emit RemanenteRegistrado(emisionId, remanente);
+        }
     }
 
     // ==== RETIRO DE PAGOS (permissionless, ver seccion 2.3) ====
@@ -380,6 +407,19 @@ contract MercadoCertificados is
         saldoPendiente[destinatario] = 0;
         usdt.safeTransfer(destinatario, monto);
         emit PagoRetirado(destinatario, monto);
+    }
+
+    /// @notice Saca del contrato el USDT que ninguna venta pudo acreditar (ver
+    /// remanenteNoAcreditado). Solo admin: es una decision de gobernanza a quien va ese
+    /// dinero (devolverlo a los separadores afectados, un fondo de compensacion, etc.), no
+    /// algo que el contrato deba decidir solo.
+    function rescatarRemanente(address destino) external onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant {
+        require(destino != address(0), "destino invalido");
+        uint256 monto = remanenteNoAcreditado;
+        require(monto > 0, "Sin remanente");
+        remanenteNoAcreditado = 0;
+        usdt.safeTransfer(destino, monto);
+        emit RemanenteRescatado(destino, monto);
     }
 
     // ==== RETIRO DE CERTIFICADO (uso en un informe de cumplimiento) ====
@@ -406,5 +446,5 @@ contract MercadoCertificados is
     {}
 
     /// @dev Reservado para variables de estado de futuras versiones (patron UUPS).
-    uint256[44] private __gap;
+    uint256[43] private __gap;
 }

@@ -26,3 +26,28 @@ jobs:
 
       - name: Typecheck + lint frontend
         run: npm run frontend:typecheck && npm run frontend:lint
+
+  # Analisis estatico de los contratos (plan de produccion, A8). Empieza como informativo
+  # (continue-on-error) hasta confirmar que crytic-compile entiende este proyecto de Hardhat 3
+  # sin falsos positivos; despues de revisar el primer reporte, quitar continue-on-error y
+  # dejar fail-on en "medium" o "high".
+  slither:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Slither
+        uses: crytic/slither-action@v0.4.1
+        with:
+          target: packages/contracts
+          node-version: 22
+          fail-on: high
+          slither-args: --filter-paths "node_modules|mocks"

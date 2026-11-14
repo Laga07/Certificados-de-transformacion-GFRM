@@ -287,6 +287,36 @@ export const iRegistroEntidadesAbi = [
         type: 'address',
         indexed: true,
       },
+      { name: 'rol', internalType: 'enum Rol', type: 'uint8', indexed: false },
+      { name: 'por', internalType: 'address', type: 'address', indexed: true },
+    ],
+    name: 'EntidadDesactivada',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'wallet',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'rol', internalType: 'enum Rol', type: 'uint8', indexed: false },
+      { name: 'por', internalType: 'address', type: 'address', indexed: true },
+    ],
+    name: 'EntidadReactivada',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'wallet',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
       {
         name: 'nombreHash',
         internalType: 'bytes32',
@@ -380,6 +410,28 @@ export const iRegistroEntidadesAbi = [
     name: 'TransformadorVerificado',
   },
   {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'wallet',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'rol', internalType: 'enum Rol', type: 'uint8', indexed: false },
+      { name: 'por', internalType: 'address', type: 'address', indexed: true },
+    ],
+    name: 'VerificacionRevocada',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'wallet', internalType: 'address', type: 'address' }],
+    name: 'desactivarEntidad',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
     type: 'function',
     inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
     name: 'esComprador',
@@ -406,6 +458,20 @@ export const iRegistroEntidadesAbi = [
     name: 'esTransformadorVerificado',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
     stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'estaActiva',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'wallet', internalType: 'address', type: 'address' }],
+    name: 'reactivarEntidad',
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
     type: 'function',
@@ -452,6 +518,13 @@ export const iRegistroEntidadesAbi = [
       { name: '_cantonId', internalType: 'uint8', type: 'uint8' },
     ],
     name: 'registrarTransformador',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'wallet', internalType: 'address', type: 'address' }],
+    name: 'revocarVerificacion',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -1011,6 +1084,63 @@ export const mercadoCertificadosAbi = [
     type: 'event',
     anonymous: false,
     inputs: [
+      {
+        name: 'anterior',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'nueva',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'PlataformaActualizada',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'emisionId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'monto',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'RemanenteRegistrado',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'destino',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'monto',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'RemanenteRescatado',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
       { name: 'role', internalType: 'bytes32', type: 'bytes32', indexed: true },
       {
         name: 'previousAdminRole',
@@ -1371,11 +1501,25 @@ export const mercadoCertificadosAbi = [
   },
   {
     type: 'function',
+    inputs: [],
+    name: 'remanenteNoAcreditado',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [
       { name: 'role', internalType: 'bytes32', type: 'bytes32' },
       { name: 'callerConfirmation', internalType: 'address', type: 'address' },
     ],
     name: 'renounceRole',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'destino', internalType: 'address', type: 'address' }],
+    name: 'rescatarRemanente',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -1423,6 +1567,13 @@ export const mercadoCertificadosAbi = [
     name: 'separadoresDeEmision',
     outputs: [{ name: '', internalType: 'address[]', type: 'address[]' }],
     stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'nueva', internalType: 'address', type: 'address' }],
+    name: 'setPlataforma',
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
     type: 'function',
@@ -1775,6 +1926,36 @@ export const registroEntidadesAbi = [
     anonymous: false,
     inputs: [
       {
+        name: 'wallet',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'rol', internalType: 'enum Rol', type: 'uint8', indexed: false },
+      { name: 'por', internalType: 'address', type: 'address', indexed: true },
+    ],
+    name: 'EntidadDesactivada',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'wallet',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'rol', internalType: 'enum Rol', type: 'uint8', indexed: false },
+      { name: 'por', internalType: 'address', type: 'address', indexed: true },
+    ],
+    name: 'EntidadReactivada',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
         name: 'version',
         internalType: 'uint64',
         type: 'uint64',
@@ -1959,6 +2140,21 @@ export const registroEntidadesAbi = [
     name: 'Upgraded',
   },
   {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'wallet',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'rol', internalType: 'enum Rol', type: 'uint8', indexed: false },
+      { name: 'por', internalType: 'address', type: 'address', indexed: true },
+    ],
+    name: 'VerificacionRevocada',
+  },
+  {
     type: 'function',
     inputs: [],
     name: 'DEFAULT_ADMIN_ROLE',
@@ -1994,6 +2190,13 @@ export const registroEntidadesAbi = [
   },
   {
     type: 'function',
+    inputs: [{ name: 'wallet', internalType: 'address', type: 'address' }],
+    name: 'desactivarEntidad',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
     name: 'esComprador',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
@@ -2017,6 +2220,13 @@ export const registroEntidadesAbi = [
     type: 'function',
     inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
     name: 'esTransformadorVerificado',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'estaActiva',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
     stateMutability: 'view',
   },
@@ -2093,6 +2303,13 @@ export const registroEntidadesAbi = [
   },
   {
     type: 'function',
+    inputs: [{ name: 'wallet', internalType: 'address', type: 'address' }],
+    name: 'reactivarEntidad',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     inputs: [
       { name: 'nombreHash', internalType: 'bytes32', type: 'bytes32' },
       { name: 'cedulaHash', internalType: 'bytes32', type: 'bytes32' },
@@ -2146,6 +2363,13 @@ export const registroEntidadesAbi = [
       { name: 'callerConfirmation', internalType: 'address', type: 'address' },
     ],
     name: 'renounceRole',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'wallet', internalType: 'address', type: 'address' }],
+    name: 'revocarVerificacion',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -3480,6 +3704,15 @@ export const useReadIRegistroEntidadesEsTransformadorVerificado =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"estaActiva"`
+ */
+export const useReadIRegistroEntidadesEstaActiva =
+  /*#__PURE__*/ createUseReadContract({
+    abi: iRegistroEntidadesAbi,
+    functionName: 'estaActiva',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"rolDe"`
  */
 export const useReadIRegistroEntidadesRolDe =
@@ -3494,6 +3727,24 @@ export const useReadIRegistroEntidadesRolDe =
 export const useWriteIRegistroEntidades = /*#__PURE__*/ createUseWriteContract({
   abi: iRegistroEntidadesAbi,
 })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"desactivarEntidad"`
+ */
+export const useWriteIRegistroEntidadesDesactivarEntidad =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: iRegistroEntidadesAbi,
+    functionName: 'desactivarEntidad',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"reactivarEntidad"`
+ */
+export const useWriteIRegistroEntidadesReactivarEntidad =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: iRegistroEntidadesAbi,
+    functionName: 'reactivarEntidad',
+  })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"registrarComprador"`
@@ -3532,6 +3783,15 @@ export const useWriteIRegistroEntidadesRegistrarTransformador =
   })
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"revocarVerificacion"`
+ */
+export const useWriteIRegistroEntidadesRevocarVerificacion =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: iRegistroEntidadesAbi,
+    functionName: 'revocarVerificacion',
+  })
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"verificarIntermediario"`
  */
 export const useWriteIRegistroEntidadesVerificarIntermediario =
@@ -3554,6 +3814,24 @@ export const useWriteIRegistroEntidadesVerificarTransformador =
  */
 export const useSimulateIRegistroEntidades =
   /*#__PURE__*/ createUseSimulateContract({ abi: iRegistroEntidadesAbi })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"desactivarEntidad"`
+ */
+export const useSimulateIRegistroEntidadesDesactivarEntidad =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: iRegistroEntidadesAbi,
+    functionName: 'desactivarEntidad',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"reactivarEntidad"`
+ */
+export const useSimulateIRegistroEntidadesReactivarEntidad =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: iRegistroEntidadesAbi,
+    functionName: 'reactivarEntidad',
+  })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"registrarComprador"`
@@ -3592,6 +3870,15 @@ export const useSimulateIRegistroEntidadesRegistrarTransformador =
   })
 
 /**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"revocarVerificacion"`
+ */
+export const useSimulateIRegistroEntidadesRevocarVerificacion =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: iRegistroEntidadesAbi,
+    functionName: 'revocarVerificacion',
+  })
+
+/**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `functionName` set to `"verificarIntermediario"`
  */
 export const useSimulateIRegistroEntidadesVerificarIntermediario =
@@ -3622,6 +3909,24 @@ export const useWatchIRegistroEntidadesCompradorRegistradoEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: iRegistroEntidadesAbi,
     eventName: 'CompradorRegistrado',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `eventName` set to `"EntidadDesactivada"`
+ */
+export const useWatchIRegistroEntidadesEntidadDesactivadaEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: iRegistroEntidadesAbi,
+    eventName: 'EntidadDesactivada',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `eventName` set to `"EntidadReactivada"`
+ */
+export const useWatchIRegistroEntidadesEntidadReactivadaEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: iRegistroEntidadesAbi,
+    eventName: 'EntidadReactivada',
   })
 
 /**
@@ -3667,6 +3972,15 @@ export const useWatchIRegistroEntidadesTransformadorVerificadoEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: iRegistroEntidadesAbi,
     eventName: 'TransformadorVerificado',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iRegistroEntidadesAbi}__ and `eventName` set to `"VerificacionRevocada"`
+ */
+export const useWatchIRegistroEntidadesVerificacionRevocadaEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: iRegistroEntidadesAbi,
+    eventName: 'VerificacionRevocada',
   })
 
 /**
@@ -3955,6 +4269,15 @@ export const useReadMercadoCertificadosRegistro =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"remanenteNoAcreditado"`
+ */
+export const useReadMercadoCertificadosRemanenteNoAcreditado =
+  /*#__PURE__*/ createUseReadContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'remanenteNoAcreditado',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"saldoPendiente"`
  */
 export const useReadMercadoCertificadosSaldoPendiente =
@@ -4070,6 +4393,15 @@ export const useWriteMercadoCertificadosRenounceRole =
   })
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"rescatarRemanente"`
+ */
+export const useWriteMercadoCertificadosRescatarRemanente =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'rescatarRemanente',
+  })
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"retirarCertificado"`
  */
 export const useWriteMercadoCertificadosRetirarCertificado =
@@ -4094,6 +4426,15 @@ export const useWriteMercadoCertificadosRevokeRole =
   /*#__PURE__*/ createUseWriteContract({
     abi: mercadoCertificadosAbi,
     functionName: 'revokeRole',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"setPlataforma"`
+ */
+export const useWriteMercadoCertificadosSetPlataforma =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'setPlataforma',
   })
 
 /**
@@ -4184,6 +4525,15 @@ export const useSimulateMercadoCertificadosRenounceRole =
   })
 
 /**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"rescatarRemanente"`
+ */
+export const useSimulateMercadoCertificadosRescatarRemanente =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'rescatarRemanente',
+  })
+
+/**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"retirarCertificado"`
  */
 export const useSimulateMercadoCertificadosRetirarCertificado =
@@ -4208,6 +4558,15 @@ export const useSimulateMercadoCertificadosRevokeRole =
   /*#__PURE__*/ createUseSimulateContract({
     abi: mercadoCertificadosAbi,
     functionName: 'revokeRole',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"setPlataforma"`
+ */
+export const useSimulateMercadoCertificadosSetPlataforma =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'setPlataforma',
   })
 
 /**
@@ -4295,6 +4654,33 @@ export const useWatchMercadoCertificadosPausedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: mercadoCertificadosAbi,
     eventName: 'Paused',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `eventName` set to `"PlataformaActualizada"`
+ */
+export const useWatchMercadoCertificadosPlataformaActualizadaEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: mercadoCertificadosAbi,
+    eventName: 'PlataformaActualizada',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `eventName` set to `"RemanenteRegistrado"`
+ */
+export const useWatchMercadoCertificadosRemanenteRegistradoEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: mercadoCertificadosAbi,
+    eventName: 'RemanenteRegistrado',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `eventName` set to `"RemanenteRescatado"`
+ */
+export const useWatchMercadoCertificadosRemanenteRescatadoEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: mercadoCertificadosAbi,
+    eventName: 'RemanenteRescatado',
   })
 
 /**
@@ -4671,6 +5057,15 @@ export const useReadRegistroEntidadesEsTransformadorVerificado =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"estaActiva"`
+ */
+export const useReadRegistroEntidadesEstaActiva =
+  /*#__PURE__*/ createUseReadContract({
+    abi: registroEntidadesAbi,
+    functionName: 'estaActiva',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"getRoleAdmin"`
  */
 export const useReadRegistroEntidadesGetRoleAdmin =
@@ -4759,6 +5154,15 @@ export const useWriteRegistroEntidades = /*#__PURE__*/ createUseWriteContract({
 })
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"desactivarEntidad"`
+ */
+export const useWriteRegistroEntidadesDesactivarEntidad =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: registroEntidadesAbi,
+    functionName: 'desactivarEntidad',
+  })
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"grantRole"`
  */
 export const useWriteRegistroEntidadesGrantRole =
@@ -4774,6 +5178,15 @@ export const useWriteRegistroEntidadesInitialize =
   /*#__PURE__*/ createUseWriteContract({
     abi: registroEntidadesAbi,
     functionName: 'initialize',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"reactivarEntidad"`
+ */
+export const useWriteRegistroEntidadesReactivarEntidad =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: registroEntidadesAbi,
+    functionName: 'reactivarEntidad',
   })
 
 /**
@@ -4822,6 +5235,15 @@ export const useWriteRegistroEntidadesRenounceRole =
   })
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"revocarVerificacion"`
+ */
+export const useWriteRegistroEntidadesRevocarVerificacion =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: registroEntidadesAbi,
+    functionName: 'revocarVerificacion',
+  })
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"revokeRole"`
  */
 export const useWriteRegistroEntidadesRevokeRole =
@@ -4864,6 +5286,15 @@ export const useSimulateRegistroEntidades =
   /*#__PURE__*/ createUseSimulateContract({ abi: registroEntidadesAbi })
 
 /**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"desactivarEntidad"`
+ */
+export const useSimulateRegistroEntidadesDesactivarEntidad =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: registroEntidadesAbi,
+    functionName: 'desactivarEntidad',
+  })
+
+/**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"grantRole"`
  */
 export const useSimulateRegistroEntidadesGrantRole =
@@ -4879,6 +5310,15 @@ export const useSimulateRegistroEntidadesInitialize =
   /*#__PURE__*/ createUseSimulateContract({
     abi: registroEntidadesAbi,
     functionName: 'initialize',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"reactivarEntidad"`
+ */
+export const useSimulateRegistroEntidadesReactivarEntidad =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: registroEntidadesAbi,
+    functionName: 'reactivarEntidad',
   })
 
 /**
@@ -4924,6 +5364,15 @@ export const useSimulateRegistroEntidadesRenounceRole =
   /*#__PURE__*/ createUseSimulateContract({
     abi: registroEntidadesAbi,
     functionName: 'renounceRole',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registroEntidadesAbi}__ and `functionName` set to `"revocarVerificacion"`
+ */
+export const useSimulateRegistroEntidadesRevocarVerificacion =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: registroEntidadesAbi,
+    functionName: 'revocarVerificacion',
   })
 
 /**
@@ -4975,6 +5424,24 @@ export const useWatchRegistroEntidadesCompradorRegistradoEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: registroEntidadesAbi,
     eventName: 'CompradorRegistrado',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registroEntidadesAbi}__ and `eventName` set to `"EntidadDesactivada"`
+ */
+export const useWatchRegistroEntidadesEntidadDesactivadaEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: registroEntidadesAbi,
+    eventName: 'EntidadDesactivada',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registroEntidadesAbi}__ and `eventName` set to `"EntidadReactivada"`
+ */
+export const useWatchRegistroEntidadesEntidadReactivadaEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: registroEntidadesAbi,
+    eventName: 'EntidadReactivada',
   })
 
 /**
@@ -5065,6 +5532,15 @@ export const useWatchRegistroEntidadesUpgradedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: registroEntidadesAbi,
     eventName: 'Upgraded',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registroEntidadesAbi}__ and `eventName` set to `"VerificacionRevocada"`
+ */
+export const useWatchRegistroEntidadesVerificacionRevocadaEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: registroEntidadesAbi,
+    eventName: 'VerificacionRevocada',
   })
 
 /**

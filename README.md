@@ -13,15 +13,38 @@ que concluye el ciclo con la emisión de un **Certificado de Transformación** (
 ## Estado
 
 - **Contratos**: Fase 1 completa y desplegada en Amoy — `RegistroEntidades`, `TokenCustodia`,
-  `CertificadoTransformacion`, `MercadoCertificados`. Compilan limpio, 39/39 tests pasando
+  `CertificadoTransformacion`, `MercadoCertificados`. Compilan limpio, 46/46 tests pasando
   (incluye una regresión que reproduce el ejemplo numérico exacto del documento de
-  arquitectura). Direcciones reales en `packages/contracts/deployments/amoy.json`.
+  arquitectura). Direcciones reales en `packages/contracts/deployments/amoy.json`. Incluye
+  gobernanza operativa: desactivar/reactivar entidades, revocar verificaciones,
+  `setPlataforma` y rescate del remanente no acreditado.
 - **Backend**: schema de Prisma + indexer + API reescritos contra los contratos nuevos,
   corriendo contra datos reales de Amoy. Typecheck y lint limpios.
 - **Frontend**: reconstruido contra los contratos nuevos (los 5 roles, entregas, traspasos,
   transformación, compra de certificado). Typecheck y lint limpios, probado end-to-end.
-- Pendiente: panel de admin más completo, dashboard con más detalle, verificación del
-  contrato en Polygonscan (`hardhat verify`).
+- **Camino a producción**: ver `docs/plan-produccion.md` — revisión completa, lista de
+  tareas por prioridad y orden de sprints. Es el documento que gobierna qué sigue.
+
+## Operación de los contratos
+
+```bash
+# Separar llaves operativas de la llave admin (plan de produccion, A5). Idempotente.
+VERIFIER_WALLET=0x... PAUSER_WALLET=0x... PLATAFORMA_WALLET=0x... \
+  npx hardhat run scripts/grant-roles.ts --network amoy        # desde packages/contracts
+
+# Subir una implementacion nueva a un proxy UUPS (la direccion publica no cambia)
+CONTRACT=MercadoCertificados npx hardhat run scripts/upgrade.ts --network amoy
+
+# Verificar el codigo en Polygonscan (requiere ETHERSCAN_API_KEY en packages/contracts/.env)
+npx hardhat verify --network amoy <direccion>
+```
+
+Después de cualquier deploy o upgrade: `npm run contracts:export && npm run frontend:generate`.
+Si el deploy es completo (direcciones nuevas), además hay que vaciar las tablas indexadas
+(`npm run backend:reset-indexed`, con indexer y API detenidos; conserva las cuentas de usuario)
+y poner el `startBlock` nuevo en `INDEXER_START_BLOCK` de `packages/backend/.env` — la base de
+datos refleja UNA instancia de los contratos; mezclar dos deploys en la misma DB corrompe los
+ids de lote y emisión.
 
 ## Arquitectura
 
@@ -136,7 +159,7 @@ npm run dev
 
 | Archivo | Variable | Descripción |
 |---|---|---|
-| `packages/contracts/.env` | `AMOY_RPC_URL` | RPC de Polygon Amoy. dRPC (`https://polygon-amoy.drpc.org`) es el que funciona de forma confiable en este entorno — el RPC público (`rpc-amoy.polygon.technology`) no resuelve DNS aquí |
+| `packages/contracts/.env` | `AMOY_RPC_URL` | RPC de Polygon Amoy para deploys. publicnode (`https://polygon-amoy-bor-rpc.publicnode.com`) es el más estable medido desde esta máquina; dRPC gratis da 408 intermitentes en `eth_estimateGas` de creación de contratos; `rpc-amoy.polygon.technology` no resuelve DNS aquí |
 | | `DEPLOYER_PRIVATE_KEY` | Clave privada de una wallet **exclusiva para testnet** |
 | `packages/backend/.env` | `DATABASE_URL` | Apunta a `localhost:5433` (instancia propia, ver arriba) |
 | | `NETWORK_NAME` | `amoy` por default |

@@ -36,6 +36,23 @@ con piso en cero) y con **rigor de producto real** (no custodia de fondos desde 
 reentrancy guards, pausable, pensado para eventualmente auditarse) aunque el despliegue siga en
 testnet por ahora.
 
+### 0.1 Gobernanza operativa agregada el 2026-11-13 (plan de producción, A1/A2/A4)
+
+- `RegistroEntidades.desactivarEntidad / reactivarEntidad` (VERIFIER_ROLE): una entidad
+  desactivada conserva su registro (la wallet no puede volver a registrarse con otra
+  identidad) pero deja de pasar `esSeparador` / `esIntermediarioVerificado` /
+  `esTransformadorVerificado` / `esComprador`, así que no puede operar. `rolDe` ahora devuelve
+  el rol **registrado** (activa o no); `estaActiva` dice si puede operar hoy.
+- `RegistroEntidades.revocarVerificacion` (VERIFIER_ROLE): solo intermediarios y
+  transformadores; vuelven al estado "registrado, sin verificar" y pueden verificarse de nuevo.
+- `MercadoCertificados.setPlataforma` (admin): cambia el destinatario del 15 % para ventas
+  futuras; el saldo ya acreditado a la dirección anterior no se toca.
+- `MercadoCertificados.remanenteNoAcreditado` + `rescatarRemanente` (admin): el USDT que la
+  cascada de merma no pudo acreditar a nadie (caso extremo de la sección 2.4) se contabiliza
+  aparte en vez de quedar como balance anónimo del contrato, y el admin decide a dónde va.
+- `registrarTransformacion` lleva `nonReentrant` por consistencia con el resto de funciones
+  que mueven tokens.
+
 ---
 
 ## 1. Qué se reutiliza de DAPP Plástico Tesis

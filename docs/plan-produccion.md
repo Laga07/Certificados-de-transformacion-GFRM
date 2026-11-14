@@ -166,10 +166,19 @@ Con el presupuesto indicado, el VPS único es la opción correcta.
 
 ## G. Checklist corta
 
-- [ ] Repo en GitHub + CI verde
-- [ ] Portada/footer/metadata propios; scripts de tesis eliminados
-- [ ] `error.tsx`, `not-found.tsx`, `loading.tsx`
-- [ ] `setPlataforma`, revocación, tests, Slither, redeploy Amoy, verify en Polygonscan
+Avance 2026-11-13 (Sprint 1): repo `Laga07/Certificados-de-transformacion-GFRM` creado y
+`main` publicado; contratos con gobernanza redesplegados en Amoy (`startBlock` 52807377) e
+indexados desde cero; portada, footer, páginas de error y scripts limpios. Queda del sprint:
+CI verde en GitHub (primer run pendiente de revisar), `hardhat verify` (falta
+`ETHERSCAN_API_KEY`) y separar `VERIFIER_ROLE`/`PAUSER_ROLE` (faltan las wallets operativas;
+el script `grant-roles.ts` ya está).
+
+- [x] Repo en GitHub (CI: revisar el primer run)
+- [x] Portada/footer/metadata propios; scripts de tesis eliminados
+- [x] `error.tsx`, `not-found.tsx`, `loading.tsx`
+- [x] `setPlataforma`, revocación, remanente, tests, redeploy Amoy
+- [ ] Slither sin hallazgos altos (job informativo ya en CI); verify en Polygonscan
+- [ ] `VERIFIER_ROLE` y `PAUSER_ROLE` en wallets operativas distintas
 - [ ] Roles de cuenta, verificación de correo, reset, rate limit, CORS cerrado
 - [ ] SIWE + perfil off-chain + panel admin con datos reales
 - [ ] Hash de identidad con pepper

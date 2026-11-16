@@ -163,8 +163,8 @@ npm run dev
 | | `DEPLOYER_PRIVATE_KEY` | Clave privada de una wallet **exclusiva para testnet** |
 | `packages/backend/.env` | `DATABASE_URL` | Apunta a `localhost:5433` (instancia propia, ver arriba) |
 | | `NETWORK_NAME` | `amoy` por default |
-| | `AMOY_RPC_URL` | dRPC, igual que en contracts |
-| | `INDEXER_BLOCK_WINDOW` | **50** — el límite real de dRPC gratis para `eth_getLogs` con filtro de address, no los 10,000 que dice su propio mensaje de error (ver comentario en `sync.ts`) |
+| | `AMOY_RPC_URL` | publicnode, igual que en contracts (dRPC gratis estuvo días caído y solo aguanta ventanas de ~50 bloques) |
+| | `INDEXER_BLOCK_WINDOW` | **5000** con publicnode (acepta hasta 10,000 medidos en vivo). Con dRPC gratis tenía que ser 50. Si cambiás de RPC, medí el límite real antes de fijarlo |
 | | `PORT` | **4001** (no 4000 — ver tabla de puertos arriba) |
 | | `JWT_SECRET` | Firma de la sesión (mismo valor en el frontend) |
 | | `IDENTITY_PEPPER` | Secreto del HMAC con el que se hashean cédulas y nombres antes de ir al contrato. **Tan crítico como la DB**: respaldarlo, nunca rotarlo sin migrar |

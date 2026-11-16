@@ -19,12 +19,14 @@ const CERO = BigInt(0);
 export function ComprarCertificadoForm({
   mercadoAddress,
   usdtAddress,
+  emisionInicial = "",
 }: {
   mercadoAddress: `0x${string}`;
   usdtAddress: `0x${string}`;
+  emisionInicial?: string;
 }) {
   const { address } = useAccount();
-  const [emisionIdTexto, setEmisionIdTexto] = useState("");
+  const [emisionIdTexto, setEmisionIdTexto] = useState(emisionInicial);
   const [cantidadKg, setCantidadKg] = useState(0);
 
   const emisionIdValido = /^\d+$/.test(emisionIdTexto);
@@ -147,8 +149,11 @@ export function ComprarCertificadoForm({
       )}
 
       <p className="text-xs text-neutral-500">
-        ¿No tenés USDT de prueba? El contrato MockUSDT tiene un faucet público — pedile a quien
-        maneja el proyecto la dirección o usá la consola de Hardhat.
+        ¿No tenés USDT de prueba?{" "}
+        <a href="/mercado/faucet" className="text-forest underline">
+          Pedilos acá
+        </a>{" "}
+        (red de prueba, sin valor real).
       </p>
     </div>
   );

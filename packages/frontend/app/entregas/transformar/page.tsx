@@ -2,8 +2,9 @@ import { getDeploymentAddresses } from "@/lib/addresses.server";
 import { RoleGate } from "@/components/RoleGate";
 import { TransformarForm } from "./TransformarForm";
 
-export default function TransformarPage() {
+export default async function TransformarPage({ searchParams }: { searchParams: Promise<{ lotes?: string }> }) {
   const deployment = getDeploymentAddresses();
+  const { lotes } = await searchParams;
 
   if (!deployment) {
     return <p className="text-neutral-500">Los contratos aún no se han desplegado en Amoy.</p>;
@@ -18,7 +19,10 @@ export default function TransformarPage() {
         Transformación disponible para la venta primaria, al precio que fijes acá.
       </p>
       <RoleGate role="transformador" registroAddress={deployment.RegistroEntidades}>
-        <TransformarForm mercadoAddress={deployment.MercadoCertificados} />
+        <TransformarForm
+          mercadoAddress={deployment.MercadoCertificados}
+          lotesInicial={lotes && /^[\d,\s]+$/.test(lotes) ? lotes : ""}
+        />
       </RoleGate>
     </div>
   );

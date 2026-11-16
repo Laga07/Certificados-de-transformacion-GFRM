@@ -13,8 +13,9 @@ export default function RegistroSeparadorPage() {
       <h1 className="text-2xl font-semibold text-navy">Registro de Separador</h1>
       <p className="text-sm text-neutral-500 max-w-md">
         Sos quien separa el material — en casa, en un comercio, o recuperándolo en espacios
-        públicos. Tu cédula nunca se envía a la chain ni al backend: solo su hash keccak256,
-        calculado en tu navegador.
+        públicos. A la cadena nunca viaja tu cédula: solo un hash calculado con un secreto del
+        servidor, que no se puede revertir. Si ya cargaste tus datos en &ldquo;Mi entidad&rdquo;, el
+        formulario se llena solo.
       </p>
       <RegistroSeparadorForm registroAddress={deployment.RegistroEntidades} />
     </div>

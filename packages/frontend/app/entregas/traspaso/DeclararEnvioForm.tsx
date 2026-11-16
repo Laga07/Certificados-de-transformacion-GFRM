@@ -7,8 +7,14 @@ import { TxButton } from "@/components/TxButton";
 import { useTxReceipt } from "@/lib/useTxReceipt";
 import { GAS_FEE_OVERRIDES } from "@/lib/gasOverrides";
 
-export function DeclararEnvioForm({ custodiaAddress }: { custodiaAddress: `0x${string}` }) {
-  const [loteId, setLoteId] = useState("");
+export function DeclararEnvioForm({
+  custodiaAddress,
+  loteInicial = "",
+}: {
+  custodiaAddress: `0x${string}`;
+  loteInicial?: string;
+}) {
+  const [loteId, setLoteId] = useState(loteInicial);
   const [destinatario, setDestinatario] = useState("");
   const [pesoEnviado, setPesoEnviado] = useState(0);
   const [precioUSDTporKg, setPrecioUSDTporKg] = useState(0);

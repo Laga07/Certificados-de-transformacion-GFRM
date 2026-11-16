@@ -2,8 +2,9 @@ import { getDeploymentAddresses } from "@/lib/addresses.server";
 import { RoleGate } from "@/components/RoleGate";
 import { RegistrarEntregaForm } from "./RegistrarEntregaForm";
 
-export default function RegistrarEntregaPage() {
+export default async function RegistrarEntregaPage({ searchParams }: { searchParams: Promise<{ lote?: string }> }) {
   const deployment = getDeploymentAddresses();
+  const { lote } = await searchParams;
 
   if (!deployment) {
     return <p className="text-neutral-500">Los contratos aún no se han desplegado en Amoy.</p>;
@@ -17,7 +18,10 @@ export default function RegistrarEntregaPage() {
         entrega y paga el gas — el separador no necesita fondos en POL para participar.
       </p>
       <RoleGate role={["intermediario", "transformador"]} registroAddress={deployment.RegistroEntidades}>
-        <RegistrarEntregaForm custodiaAddress={deployment.TokenCustodia} />
+        <RegistrarEntregaForm
+          custodiaAddress={deployment.TokenCustodia}
+          loteInicial={lote && /^\d+$/.test(lote) ? lote : "0"}
+        />
       </RoleGate>
     </div>
   );

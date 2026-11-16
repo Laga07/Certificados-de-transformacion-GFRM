@@ -166,7 +166,39 @@ npm run dev
 | | `AMOY_RPC_URL` | dRPC, igual que en contracts |
 | | `INDEXER_BLOCK_WINDOW` | **50** — el límite real de dRPC gratis para `eth_getLogs` con filtro de address, no los 10,000 que dice su propio mensaje de error (ver comentario en `sync.ts`) |
 | | `PORT` | **4001** (no 4000 — ver tabla de puertos arriba) |
+| | `JWT_SECRET` | Firma de la sesión (mismo valor en el frontend) |
+| | `IDENTITY_PEPPER` | Secreto del HMAC con el que se hashean cédulas y nombres antes de ir al contrato. **Tan crítico como la DB**: respaldarlo, nunca rotarlo sin migrar |
+| | `ADMIN_EMAILS` | Correos que nacen como administradores de la app |
+| | `APP_URL`, `CORS_ORIGINS` | URL pública del frontend (enlaces de correo) y orígenes permitidos |
+| | `RESEND_API_KEY`, `MAIL_FROM` | Correo transaccional (Resend). Sin la clave, los correos se escriben en el log |
+| | `UPLOADS_DIR` | Carpeta de documentos adjuntos a perfiles (default `packages/backend/uploads`) |
 | `packages/frontend/.env.local` | `NEXT_PUBLIC_API_URL` | `http://localhost:4001` |
+
+## Cuentas, perfiles y verificación (Sprint 2 del plan)
+
+- **Cuenta** (correo + contraseña): verificación de correo y restablecer contraseña por enlace de
+  un solo uso; bloqueo de 15 min tras 5 intentos fallidos; rate limit en `/api/auth/*`.
+- **Rol de cuenta** (`USER`/`ADMIN`): el panel `/admin` exige `ADMIN`. Es distinto de
+  `VERIFIER_ROLE` on-chain, que sigue viviendo en la wallet.
+- **Wallet vinculada**: la wallet firma un mensaje con nonce (sin gas) y queda asociada a la
+  cuenta. Una wallet, una cuenta.
+- **Perfil de entidad** (`/cuenta/perfil`): razón social, cédula, contacto, ubicación y
+  documentos (PDF/JPG/PNG). Solo lo ven el dueño y los admins. El admin lo aprueba o rechaza en
+  `/admin` y, para intermediarios/transformadores, verifica on-chain desde la misma pantalla.
+- **Hash de identidad**: ya no es `keccak256(cédula)` en el navegador (reversible por fuerza
+  bruta) sino HMAC-SHA256 con `IDENTITY_PEPPER` calculado por la API (`POST /api/identidad/hash`,
+  con sesión y rate limit). El mismo hash se usa para buscar separadores por cédula al registrar
+  una entrega.
+
+Migraciones: `prisma migrate dev` es interactivo y no corre en este entorno. Para crear una
+migración nueva: editar `schema.prisma`, luego
+
+```bash
+cd packages/backend
+npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --script \
+  > prisma/migrations/<YYYYMMDDHHMMSS>_<nombre>/migration.sql   # revisar que no quede vacio
+npx prisma migrate deploy && npx prisma generate
+```
 
 ## Notas de seguridad del contrato
 

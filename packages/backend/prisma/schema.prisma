@@ -454,14 +454,124 @@ model IndexerState {
   @@map("indexer_state")
 }
 
-/// Cuenta de acceso a la aplicacion (email/contrasena): un gate de aplicacion previo a
-/// conectar la wallet, separado por completo del rol on-chain. No representa identidad
-/// verificada ni reemplaza a la wallet -- solo controla quien puede entrar al sitio.
+// ==== CUENTAS, PERFILES OFF-CHAIN Y DOCUMENTOS (plan de produccion, B3/B4/B5) ====
+// Nada de esto viene de la cadena: es el lado "humano" del sistema -- quien es la persona o
+// empresa detras de cada wallet, con que correo entra, y los documentos que el verificador
+// revisa antes de aprobar on-chain a un intermediario o transformador.
+
+enum AccountRol {
+  USER
+  ADMIN
+}
+
+enum TipoAuthToken {
+  VERIFICAR_EMAIL
+  RESET_PASSWORD
+}
+
+enum TipoEntidad {
+  SEPARADOR
+  INTERMEDIARIO
+  TRANSFORMADOR
+  COMPRADOR
+}
+
+enum EstadoRevision {
+  PENDIENTE
+  APROBADO
+  RECHAZADO
+}
+
+/// Cuenta de acceso a la aplicacion (email/contrasena). `rol` controla el acceso al panel de
+/// administracion de la app (distinto de VERIFIER_ROLE on-chain, que vive en la wallet).
+/// `walletAddress` se vincula firmando un mensaje con la wallet (ver routes/auth.ts) -- es la
+/// unica forma de saber que persona esta detras de que direccion.
 model Account {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique @db.VarChar(255)
-  passwordHash String
-  createdAt    DateTime @default(now())
+  id                Int        @id @default(autoincrement())
+  email             String     @unique @db.VarChar(255)
+  passwordHash      String
+  rol               AccountRol @default(USER)
+  emailVerificadoEn DateTime?
+  walletAddress     String?    @unique @db.VarChar(42)
+  walletVinculadaEn DateTime?
+  walletNonce       String?    @db.VarChar(64)
+  intentosFallidos  Int        @default(0)
+  bloqueadoHasta    DateTime?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @default(now()) @updatedAt
+
+  tokens AuthToken[]
+  perfil EntidadPerfil?
 
   @@map("accounts")
+}
+
+/// Tokens de un solo uso para verificar el correo y restablecer la contrasena. Se guarda el
+/// SHA-256 del token, nunca el token en claro (igual que una contrasena).
+model AuthToken {
+  id        Int           @id @default(autoincrement())
+  accountId Int
+  tipo      TipoAuthToken
+  tokenHash String        @unique @db.VarChar(64)
+  expiraEn  DateTime
+  usadoEn   DateTime?
+  createdAt DateTime      @default(now())
+
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@index([accountId, tipo])
+  @@map("auth_tokens")
+}
+
+/// Datos en claro de la entidad detras de una wallet. On-chain solo viaja el hash de la
+/// cedula y el nombre; aca vive lo que el verificador necesita para saber a quien esta
+/// aprobando (razon social, cedula, contacto, documentos). Solo lo ven el dueno y los admins.
+model EntidadPerfil {
+  id              Int            @id @default(autoincrement())
+  accountId       Int            @unique
+  tipo            TipoEntidad
+  razonSocial     String         @db.VarChar(200)
+  cedula          String         @db.VarChar(40)
+  /// Hash HMAC (con pepper del servidor) de la cedula normalizada -- el mismo valor que se
+  /// manda al contrato, para poder cruzar perfil <-> registro on-chain sin exponer la cedula.
+  cedulaHash      String         @db.VarChar(66)
+  representante   String?        @db.VarChar(200)
+  telefono        String?        @db.VarChar(40)
+  correoContacto  String?        @db.VarChar(255)
+  direccion       String?        @db.VarChar(500)
+  provincia       Provincia
+  cantonId        Int
+  subtipo         Int?
+  descripcion     String?        @db.VarChar(2000)
+  estadoRevision  EstadoRevision @default(PENDIENTE)
+  notasRevisor    String?        @db.VarChar(2000)
+  revisadoPorId   Int?
+  revisadoEn      DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  account    Account            @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  documentos PerfilDocumento[]
+
+  @@index([estadoRevision, tipo])
+  @@index([cedulaHash])
+  @@map("entidad_perfiles")
+}
+
+/// Archivo adjunto a un perfil (cedula juridica, personeria, permiso sanitario, etc.). El
+/// binario vive fuera de la DB (UPLOADS_DIR local hoy; R2/S3 en produccion), aca solo la
+/// referencia.
+model PerfilDocumento {
+  id         Int      @id @default(autoincrement())
+  perfilId   Int
+  nombre     String   @db.VarChar(255)
+  mimeType   String   @db.VarChar(100)
+  tamano     Int
+  storageKey String   @unique @db.VarChar(500)
+  createdAt  DateTime @default(now())
+
+  perfil EntidadPerfil @relation(fields: [perfilId], references: [id], onDelete: Cascade)
+
+  @@index([perfilId])
+  @@map("perfil_documentos")
 }

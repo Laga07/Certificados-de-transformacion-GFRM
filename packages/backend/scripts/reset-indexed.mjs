@@ -8,6 +8,7 @@
 //
 // Despues: actualizar INDEXER_START_BLOCK en .env con el startBlock del deploy nuevo y volver
 // a levantar el indexer -- rellena todo desde ese bloque.
+/* global process, console */
 import "dotenv/config";
 import pg from "pg";
 

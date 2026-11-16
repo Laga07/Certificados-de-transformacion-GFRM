@@ -25,14 +25,20 @@ export function Footer() {
             Trazabilidad multi-material y certificación de reciclaje sobre Polygon
           </p>
           <nav className="flex flex-wrap gap-4 font-mono text-[0.7rem] uppercase tracking-wider text-white/70">
+            <Link href="/guia-inicio" className="hover:text-white">
+              Guía de inicio
+            </Link>
             <Link href="/dashboard" className="hover:text-white">
               Dashboard
             </Link>
             <Link href="/guia-plasticos" className="hover:text-white">
               Guía de plásticos
             </Link>
-            <Link href="/perfil" className="hover:text-white">
-              Mi perfil
+            <Link href="/terminos" className="hover:text-white">
+              Términos
+            </Link>
+            <Link href="/privacidad" className="hover:text-white">
+              Privacidad
             </Link>
           </nav>
         </div>

@@ -41,10 +41,15 @@ export function LoginForm() {
         {isPending ? "Entrando..." : "Entrar"}
       </button>
 
-      <p className="text-sm text-neutral-500">
-        ¿No tenés cuenta todavía?{" "}
-        <Link href="/crear-cuenta" className="text-forest hover:underline">
-          Creala acá
+      <p className="text-sm text-neutral-500 flex flex-col gap-1">
+        <span>
+          ¿No tenés cuenta todavía?{" "}
+          <Link href="/crear-cuenta" className="text-forest hover:underline">
+            Creala acá
+          </Link>
+        </span>
+        <Link href="/olvide-contrasena" className="text-forest hover:underline">
+          Olvidé mi contraseña
         </Link>
       </p>
     </form>

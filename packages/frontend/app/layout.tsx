@@ -9,18 +9,30 @@ import "./globals.css";
 import { Providers } from "./providers";
 import { ConnectWalletButton } from "@/components/ConnectWalletButton";
 import { ChainGuard } from "@/components/ChainGuard";
+import { EmailVerificacionBanner } from "@/components/EmailVerificacionBanner";
 import { Footer } from "@/components/Footer";
 import { NavMenu } from "@/components/NavMenu";
 import { wagmiServerConfig } from "@/lib/wagmiServer";
 import { logoutAction } from "./login/actions";
 import logo from "../public/GFRM-Logo.png";
 
-function getSessionEmail(sessionCookie: string | undefined): string | null {
+interface Sesion {
+  email: string;
+  rol: "USER" | "ADMIN";
+  emailVerificado: boolean;
+}
+
+function getSesion(sessionCookie: string | undefined): Sesion | null {
   const secret = process.env.JWT_SECRET;
   if (!sessionCookie || !secret) return null;
   try {
     const payload = jwt.verify(sessionCookie, secret);
-    return typeof payload === "object" && "email" in payload ? String(payload.email) : null;
+    if (typeof payload !== "object" || !("email" in payload)) return null;
+    return {
+      email: String(payload.email),
+      rol: payload.rol === "ADMIN" ? "ADMIN" : "USER",
+      emailVerificado: Boolean(payload.ev),
+    };
   } catch {
     return null;
   }
@@ -50,9 +62,9 @@ const spaceMono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DAPP Certificado de Transformación",
+  title: "Certificado de Transformación",
   description:
-    "Trazabilidad multi-material y Certificado de Transformación (ERC20) sobre Polygon Amoy",
+    "Trazabilidad multi-material de residuos valorizables y Certificado de Transformación (ERC-20) sobre Polygon. Green Foot, Costa Rica.",
 };
 
 export default async function RootLayout({
@@ -70,7 +82,7 @@ export default async function RootLayout({
   } catch {
     initialState = undefined;
   }
-  const sessionEmail = getSessionEmail((await cookies()).get("session")?.value);
+  const sesion = getSesion((await cookies()).get("session")?.value);
 
   return (
     <html
@@ -83,7 +95,7 @@ export default async function RootLayout({
           <header className="border-b border-neutral-300 bg-background">
             <div className="px-4 py-1.5 flex justify-between label-mono text-[0.65rem] border-b border-neutral-200">
               <span>Registro de campo &middot; trazabilidad y Certificado de Transformación</span>
-              <span className="hidden sm:inline">Polygon Amoy &middot; GAM, Costa Rica</span>
+              <span className="hidden sm:inline">Polygon Amoy (red de prueba) &middot; Costa Rica</span>
             </div>
             <div className="px-4 py-3 flex flex-wrap items-center gap-4">
               <Link
@@ -100,12 +112,14 @@ export default async function RootLayout({
                 />
                 Certificado de Transformación
               </Link>
-              <NavMenu />
+              <NavMenu esAdmin={sesion?.rol === "ADMIN"} />
               <div className="flex items-center gap-3">
                 <ConnectWalletButton />
-                {sessionEmail ? (
+                {sesion ? (
                   <form action={logoutAction} className="flex items-center gap-2 text-xs text-neutral-500">
-                    <span className="hidden sm:inline">{sessionEmail}</span>
+                    <Link href="/cuenta" className="hidden sm:inline hover:text-forest" title="Mi cuenta">
+                      {sesion.email}
+                    </Link>
                     <button type="submit" className="text-forest hover:underline">
                       Cerrar sesión
                     </button>
@@ -115,6 +129,7 @@ export default async function RootLayout({
             </div>
           </header>
           <ChainGuard />
+          {sesion && !sesion.emailVerificado ? <EmailVerificacionBanner /> : null}
           <main className="flex-1 p-6 max-w-5xl w-full mx-auto">{children}</main>
           <Footer />
         </Providers>

@@ -8,8 +8,14 @@ import { GAS_FEE_OVERRIDES } from "@/lib/gasOverrides";
 
 const QUIEN_ABSORBE = ["Quien envía", "Quien recibe", "Mitad y mitad"] as const;
 
-export function ConfirmarRecepcionForm({ custodiaAddress }: { custodiaAddress: `0x${string}` }) {
-  const [loteId, setLoteId] = useState("");
+export function ConfirmarRecepcionForm({
+  custodiaAddress,
+  loteInicial = "",
+}: {
+  custodiaAddress: `0x${string}`;
+  loteInicial?: string;
+}) {
+  const [loteId, setLoteId] = useState(loteInicial);
   const [pesoRecibido, setPesoRecibido] = useState(0);
   const [quienAbsorbe, setQuienAbsorbe] = useState(2);
 

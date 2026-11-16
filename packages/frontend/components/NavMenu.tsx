@@ -15,17 +15,19 @@ interface NavGroup {
 }
 
 const NAV_DIRECT: NavItem[] = [
-  { href: "/perfil", label: "Perfil" },
+  { href: "/cuenta", label: "Mi cuenta" },
+  { href: "/perfil", label: "Wallet" },
   { href: "/dashboard", label: "Dashboard" },
 ];
 
-// Categorias en vez de una fila plana de 7 enlaces -- cada una se despliega en su propio
+// Categorias en vez de una fila plana de enlaces -- cada una se despliega en su propio
 // menu al hacer click, con las paginas relacionadas agrupadas por lo que el usuario
-// realmente hace ahi (registrarse, entregar material, o administrar).
+// realmente hace ahi (registrarse, mover material, comprar).
 const NAV_GROUPS: NavGroup[] = [
   {
     label: "Registrarse",
     items: [
+      { href: "/cuenta/perfil", label: "Datos de mi entidad" },
       { href: "/registro/separador", label: "Separador" },
       { href: "/registro/intermediario", label: "Intermediario" },
       { href: "/registro/transformador", label: "Transformador" },
@@ -33,8 +35,9 @@ const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    label: "Entregas",
+    label: "Material",
     items: [
+      { href: "/entregas/lotes", label: "Mis lotes" },
       { href: "/entregas/registrar", label: "Registrar entrega" },
       { href: "/entregas/traspaso", label: "Traspaso de lote" },
       { href: "/entregas/transformar", label: "Registrar transformación" },
@@ -44,17 +47,23 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "Mercado",
     items: [
+      { href: "/mercado", label: "Catálogo de certificados" },
       { href: "/mercado/comprar", label: "Comprar certificado" },
       { href: "/mercado/pagos", label: "Mis pagos" },
+      { href: "/mercado/faucet", label: "USDT y POL de prueba" },
     ],
-  },
-  {
-    label: "Administración",
-    items: [{ href: "/admin", label: "Verificaciones" }],
   },
 ];
 
-export function NavMenu() {
+const NAV_ADMIN: NavGroup = {
+  label: "Administración",
+  items: [
+    { href: "/admin", label: "Revisión de entidades" },
+    { href: "/admin/cuentas", label: "Cuentas" },
+  ],
+};
+
+export function NavMenu({ esAdmin }: { esAdmin?: boolean }) {
   const [abierto, setAbierto] = useState<string | null>(null);
   const containerRef = useRef<HTMLElement>(null);
 
@@ -78,6 +87,8 @@ export function NavMenu() {
     };
   }, [abierto]);
 
+  const grupos = esAdmin ? [...NAV_GROUPS, NAV_ADMIN] : NAV_GROUPS;
+
   return (
     <nav ref={containerRef} className="flex flex-wrap items-center gap-x-1 gap-y-1 flex-1">
       {NAV_DIRECT.map((link) => (
@@ -90,7 +101,7 @@ export function NavMenu() {
         </Link>
       ))}
 
-      {NAV_GROUPS.map((group) => {
+      {grupos.map((group) => {
         const estaAbierto = abierto === group.label;
         return (
           <div key={group.label} className="relative">
@@ -108,7 +119,7 @@ export function NavMenu() {
               />
             </button>
             {estaAbierto ? (
-              <div className="absolute left-0 top-full z-20 mt-1 min-w-44 border border-neutral-300 bg-surface-warm py-1 shadow-sm">
+              <div className="absolute left-0 top-full z-20 mt-1 min-w-48 border border-neutral-300 bg-surface-warm py-1 shadow-sm">
                 {group.items.map((item) => (
                   <Link
                     key={item.href}

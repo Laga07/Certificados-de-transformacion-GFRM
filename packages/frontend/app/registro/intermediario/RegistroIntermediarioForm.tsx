@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useWriteRegistroEntidadesRegistrarIntermediario } from "@/lib/generated";
-import { hashValue } from "@/lib/hash";
-import { PROVINCIAS, SUBTIPOS_INTERMEDIARIO } from "@/lib/catalogos";
+import { cargarPerfilPropio, hashIdentidad, provinciaIdDesdeClave } from "@/lib/identidad";
+import { SUBTIPOS_INTERMEDIARIO } from "@/lib/catalogos";
+import { UbicacionField } from "@/components/UbicacionField";
 import { TxButton } from "@/components/TxButton";
 import { useTxReceipt } from "@/lib/useTxReceipt";
 import { GAS_FEE_OVERRIDES } from "@/lib/gasOverrides";
@@ -14,25 +15,45 @@ export function RegistroIntermediarioForm({ registroAddress }: { registroAddress
   const [provinciaId, setProvinciaId] = useState(0);
   const [cantonId, setCantonId] = useState(1);
   const [subtipo, setSubtipo] = useState(0);
+  const [preparando, setPreparando] = useState(false);
+  const [errorHash, setErrorHash] = useState<Error | null>(null);
 
-  const { writeContract, data: hash, isPending, error } =
-    useWriteRegistroEntidadesRegistrarIntermediario();
+  const { writeContract, data: hash, isPending, error } = useWriteRegistroEntidadesRegistrarIntermediario();
   const { isConfirming, isSuccess, revertedError } = useTxReceipt(hash);
 
-  function handleSubmit() {
-    if (!nombre.trim() || !cedula.trim()) return;
-
-    writeContract({
-      address: registroAddress,
-      args: [hashValue(nombre), hashValue(cedula), provinciaId, cantonId, subtipo],
-      ...GAS_FEE_OVERRIDES,
+  useEffect(() => {
+    cargarPerfilPropio().then((p) => {
+      if (!p || p.tipo !== "INTERMEDIARIO") return;
+      setNombre(p.razonSocial);
+      setCedula(p.cedula);
+      setProvinciaId(provinciaIdDesdeClave(p.provincia));
+      setCantonId(p.cantonId);
+      if (p.subtipo !== null) setSubtipo(p.subtipo);
     });
+  }, []);
+
+  async function handleSubmit() {
+    if (!nombre.trim() || !cedula.trim()) return;
+    setPreparando(true);
+    setErrorHash(null);
+    try {
+      const { nombreHash, cedulaHash } = await hashIdentidad({ nombre, cedula });
+      writeContract({
+        address: registroAddress,
+        args: [nombreHash!, cedulaHash!, provinciaId, cantonId, subtipo],
+        ...GAS_FEE_OVERRIDES,
+      });
+    } catch (e) {
+      setErrorHash(e instanceof Error ? e : new Error("No se pudo preparar el registro"));
+    } finally {
+      setPreparando(false);
+    }
   }
 
   return (
     <div className="flex flex-col gap-4 max-w-md">
       <label className="flex flex-col gap-1 text-sm">
-        Nombre (solo se guarda su hash)
+        Razón social (a la cadena solo viaja su hash)
         <input
           type="text"
           value={nombre}
@@ -43,7 +64,7 @@ export function RegistroIntermediarioForm({ registroAddress }: { registroAddress
       </label>
 
       <label className="flex flex-col gap-1 text-sm">
-        Cédula jurídica (solo se guarda su hash)
+        Cédula jurídica (a la cadena solo viaja su hash)
         <input
           type="text"
           value={cedula}
@@ -53,31 +74,12 @@ export function RegistroIntermediarioForm({ registroAddress }: { registroAddress
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-sm">
-        Provincia
-        <select
-          value={provinciaId}
-          onChange={(event) => setProvinciaId(Number(event.target.value))}
-          className="rounded border border-neutral-300 bg-white px-3 py-2"
-        >
-          {PROVINCIAS.map((nombreP, index) => (
-            <option key={nombreP} value={index}>
-              {nombreP}
-            </option>
-          ))}
-        </select>
-      </label>
-
-      <label className="flex flex-col gap-1 text-sm">
-        Cantón (ID numérico según tu provincia)
-        <input
-          type="number"
-          min={0}
-          value={cantonId}
-          onChange={(event) => setCantonId(Number(event.target.value))}
-          className="rounded border border-neutral-300 bg-white px-3 py-2"
-        />
-      </label>
+      <UbicacionField
+        provinciaId={provinciaId}
+        cantonId={cantonId}
+        onChangeProvincia={setProvinciaId}
+        onChangeCanton={setCantonId}
+      />
 
       <label className="flex flex-col gap-1 text-sm">
         Subtipo
@@ -96,10 +98,10 @@ export function RegistroIntermediarioForm({ registroAddress }: { registroAddress
 
       <TxButton
         onClick={handleSubmit}
-        isPending={isPending}
+        isPending={isPending || preparando}
         isConfirming={isConfirming}
         isSuccess={isSuccess}
-        error={error ?? revertedError}
+        error={error ?? revertedError ?? errorHash}
         disabled={!nombre.trim() || !cedula.trim()}
       >
         Registrarme como intermediario

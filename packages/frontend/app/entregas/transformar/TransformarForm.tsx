@@ -6,8 +6,14 @@ import { TxButton } from "@/components/TxButton";
 import { useTxReceipt } from "@/lib/useTxReceipt";
 import { GAS_FEE_OVERRIDES } from "@/lib/gasOverrides";
 
-export function TransformarForm({ mercadoAddress }: { mercadoAddress: `0x${string}` }) {
-  const [loteIdsTexto, setLoteIdsTexto] = useState("");
+export function TransformarForm({
+  mercadoAddress,
+  lotesInicial = "",
+}: {
+  mercadoAddress: `0x${string}`;
+  lotesInicial?: string;
+}) {
+  const [loteIdsTexto, setLoteIdsTexto] = useState(lotesInicial);
   const [kgTransformados, setKgTransformados] = useState(0);
   const [precioUSDTporKg, setPrecioUSDTporKg] = useState(1);
 

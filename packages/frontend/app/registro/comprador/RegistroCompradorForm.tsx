@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useWriteRegistroEntidadesRegistrarComprador } from "@/lib/generated";
-import { hashValue } from "@/lib/hash";
+import { cargarPerfilPropio, hashIdentidad } from "@/lib/identidad";
 import { TxButton } from "@/components/TxButton";
 import { useTxReceipt } from "@/lib/useTxReceipt";
 import { GAS_FEE_OVERRIDES } from "@/lib/gasOverrides";
@@ -11,25 +11,42 @@ export function RegistroCompradorForm({ registroAddress }: { registroAddress: `0
   const [nombre, setNombre] = useState("");
   const [cedula, setCedula] = useState("");
   const [empresaObligadaLey9786, setEmpresaObligadaLey9786] = useState(false);
+  const [preparando, setPreparando] = useState(false);
+  const [errorHash, setErrorHash] = useState<Error | null>(null);
 
-  const { writeContract, data: hash, isPending, error } =
-    useWriteRegistroEntidadesRegistrarComprador();
+  const { writeContract, data: hash, isPending, error } = useWriteRegistroEntidadesRegistrarComprador();
   const { isConfirming, isSuccess, revertedError } = useTxReceipt(hash);
 
-  function handleSubmit() {
-    if (!nombre.trim() || !cedula.trim()) return;
-
-    writeContract({
-      address: registroAddress,
-      args: [hashValue(nombre), hashValue(cedula), empresaObligadaLey9786],
-      ...GAS_FEE_OVERRIDES,
+  useEffect(() => {
+    cargarPerfilPropio().then((p) => {
+      if (!p || p.tipo !== "COMPRADOR") return;
+      setNombre(p.razonSocial);
+      setCedula(p.cedula);
     });
+  }, []);
+
+  async function handleSubmit() {
+    if (!nombre.trim() || !cedula.trim()) return;
+    setPreparando(true);
+    setErrorHash(null);
+    try {
+      const { nombreHash, cedulaHash } = await hashIdentidad({ nombre, cedula });
+      writeContract({
+        address: registroAddress,
+        args: [nombreHash!, cedulaHash!, empresaObligadaLey9786],
+        ...GAS_FEE_OVERRIDES,
+      });
+    } catch (e) {
+      setErrorHash(e instanceof Error ? e : new Error("No se pudo preparar el registro"));
+    } finally {
+      setPreparando(false);
+    }
   }
 
   return (
     <div className="flex flex-col gap-4 max-w-md">
       <label className="flex flex-col gap-1 text-sm">
-        Nombre de la empresa (solo se guarda su hash)
+        Nombre de la empresa (a la cadena solo viaja su hash)
         <input
           type="text"
           value={nombre}
@@ -40,7 +57,7 @@ export function RegistroCompradorForm({ registroAddress }: { registroAddress: `0
       </label>
 
       <label className="flex flex-col gap-1 text-sm">
-        Cédula jurídica (solo se guarda su hash)
+        Cédula jurídica (a la cadena solo viaja su hash)
         <input
           type="text"
           value={cedula}
@@ -62,10 +79,10 @@ export function RegistroCompradorForm({ registroAddress }: { registroAddress: `0
 
       <TxButton
         onClick={handleSubmit}
-        isPending={isPending}
+        isPending={isPending || preparando}
         isConfirming={isConfirming}
         isSuccess={isSuccess}
-        error={error ?? revertedError}
+        error={error ?? revertedError ?? errorHash}
         disabled={!nombre.trim() || !cedula.trim()}
       >
         Registrarme como comprador

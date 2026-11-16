@@ -173,12 +173,27 @@ CI verde en GitHub (primer run pendiente de revisar), `hardhat verify` (falta
 `ETHERSCAN_API_KEY`) y separar `VERIFIER_ROLE`/`PAUSER_ROLE` (faltan las wallets operativas;
 el script `grant-roles.ts` ya está).
 
+Avance 2026-11-16 (Sprint 2): cuentas con rol, verificación de correo y restablecer
+contraseña, bloqueo por intentos, rate limit + helmet + CORS cerrado, vínculo de wallet por
+firma, perfil off-chain con documentos y panel de revisión, hash de identidad con pepper,
+catálogo de emisiones, "Mis lotes" con unir/dividir y bandeja de recepciones, búsqueda de
+separador por cédula, cantones reales, faucet en la app, términos, privacidad y guía de inicio.
+Queda del sprint: configurar `RESEND_API_KEY` (hoy los correos van al log) y una pasada de
+revisión en móvil.
+
 - [x] Repo en GitHub (CI: revisar el primer run)
 - [x] Portada/footer/metadata propios; scripts de tesis eliminados
 - [x] `error.tsx`, `not-found.tsx`, `loading.tsx`
 - [x] `setPlataforma`, revocación, remanente, tests, redeploy Amoy
 - [ ] Slither sin hallazgos altos (job informativo ya en CI); verify en Polygonscan
-- [ ] `VERIFIER_ROLE` y `PAUSER_ROLE` en wallets operativas distintas
+- [ ] `VERIFIER_ROLE` y `PAUSER_ROLE` en wallets operativas distintas (comando listo, lo corre el dueño)
+- [x] Roles de cuenta, verificación de correo, reset, rate limit, CORS cerrado
+- [x] Firma de wallet + perfil off-chain + panel admin con datos reales
+- [x] Hash de identidad con pepper
+- [x] Catálogo de emisiones, Mis lotes, búsqueda de separador, cantones, faucet
+- [x] Términos, privacidad, aviso testnet, guía de onboarding
+- [ ] Resend configurado y correo de verificación probado de punta a punta
+- [ ] Revisión en móvil de los formularios nuevos
 - [ ] Roles de cuenta, verificación de correo, reset, rate limit, CORS cerrado
 - [ ] SIWE + perfil off-chain + panel admin con datos reales
 - [ ] Hash de identidad con pepper

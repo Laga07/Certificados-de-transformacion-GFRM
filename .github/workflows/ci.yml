@@ -27,6 +27,39 @@ jobs:
       - name: Typecheck + lint frontend
         run: npm run frontend:typecheck && npm run frontend:lint
 
+  # Construye las imagenes de produccion (sin publicarlas) para detectar un Dockerfile roto
+  # antes de que llegue al servidor. La maquina de desarrollo no tiene Docker: este job es
+  # la unica prueba real de los Dockerfiles.
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Imagen del backend
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: packages/backend/Dockerfile
+          push: false
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
+      - name: Imagen del frontend
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: packages/frontend/Dockerfile
+          push: false
+          build-args: |
+            NEXT_PUBLIC_API_URL=https://ci.invalid
+            NEXT_PUBLIC_AMOY_RPC_URL=https://polygon-amoy-bor-rpc.publicnode.com
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,mode=max,scope=frontend
+      - name: Compose de produccion valido
+        run: |
+          cp deploy/.env.prod.example deploy/.env.prod
+          sed -i 's/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=ci/; s/^JWT_SECRET=.*/JWT_SECRET=ci/' deploy/.env.prod
+          docker compose --env-file deploy/.env.prod -f docker-compose.prod.yml config --quiet
+
   # Analisis estatico de los contratos (plan de produccion, A8). Empieza como informativo
   # (continue-on-error) hasta confirmar que crytic-compile entiende este proyecto de Hardhat 3
   # sin falsos positivos; despues de revisar el primer reporte, quitar continue-on-error y

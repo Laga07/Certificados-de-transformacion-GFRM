@@ -1,0 +1,44 @@
+# Proxy de entrada con HTTPS automatico (Let's Encrypt). Caddy pide y renueva el certificado
+# solo, con tal de que el DNS del dominio ya apunte a este servidor y los puertos 80/443
+# esten abiertos.
+#
+# Un solo dominio para todo: /api/* va a la API y el resto al frontend. Asi la cookie de
+# sesion del sitio viaja sola a la API (mismo origen) y no hace falta CORS entre dominios.
+{
+	email {$ACME_EMAIL}
+}
+
+{$APP_DOMAIN} {
+	encode zstd gzip
+
+	# Documentos adjuntos hasta 5 MB (mas margen para el multipart).
+	request_body {
+		max_size 8MB
+	}
+
+	handle /api/* {
+		reverse_proxy api:4001
+	}
+
+	handle {
+		reverse_proxy web:3001
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		-Server
+	}
+
+	log {
+		output stdout
+		format json
+	}
+}
+
+# www -> dominio principal
+www.{$APP_DOMAIN} {
+	redir https://{$APP_DOMAIN}{uri} permanent
+}

@@ -1,0 +1,35 @@
+name: Deploy
+
+# Despliega al servidor despues de que el CI pase en main. Apagado hasta que exista el
+# servidor: para activarlo, en GitHub > Settings > Secrets and variables > Actions:
+#   - Variable  DEPLOY_ENABLED = true
+#   - Secrets   VPS_HOST (IP o dominio), VPS_USER (deploy), VPS_SSH_KEY (llave privada
+#               dedicada a este deploy; su publica va en ~/.ssh/authorized_keys del servidor)
+# Tambien se puede lanzar a mano desde la pestana Actions (workflow_dispatch).
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-produccion
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: >-
+      vars.DEPLOY_ENABLED == 'true' &&
+      (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    environment: produccion
+    steps:
+      - name: Desplegar por SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          command_timeout: 30m
+          script: cd /opt/certificado && ./deploy/deploy.sh

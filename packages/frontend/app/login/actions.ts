@@ -2,7 +2,8 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { API_URL } from "@/lib/apiUrl";
+import { API_URL_SERVER as API_URL } from "@/lib/apiUrl";
+import { cabecerasDelVisitante } from "@/lib/api.server";
 
 const COOKIE_NAME = "session";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 dias, igual que el vencimiento del JWT
@@ -22,7 +23,7 @@ async function llamarApi(path: string, body: unknown): Promise<{ ok: true; data:
   try {
     res = await fetch(`${API_URL}/api/auth/${path}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...(await cabecerasDelVisitante()) },
       body: JSON.stringify(body),
     });
   } catch {

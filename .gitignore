@@ -62,7 +62,8 @@ packages/contracts/artifacts/
 packages/contracts/cache/
 packages/contracts/types/
 packages/contracts/typechain-types/
-packages/contracts/exported/
+# exported/ (ABIs + direcciones) SI se trackea: el backend la lee en runtime y la imagen
+# Docker se construye en el servidor desde git, sin compilar los contratos alli.
 
 # Direcciones de deploys locales (Hardhat en memoria): cambian cada vez que alguien
 # levanta un nodo local y no aportan nada trackeadas en git. `amoy.json` (el deploy real
@@ -97,6 +98,10 @@ Thumbs.db
 # Misc
 # ==========================================
 *.log
+
+# Build de produccion del backend y respaldos locales
+packages/backend/dist/
+backups/
 
 # Datos de la instancia nativa de PostgreSQL de este proyecto (ver scripts/db.mjs) --
 # binarios de datos, nunca se trackean.

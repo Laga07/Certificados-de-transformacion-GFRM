@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { API_URL } from "@/lib/apiUrl";
+import { API_URL_SERVER as API_URL } from "@/lib/apiUrl";
 import { MATERIALES } from "@/lib/catalogos";
 
 // Catalogo de emisiones con kilos disponibles para venta primaria. Antes el comprador tenia

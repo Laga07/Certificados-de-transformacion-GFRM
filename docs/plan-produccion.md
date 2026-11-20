@@ -192,8 +192,23 @@ revisión en móvil.
 - [x] Hash de identidad con pepper
 - [x] Catálogo de emisiones, Mis lotes, búsqueda de separador, cantones, faucet
 - [x] Términos, privacidad, aviso testnet, guía de onboarding
-- [ ] Resend configurado y correo de verificación probado de punta a punta
+- [ ] Correo transaccional configurado (Resend, Brevo o SMTP) y probado de punta a punta
 - [ ] Revisión en móvil de los formularios nuevos
+
+Avance 2026-11-20 (Sprint 3, parte que no depende de comprar nada): build de producción del
+backend (`dist/`), Next en modo standalone, Dockerfiles, `docker-compose.prod.yml` con
+Postgres interno + migraciones + API + indexer + web + Caddy (HTTPS automático, un solo
+dominio con `/api` detrás), scripts `setup-servidor.sh` / `deploy.sh` / `backup.sh`, workflow
+de deploy por SSH (apagado hasta tener servidor), job de CI que construye las imágenes, correo
+por SMTP genérico además de Resend, y la guía `docs/despliegue.md`. Falta lo que requiere
+compra: dominio, VPS, DNS, `.env.prod`, primer deploy, R2 y UptimeRobot.
+
+- [x] Dockerfiles + compose de producción + Caddy + scripts de servidor
+- [x] Build de producción del backend, logger JSON, RPC publicnode
+- [x] Respaldos con validación y copia opcional a R2; deploy automático preparado
+- [ ] Dominio y VPS comprados, DNS apuntando
+- [ ] Primer deploy en el servidor y restauración de respaldo probada
+- [ ] UptimeRobot + Sentry
 - [ ] Roles de cuenta, verificación de correo, reset, rate limit, CORS cerrado
 - [ ] SIWE + perfil off-chain + panel admin con datos reales
 - [ ] Hash de identidad con pepper

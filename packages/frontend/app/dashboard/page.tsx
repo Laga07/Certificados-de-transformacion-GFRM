@@ -1,6 +1,6 @@
 import { StatsBarChart, type StatsBarChartDatum } from "@/components/StatsBarChart";
 import { CantonMap, type CantonRow } from "@/components/CantonMap";
-import { API_URL } from "@/lib/apiUrl";
+import { API_URL_SERVER as API_URL } from "@/lib/apiUrl";
 
 interface Stats {
   totales: {

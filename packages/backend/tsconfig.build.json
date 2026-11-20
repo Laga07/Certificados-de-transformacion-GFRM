@@ -1,0 +1,13 @@
+{
+  // Build de produccion: solo src/ -> dist/, con rootDir fijo para que dist/lib/contracts.js
+  // quede a la misma profundidad que src/lib/contracts.ts (resuelve ../../../contracts igual).
+  // tsconfig.json (el de typecheck) tambien incluye prisma.config.ts y por eso no sirve aca.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "noEmit": false,
+    "sourceMap": true
+  },
+  "include": ["src"]
+}

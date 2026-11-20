@@ -1,0 +1,110 @@
+# Produccion (servidor). Uso, siempre desde la raiz del repo en el servidor:
+#
+#   docker compose --env-file deploy/.env.prod -f docker-compose.prod.yml up -d --build
+#
+# deploy/.env.prod (copia de deploy/.env.prod.example, nunca en git) tiene TODOS los valores.
+# Ver docs/despliegue.md para el paso a paso completo.
+name: certificado
+
+x-backend: &backend
+  build:
+    context: .
+    dockerfile: packages/backend/Dockerfile
+  image: certificado-backend:latest
+  env_file: deploy/.env.prod
+  environment:
+    NODE_ENV: production
+    DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:?falta POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-certificado_transformacion}?schema=public
+    APP_URL: https://${APP_DOMAIN:?falta APP_DOMAIN}
+    CORS_ORIGINS: https://${APP_DOMAIN}
+  restart: unless-stopped
+  logging: &logging
+    driver: json-file
+    options: { max-size: "20m", max-file: "5" }
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?falta POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-certificado_transformacion}
+    volumes:
+      # Postgres 18 guarda los datos en /var/lib/postgresql/18/docker: se monta el padre.
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-certificado_transformacion}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    logging: *logging
+    # Sin "ports": la base solo es accesible desde la red interna de Docker, nunca desde afuera.
+
+  migrate:
+    <<: *backend
+    command: ["npx", "prisma", "migrate", "deploy"]
+    restart: "no"
+    depends_on:
+      postgres: { condition: service_healthy }
+
+  api:
+    <<: *backend
+    command: ["node", "dist/index.js"]
+    volumes:
+      - uploads:/data/uploads
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:4001/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  indexer:
+    <<: *backend
+    command: ["node", "dist/indexer/run.js"]
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+
+  web:
+    build:
+      context: .
+      dockerfile: packages/frontend/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: https://${APP_DOMAIN}
+        NEXT_PUBLIC_AMOY_RPC_URL: ${NEXT_PUBLIC_AMOY_RPC_URL:-https://polygon-amoy-bor-rpc.publicnode.com}
+        NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: ${NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID:-}
+    image: certificado-web:latest
+    restart: unless-stopped
+    environment:
+      JWT_SECRET: ${JWT_SECRET:?falta JWT_SECRET}
+      API_INTERNAL_URL: http://api:4001
+    depends_on:
+      api: { condition: service_healthy }
+    logging: *logging
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL:?falta ACME_EMAIL}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+      - api
+    logging: *logging
+
+volumes:
+  pgdata:
+  uploads:
+  caddy_data:
+  caddy_config:

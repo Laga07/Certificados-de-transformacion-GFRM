@@ -1,0 +1,30 @@
+{
+  "network": "amoy",
+  "chainId": 80002,
+  "deployer": "0x6f2dCF4A6a414809b46194DBF33d60071f898942",
+  "startBlock": 52807377,
+  "contracts": {
+    "MockUSDT": {
+      "address": "0x2a1F56Dba49540DE68b6728fa17641c43f843a56"
+    },
+    "RegistroEntidades": {
+      "address": "0x081C15fC83Dcc8E1C3e3A962Cd64FF598c137Fba"
+    },
+    "TokenCustodia": {
+      "address": "0xafa3DC0ea5fd1832DabdEE1A3A025ab5E39cdD6a"
+    },
+    "CertificadoTransformacionImpl": {
+      "address": "0x82cFDf9c901137089435AFfbe1c1F9a4cc505463"
+    },
+    "MercadoCertificados": {
+      "address": "0xC014B5eFE9CCfeB5602ee2Df5f52cE0a0C470790"
+    },
+    "Certificados": {
+      "CERT-PLAST": "0x239ad922D40B1ff2d8CfCEfA44b83dc8c09a6afB",
+      "CERT-CART": "0xb05be56a5d5396C49558479D8835F113b239F550",
+      "CERT-TETRA": "0xD0538C85C93dEB3aE2857846db9c7a45E24d5645",
+      "CERT-VIDRIO": "0x378b2437d449A924F5F68824B22C65A07fAae886",
+      "CERT-METAL": "0x38fFFd4E2294022e726182eD52476427f98A6C70"
+    }
+  }
+}

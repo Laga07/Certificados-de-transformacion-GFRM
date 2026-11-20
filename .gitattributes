@@ -1,0 +1,7 @@
+# Archivos que se ejecutan o leen en el servidor Linux: siempre LF, aunque se editen en
+# Windows (core.autocrlf los convertiria a CRLF y bash fallaria con "\r: command not found").
+*.sh          text eol=lf
+Dockerfile    text eol=lf
+Caddyfile     text eol=lf
+*.yml         text eol=lf
+*.example     text eol=lf

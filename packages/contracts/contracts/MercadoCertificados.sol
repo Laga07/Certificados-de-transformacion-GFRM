@@ -9,6 +9,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {Material} from "./TiposComunes.sol";
 import {IRegistroEntidades} from "./RegistroEntidades.sol";
@@ -28,6 +29,13 @@ contract MercadoCertificados is
     using SafeERC20 for IERC20;
 
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
+
+    /// @dev UNIDADES (corregido 2026-11-20): TokenCustodia registra todo el peso en GRAMOS
+    /// (entregas, traspasos, merma, pesoAceptadoOrigen). Este contrato vende en KG
+    /// (kgTransformados, cantidadKg, 1 token = 1 kg) y el precio es USDT (6 decimales) por KG.
+    /// Toda formula que cruza las dos escalas divide por GRAMOS_POR_KG; antes no lo hacia y
+    /// un uso real (gramos desde el frontend) daba mermas absurdas y ventas revertidas.
+    uint256 public constant GRAMOS_POR_KG = 1000;
 
     IRegistroEntidades public registro;
     ITokenCustodia public tokenCustodia;
@@ -161,8 +169,10 @@ contract MercadoCertificados is
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(certificados[material] == address(0), "Ya desplegado para ese material");
         address clone = Clones.clone(certificadoImplementacion);
-        CertificadoTransformacion(clone).initialize(nombre, simbolo, address(this));
+        // Estado antes de la llamada externa (checks-effects-interactions; Slither
+        // reentrancy-no-eth). El clone es codigo propio, pero el orden correcto no cuesta nada.
         certificados[material] = clone;
+        CertificadoTransformacion(clone).initialize(nombre, simbolo, address(this));
         emit CertificadoDesplegado(material, clone, nombre, simbolo);
     }
 
@@ -183,6 +193,8 @@ contract MercadoCertificados is
         require(precioUSDTporKg > 0, "precio debe ser > 0");
 
         uint256 loteConsolidadoId = tokenCustodia.consumirParaTransformacion(loteIds, msg.sender);
+        // Los campos omitidos (variante, custodio, activo) no se usan a proposito.
+        // slither-disable-next-line unused-return
         (
             Material material,
             ,
@@ -192,10 +204,13 @@ contract MercadoCertificados is
 
         ) = tokenCustodia.loteInfo(loteConsolidadoId);
 
-        require(kgTransformados <= pesoActualTotal, "kgTransformados no puede superar el peso consumido");
+        // pesoActualTotal esta en gramos, kgTransformados en kg.
+        uint256 gramosTransformados = kgTransformados * GRAMOS_POR_KG;
+        require(gramosTransformados <= pesoActualTotal, "kgTransformados no puede superar el peso consumido");
         require(certificados[material] != address(0), "Material sin certificado desplegado");
 
-        uint256 mermaTransformador = pesoActualTotal - kgTransformados;
+        // En gramos, igual que la merma de los traspasos que viene de TokenCustodia.
+        uint256 mermaTransformador = pesoActualTotal - gramosTransformados;
 
         emisionId = ++nextEmisionId;
         emisiones[emisionId] = Emision({
@@ -268,11 +283,26 @@ contract MercadoCertificados is
     function _repartirVenta(uint256 emisionId, uint256 cantidadKg, uint256 valorTotal) internal {
         Emision storage emision = emisiones[emisionId];
 
-        uint256 baseEscalada = (emision.pesoAceptadoOrigenTotal * cantidadKg) / emision.kgTransformadosOriginal;
-        uint256 valorBaseTotal = baseEscalada * emision.precioUSDTporKg;
+        // Denominador comun de todas las conversiones gramos -> valor de esta venta: la venta
+        // representa cantidadKg / kgTransformadosOriginal de la emision, y los gramos se pasan
+        // a kg dividiendo por GRAMOS_POR_KG. Se multiplica TODO antes de dividir una sola vez
+        // (Slither divide-before-multiply): antes se redondeaba a kg y despues se multiplicaba
+        // por el precio, perdiendo hasta un precio entero por termino.
+        uint256 denominador = emision.kgTransformadosOriginal * GRAMOS_POR_KG;
+        uint256 valorBaseTotal =
+            (emision.pesoAceptadoOrigenTotal * cantidadKg * emision.precioUSDTporKg) / denominador;
 
+        // Slither marca divide-before-multiply en las 3 lineas siguientes, en la division por
+        // nIntermediariosReales y en el pro rata de separadores. Revisado y aceptado: son
+        // porcentajes sobre un monto que YA esta en unidades minimas de USDT (1e-6), asi que el
+        // error maximo es 1 unidad minima por termino, y ese residuo no se pierde -- va a la
+        // plataforma (residuo exacto) o a remanenteNoAcreditado. El error real (redondear a kg
+        // antes de multiplicar por el precio) se corrigio arriba.
+        // slither-disable-next-line divide-before-multiply
         uint256 baseSeparadores = (valorBaseTotal * 3500) / 10000;
+        // slither-disable-next-line divide-before-multiply
         uint256 baseIntermediariosTotal = (valorBaseTotal * 2000) / 10000;
+        // slither-disable-next-line divide-before-multiply
         uint256 baseTransformador = (valorBaseTotal * 3000) / 10000;
         // La plataforma es el residuo EXACTO de valorBaseTotal contra los otros 3 (nunca un
         // 15% directo): asi absorbe el redondeo de las 3 divisiones enteras de arriba. OJO:
@@ -302,7 +332,8 @@ contract MercadoCertificados is
             baseShareIntermediarioIndividual = baseIntermediariosTotal / nIntermediariosReales;
             // Redondeo de ESTA division tambien a la plataforma (nIntermediariosReales no
             // siempre divide baseIntermediariosTotal exacto).
-            basePlataforma += baseIntermediariosTotal - (baseShareIntermediarioIndividual * nIntermediariosReales);
+            // slither-disable-next-line divide-before-multiply
+            basePlataforma +=baseIntermediariosTotal - (baseShareIntermediarioIndividual * nIntermediariosReales);
         } else {
             basePlataforma += baseIntermediariosTotal;
         }
@@ -314,8 +345,13 @@ contract MercadoCertificados is
         for (uint256 i = 0; i < nEslabones; i++) {
             address eslabon = eslabones[i];
             uint256 baseShare = (eslabon == emision.transformador) ? baseTransformador : baseShareIntermediarioIndividual;
-            uint256 mermaEscalada = (mermaKgDeEmision[emisionId][eslabon] * cantidadKg) / emision.kgTransformadosOriginal;
-            uint256 perdidaValor = mermaEscalada * emision.precioUSDTporKg;
+            // Redondeo HACIA ARRIBA de la perdida (y hacia abajo de valorBaseTotal): asi la suma
+            // acreditada nunca supera lo cobrado por culpa del redondeo, y la fraccion de unidad
+            // la absorbe quien genero la merma, no el resto. Lo que sobre va a remanente.
+            uint256 perdidaValor = Math.ceilDiv(
+                mermaKgDeEmision[emisionId][eslabon] * cantidadKg * emision.precioUSDTporKg,
+                denominador
+            );
 
             if (perdidaValor <= baseShare) {
                 shareFinal[i] = baseShare - perdidaValor;
@@ -366,8 +402,11 @@ contract MercadoCertificados is
         uint256 sumSeparadores = 0;
         for (uint256 i = 0; i < separadoresList.length; i++) {
             address sep = separadoresList[i];
-            uint256 aporteEscalado = (aporteKgDeEmision[emisionId][sep] * cantidadKg) / emision.kgTransformadosOriginal;
-            uint256 pagoSep = (baseSeparadores * aporteEscalado) / baseEscalada;
+            // Pro rata por gramos aportados sobre el total aceptado en origen. La escala de la
+            // venta (cantidadKg / kgTransformadosOriginal) ya esta dentro de baseSeparadores y
+            // se cancela en la proporcion, asi que no se redondea dos veces.
+            // slither-disable-next-line divide-before-multiply
+            uint256 pagoSep = (baseSeparadores * aporteKgDeEmision[emisionId][sep]) / emision.pesoAceptadoOrigenTotal;
             if (pagoSep > 0) {
                 saldoPendiente[sep] += pagoSep;
                 sumSeparadores += pagoSep;

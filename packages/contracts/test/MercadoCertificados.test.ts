@@ -81,6 +81,7 @@ async function deployFixture() {
 }
 
 /** Reproduce la cadena del ejemplo ilustrativo del documento (Tabla 12):
+ * Pesos de custodia en GRAMOS (como en el frontend), kgTransformados en kg.
  * separador -> acopio (sin merma) -> compactador (2% merma, 200kg) -> transformador
  * (3% merma, 294kg) -> 9,506 kg transformados. */
 async function cadenaTabla12Fixture() {
@@ -89,13 +90,13 @@ async function cadenaTabla12Fixture() {
 
   await custodia
     .connect(acopio)
-    .registrarEntrega(separador.address, MATERIAL_PLASTICO, VARIANTE_PET, 10_000n, 0n, MODALIDAD_SIN_PAGO, 0n);
+    .registrarEntrega(separador.address, MATERIAL_PLASTICO, VARIANTE_PET, 10_000_000n, 0n, MODALIDAD_SIN_PAGO, 0n);
 
-  await custodia.connect(acopio).declararEnvio(1n, compactador.address, 10_000n, 0n);
-  await custodia.connect(compactador).confirmarRecepcion(1n, 10_000n, QUIEN_ABSORBE_ENVIA); // sin merma en acopio
+  await custodia.connect(acopio).declararEnvio(1n, compactador.address, 10_000_000n, 0n);
+  await custodia.connect(compactador).confirmarRecepcion(1n, 10_000_000n, QUIEN_ABSORBE_ENVIA); // sin merma en acopio
 
-  await custodia.connect(compactador).declararEnvio(1n, transformador.address, 10_000n, 0n);
-  await custodia.connect(transformador).confirmarRecepcion(1n, 9_800n, QUIEN_ABSORBE_ENVIA); // 200kg merma -> compactador
+  await custodia.connect(compactador).declararEnvio(1n, transformador.address, 10_000_000n, 0n);
+  await custodia.connect(transformador).confirmarRecepcion(1n, 9_800_000n, QUIEN_ABSORBE_ENVIA); // 200kg merma -> compactador
 
   return base;
 }
@@ -106,12 +107,12 @@ describe("MercadoCertificados", function () {
 
     await expect(mercado.connect(transformador).registrarTransformacion([1n], 9_506n, 1n))
       .to.emit(mercado, "TransformacionRegistrada")
-      .withArgs(1n, transformador.address, MATERIAL_PLASTICO, [1n], 2n, 9_800n, 9_506n, 294n, 1n);
+      .withArgs(1n, transformador.address, MATERIAL_PLASTICO, [1n], 2n, 9_800_000n, 9_506n, 294_000n, 1n);
 
     const emision = await mercado.emisiones(1n);
     expect(emision.kgTransformadosOriginal).to.equal(9_506n);
     expect(emision.kgDisponiblesPrimario).to.equal(9_506n);
-    expect(emision.pesoAceptadoOrigenTotal).to.equal(10_000n);
+    expect(emision.pesoAceptadoOrigenTotal).to.equal(10_000_000n); // gramos
   });
 
   it("solo un transformador verificado puede registrar una transformacion", async function () {
@@ -273,11 +274,11 @@ describe("MercadoCertificados", function () {
 
       await custodia
         .connect(acopio)
-        .registrarEntrega(separador.address, MATERIAL_PLASTICO, VARIANTE_PET, 10_000n, 0n, MODALIDAD_SIN_PAGO, 0n);
-      await custodia.connect(acopio).declararEnvio(1n, compactador.address, 10_000n, 0n);
-      await custodia.connect(compactador).confirmarRecepcion(1n, 10_000n, QUIEN_ABSORBE_ENVIA);
-      await custodia.connect(compactador).declararEnvio(1n, transformador.address, 10_000n, 0n);
-      await custodia.connect(transformador).confirmarRecepcion(1n, 8_500n, QUIEN_ABSORBE_ENVIA); // 1500 de merma, todo compactador
+        .registrarEntrega(separador.address, MATERIAL_PLASTICO, VARIANTE_PET, 10_000_000n, 0n, MODALIDAD_SIN_PAGO, 0n);
+      await custodia.connect(acopio).declararEnvio(1n, compactador.address, 10_000_000n, 0n);
+      await custodia.connect(compactador).confirmarRecepcion(1n, 10_000_000n, QUIEN_ABSORBE_ENVIA);
+      await custodia.connect(compactador).declararEnvio(1n, transformador.address, 10_000_000n, 0n);
+      await custodia.connect(transformador).confirmarRecepcion(1n, 8_500_000n, QUIEN_ABSORBE_ENVIA); // 1500 de merma, todo compactador
 
       await mercado.connect(transformador).registrarTransformacion([1n], 8_500n, 1n); // sin merma de transformacion aparte
 
@@ -311,11 +312,11 @@ describe("MercadoCertificados", function () {
 
       await custodia
         .connect(acopio)
-        .registrarEntrega(separador.address, MATERIAL_PLASTICO, VARIANTE_PET, 10_000n, 0n, MODALIDAD_SIN_PAGO, 0n);
-      await custodia.connect(acopio).declararEnvio(1n, compactador.address, 10_000n, 0n);
-      await custodia.connect(compactador).confirmarRecepcion(1n, 10_000n, QUIEN_ABSORBE_ENVIA);
-      await custodia.connect(compactador).declararEnvio(1n, transformador.address, 10_000n, 0n);
-      await custodia.connect(transformador).confirmarRecepcion(1n, 8_700n, QUIEN_ABSORBE_ENVIA); // 1300 merma compactador
+        .registrarEntrega(separador.address, MATERIAL_PLASTICO, VARIANTE_PET, 10_000_000n, 0n, MODALIDAD_SIN_PAGO, 0n);
+      await custodia.connect(acopio).declararEnvio(1n, compactador.address, 10_000_000n, 0n);
+      await custodia.connect(compactador).confirmarRecepcion(1n, 10_000_000n, QUIEN_ABSORBE_ENVIA);
+      await custodia.connect(compactador).declararEnvio(1n, transformador.address, 10_000_000n, 0n);
+      await custodia.connect(transformador).confirmarRecepcion(1n, 8_700_000n, QUIEN_ABSORBE_ENVIA); // 1300 merma compactador
 
       await mercado.connect(transformador).registrarTransformacion([1n], 4_000n, 1n); // 4700 de merma del transformador
 
@@ -348,7 +349,7 @@ describe("MercadoCertificados", function () {
       // Intermediario en la cadena en absoluto.
       await custodia
         .connect(transformador)
-        .registrarEntrega(separador.address, MATERIAL_PLASTICO, VARIANTE_PET, 1_000n, 0n, MODALIDAD_SIN_PAGO, 0n);
+        .registrarEntrega(separador.address, MATERIAL_PLASTICO, VARIANTE_PET, 1_000_000n, 0n, MODALIDAD_SIN_PAGO, 0n);
 
       await mercado.connect(transformador).registrarTransformacion([1n], 1_000n, 1n);
 
@@ -374,9 +375,9 @@ describe("MercadoCertificados", function () {
 
       await custodia
         .connect(acopio)
-        .registrarEntrega(separador.address, MATERIAL_PLASTICO, VARIANTE_PET, 1_000n, 0n, MODALIDAD_SIN_PAGO, 0n);
-      await custodia.connect(acopio).declararEnvio(1n, transformador.address, 1_000n, 0n);
-      await custodia.connect(transformador).confirmarRecepcion(1n, 1_000n, QUIEN_ABSORBE_ENVIA);
+        .registrarEntrega(separador.address, MATERIAL_PLASTICO, VARIANTE_PET, 1_000_000n, 0n, MODALIDAD_SIN_PAGO, 0n);
+      await custodia.connect(acopio).declararEnvio(1n, transformador.address, 1_000_000n, 0n);
+      await custodia.connect(transformador).confirmarRecepcion(1n, 1_000_000n, QUIEN_ABSORBE_ENVIA);
 
       await mercado.connect(transformador).registrarTransformacion([1n], 1_000n, 1n);
 
@@ -385,6 +386,87 @@ describe("MercadoCertificados", function () {
       await mercado.connect(comprador).comprarCertificado(1n, 1_000n);
 
       expect(await mercado.saldoPendiente(acopio.address)).to.equal(200n); // 20% completo, un solo intermediario
+    });
+  });
+
+  describe("unidades reales: custodia en gramos, certificado en kg, precio en USDT (6 dec) por kg", function () {
+    it("Tabla 12 con unidades reales: 10,000,000 g -> 9,506 kg reparte 3500/1000/800/2706/1500 USDT", async function () {
+      // Mismo ejemplo del documento pero como lo usa el frontend: pesos de custodia en gramos,
+      // kgTransformados en kg y precio de 1 USDT/kg (1_000_000 unidades de USDT con 6 dec).
+      const base = await deployFixture();
+      const { custodia, mercado, usdt, admin, separador, acopio, compactador, transformador, comprador, plataforma } = base;
+      const UN_USDT = 1_000_000n;
+
+      await custodia
+        .connect(acopio)
+        .registrarEntrega(separador.address, MATERIAL_PLASTICO, VARIANTE_PET, 10_000_000n, 0n, MODALIDAD_SIN_PAGO, 0n);
+      await custodia.connect(acopio).declararEnvio(1n, compactador.address, 10_000_000n, 0n);
+      await custodia.connect(compactador).confirmarRecepcion(1n, 10_000_000n, QUIEN_ABSORBE_ENVIA);
+      await custodia.connect(compactador).declararEnvio(1n, transformador.address, 10_000_000n, 0n);
+      await custodia.connect(transformador).confirmarRecepcion(1n, 9_800_000n, QUIEN_ABSORBE_ENVIA); // 200 kg merma
+
+      await expect(mercado.connect(transformador).registrarTransformacion([1n], 9_506n, UN_USDT))
+        .to.emit(mercado, "TransformacionRegistrada")
+        .withArgs(1n, transformador.address, MATERIAL_PLASTICO, [1n], 2n, 9_800_000n, 9_506n, 294_000n, UN_USDT);
+
+      await usdt.connect(admin).mint(comprador.address, 100_000n * UN_USDT);
+      await usdt.connect(comprador).approve(await mercado.getAddress(), 100_000n * UN_USDT);
+      await mercado.connect(comprador).comprarCertificado(1n, 9_506n);
+
+      expect(await mercado.saldoPendiente(separador.address)).to.equal(3500n * UN_USDT);
+      expect(await mercado.saldoPendiente(acopio.address)).to.equal(1000n * UN_USDT);
+      expect(await mercado.saldoPendiente(compactador.address)).to.equal(800n * UN_USDT);
+      expect(await mercado.saldoPendiente(transformador.address)).to.equal(2706n * UN_USDT);
+      expect(await mercado.saldoPendiente(plataforma.address)).to.equal(1500n * UN_USDT);
+      expect(await mercado.remanenteNoAcreditado()).to.equal(0n);
+    });
+
+    it("con pesos y precios no redondos, lo acreditado + remanente es exactamente lo cobrado, y nunca revierte", async function () {
+      const base = await deployFixture();
+      const { custodia, mercado, usdt, admin, separador, acopio, compactador, transformador, comprador, plataforma } = base;
+
+      await custodia
+        .connect(acopio)
+        .registrarEntrega(separador.address, MATERIAL_PLASTICO, VARIANTE_PET, 1_234_567n, 0n, MODALIDAD_SIN_PAGO, 0n);
+      await custodia.connect(acopio).declararEnvio(1n, compactador.address, 1_234_567n, 0n);
+      await custodia.connect(compactador).confirmarRecepcion(1n, 1_230_001n, 2); // Mitad
+      await custodia.connect(compactador).declararEnvio(1n, transformador.address, 1_230_001n, 0n);
+      await custodia.connect(transformador).confirmarRecepcion(1n, 1_201_333n, QUIEN_ABSORBE_ENVIA);
+
+      const precio = 2_345_678n; // 2.345678 USDT/kg
+      await mercado.connect(transformador).registrarTransformacion([1n], 1_177n, precio);
+
+      await usdt.connect(admin).mint(comprador.address, 10n ** 15n);
+      await usdt.connect(comprador).approve(await mercado.getAddress(), 10n ** 15n);
+
+      const participantes = [separador, acopio, compactador, transformador, plataforma].map((s) => s.address);
+      let cobradoTotal = 0n;
+      // Tres compras parciales de tamanos dispares que suman el total.
+      for (const kg of [1n, 400n, 776n]) {
+        await mercado.connect(comprador).comprarCertificado(1n, kg);
+        cobradoTotal += kg * precio;
+      }
+
+      let acreditado = 0n;
+      for (const p of participantes) acreditado += await mercado.saldoPendiente(p);
+      const remanente = await mercado.remanenteNoAcreditado();
+
+      expect(acreditado + remanente).to.equal(cobradoTotal);
+      expect(await usdt.balanceOf(await mercado.getAddress())).to.equal(cobradoTotal);
+      // El redondeo deja a lo sumo unas pocas unidades minimas (millonesimas de USDT) por venta.
+      expect(remanente).to.be.lessThan(20n);
+      expect((await mercado.emisiones(1n)).kgDisponiblesPrimario).to.equal(0n);
+    });
+
+    it("rechaza declarar mas kg transformados que los gramos consumidos", async function () {
+      const { custodia, mercado, separador, transformador } = await connection.networkHelpers.loadFixture(deployFixture);
+      await custodia
+        .connect(transformador)
+        .registrarEntrega(separador.address, MATERIAL_PLASTICO, VARIANTE_PET, 999_999n, 0n, MODALIDAD_SIN_PAGO, 0n);
+      // 999,999 g = 999.999 kg: declarar 1000 kg es imposible.
+      await expect(mercado.connect(transformador).registrarTransformacion([1n], 1_000n, 1n)).to.be.revertedWith(
+        "kgTransformados no puede superar el peso consumido",
+      );
     });
   });
 

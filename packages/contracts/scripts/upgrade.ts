@@ -39,9 +39,22 @@ async function main() {
   const Factory = await ethers.getContractFactory(nombre);
   const upgraded = await upgradesApi.upgradeProxy(proxyAddress, Factory);
   await upgraded.waitForDeployment();
-  const implNueva = await upgradesApi.erc1967.getImplementationAddress(proxyAddress);
+  // Los RPC publicos balancean entre nodos: la lectura inmediata puede venir de un nodo que
+  // todavia no vio el bloque del upgrade y devolver la implementacion vieja (paso en el
+  // upgrade del 2026-11-20). Se reintenta hasta ver el cambio.
+  let implNueva = await upgradesApi.erc1967.getImplementationAddress(proxyAddress);
+  for (let i = 0; i < 12 && implNueva.toLowerCase() === implAnterior.toLowerCase(); i++) {
+    await new Promise((r) => setTimeout(r, 5_000));
+    implNueva = await upgradesApi.erc1967.getImplementationAddress(proxyAddress);
+  }
 
   console.log(`Implementacion: ${implAnterior} -> ${implNueva}`);
+  if (implNueva.toLowerCase() === implAnterior.toLowerCase()) {
+    console.warn(
+      "La implementacion no cambio: o el bytecode era identico (nada que subir) o el RPC sigue " +
+        "atrasado. Verificar leyendo el slot EIP-1967 del proxy en el explorador.",
+    );
+  }
   console.log("Listo. Ahora: npm run contracts:export && npm run frontend:generate");
 }
 

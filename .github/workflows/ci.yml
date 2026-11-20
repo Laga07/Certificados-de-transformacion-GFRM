@@ -9,9 +9,9 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -21,8 +21,15 @@ jobs:
       - name: Compilar y probar contratos
         run: npm run contracts:compile && npm run contracts:test
 
-      - name: Typecheck + lint backend
-        run: npm run backend:typecheck && npm run backend:lint
+      # El cliente de Prisma (src/generated) no esta en git: sin este paso el typecheck del
+      # backend no encuentra los tipos. Fue la causa de que el CI fallara desde el Sprint 1.
+      - name: Generar cliente de Prisma
+        run: npm run backend:generate
+        env:
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+
+      - name: Typecheck + lint + build backend
+        run: npm run backend:typecheck && npm run backend:lint && npm run build --workspace=packages/backend
 
       - name: Typecheck + lint frontend
         run: npm run frontend:typecheck && npm run frontend:lint
@@ -33,7 +40,7 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: docker/setup-buildx-action@v3
       - name: Imagen del backend
         uses: docker/build-push-action@v6
@@ -60,27 +67,40 @@ jobs:
           sed -i 's/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=ci/; s/^JWT_SECRET=.*/JWT_SECRET=ci/' deploy/.env.prod
           docker compose --env-file deploy/.env.prod -f docker-compose.prod.yml config --quiet
 
-  # Analisis estatico de los contratos (plan de produccion, A8). Empieza como informativo
-  # (continue-on-error) hasta confirmar que crytic-compile entiende este proyecto de Hardhat 3
-  # sin falsos positivos; despues de revisar el primer reporte, quitar continue-on-error y
-  # dejar fail-on en "medium" o "high".
+  # Analisis estatico de los contratos (plan de produccion, A8). BLOQUEANTE para hallazgos
+  # de severidad media o alta. Se compila con solc directo (no via Hardhat 3, que
+  # crytic-compile no entiende) sobre MercadoCertificados.sol, que importa los otros tres.
+  # Los hallazgos revisados y aceptados se marcan en el codigo con slither-disable-next-line
+  # y una justificacion.
   slither:
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
 
       - run: npm ci
 
-      - name: Slither
-        uses: crytic/slither-action@v0.4.1
+      - uses: actions/setup-python@v5
         with:
-          target: packages/contracts
-          node-version: 22
-          fail-on: high
-          slither-args: --filter-paths "node_modules|mocks"
+          python-version: "3.12"
+
+      - name: Instalar Slither y solc 0.8.24
+        run: |
+          pip install --quiet slither-analyzer solc-select
+          solc-select install 0.8.24
+          solc-select use 0.8.24
+
+      - name: Slither (falla con hallazgos medios o altos)
+        working-directory: packages/contracts
+        run: >
+          slither contracts/MercadoCertificados.sol
+          --compile-force-framework solc
+          --solc-remaps "@openzeppelin/=../../node_modules/@openzeppelin/"
+          --solc-args "--via-ir --optimize --evm-version cancun"
+          --filter-paths node_modules
+          --exclude-informational --exclude-optimization --exclude-low
+          --fail-medium

@@ -1294,6 +1294,13 @@ export const mercadoCertificadosAbi = [
   {
     type: 'function',
     inputs: [],
+    name: 'GRAMOS_POR_KG',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
     name: 'PAUSER_ROLE',
     outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
     stateMutability: 'view',
@@ -4131,6 +4138,15 @@ export const useReadMercadoCertificadosDefaultAdminRole =
   /*#__PURE__*/ createUseReadContract({
     abi: mercadoCertificadosAbi,
     functionName: 'DEFAULT_ADMIN_ROLE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mercadoCertificadosAbi}__ and `functionName` set to `"GRAMOS_POR_KG"`
+ */
+export const useReadMercadoCertificadosGramosPorKg =
+  /*#__PURE__*/ createUseReadContract({
+    abi: mercadoCertificadosAbi,
+    functionName: 'GRAMOS_POR_KG',
   })
 
 /**

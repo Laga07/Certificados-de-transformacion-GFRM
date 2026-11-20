@@ -53,6 +53,31 @@ testnet por ahora.
 - `registrarTransformacion` lleva `nonReentrant` por consistencia con el resto de funciones
   que mueven tokens.
 
+### 0.2 Corrección de unidades en el reparto (2026-11-20, upgrade en Amoy)
+
+**Bug:** `TokenCustodia` registra todo el peso en **gramos** (entregas, traspasos, merma,
+`pesoAceptadoOrigen`), pero `MercadoCertificados` lo mezclaba con `kgTransformados` (kg) y con
+el precio por **kg** sin convertir. Con datos reales del frontend, el transformador que recibía
+9.800.000 g y declaraba 9.506 kg quedaba con 9.790.494 unidades de "merma", y la venta revertía
+con "Invariante de reparto violada". Los tests no lo veían porque usaban el mismo número para
+ambas unidades. Lo encontró la revisión del hallazgo `divide-before-multiply` de Slither.
+
+**Corrección** (constante `GRAMOS_POR_KG = 1000`):
+
+- `registrarTransformacion` exige `kgTransformados × 1000 ≤ pesoActualTotal` y la merma del
+  transformador queda en gramos, igual que la de los traspasos. `TransformacionRegistrada`
+  emite `mermaTransformador` en **gramos**.
+- `_repartirVenta` multiplica todo antes de dividir una sola vez:
+  `valorBase = pesoAceptado_g × cantidadKg × precio / (kgOriginal × 1000)` (hacia abajo) y
+  `pérdida = merma_g × cantidadKg × precio / (kgOriginal × 1000)` (hacia **arriba**: la fracción
+  la absorbe quien generó la merma, y la suma acreditada nunca puede superar lo cobrado).
+- El pro rata de separadores usa `aporte_g / pesoAceptado_g` directo (la escala de la venta se
+  cancela y no se redondea dos veces).
+- Lo que el redondeo deja sin acreditar (millonésimas de USDT) va a `remanenteNoAcreditado`.
+
+Los nombres heredados `aporteKgDeEmision` y `mermaKgDeEmision` guardan **gramos**; no se
+renombraron para no cambiar el layout ni el ABI del proxy ya desplegado.
+
 ---
 
 ## 1. Qué se reutiliza de DAPP Plástico Tesis

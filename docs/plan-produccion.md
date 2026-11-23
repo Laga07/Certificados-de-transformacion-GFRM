@@ -206,8 +206,13 @@ compra: dominio, VPS, DNS, `.env.prod`, primer deploy, R2 y UptimeRobot.
 - [x] Dockerfiles + compose de producción + Caddy + scripts de servidor
 - [x] Build de producción del backend, logger JSON, RPC publicnode
 - [x] Respaldos con validación y copia opcional a R2; deploy automático preparado
-- [ ] Dominio y VPS comprados, DNS apuntando (elegidos: Cloudflare, Vultr Miami 4 GB, Resend)
-- [ ] Primer deploy en el servidor y restauración de respaldo probada
+- [x] Dominio `valorverde.org` (Cloudflare) y VPS Vultr Miami 4 GB `45.77.196.153`, DNS apuntando
+- [x] Primer deploy en el servidor (2026-11-23): `https://valorverde.org` con HTTPS de Let's
+      Encrypt, SSH solo con llave y usuario `deploy`, firewall 22/80/443, base y servicios
+      internos cerrados desde afuera, IP real del visitante llegando a la API
+- [ ] Restauración de respaldo probada
+- [ ] Resend verificado con el dominio y correo de verificación probado
+- [ ] Dominio agregado a la lista permitida del proyecto de WalletConnect (Reown)
 - [ ] UptimeRobot + Sentry
 - [ ] Roles de cuenta, verificación de correo, reset, rate limit, CORS cerrado
 - [ ] SIWE + perfil off-chain + panel admin con datos reales

@@ -186,7 +186,7 @@ revisión en móvil.
 - [x] `error.tsx`, `not-found.tsx`, `loading.tsx`
 - [x] `setPlataforma`, revocación, remanente, tests, redeploy Amoy
 - [ ] Slither sin hallazgos altos (job informativo ya en CI); verify en Polygonscan
-- [ ] `VERIFIER_ROLE` y `PAUSER_ROLE` en wallets operativas distintas (comando listo, lo corre el dueño)
+- [x] `VERIFIER_ROLE` y `PAUSER_ROLE` en la wallet operativa `0x9b59…ea18` (2026-11-23, confirmado on-chain)
 - [x] Roles de cuenta, verificación de correo, reset, rate limit, CORS cerrado
 - [x] Firma de wallet + perfil off-chain + panel admin con datos reales
 - [x] Hash de identidad con pepper
@@ -206,7 +206,7 @@ compra: dominio, VPS, DNS, `.env.prod`, primer deploy, R2 y UptimeRobot.
 - [x] Dockerfiles + compose de producción + Caddy + scripts de servidor
 - [x] Build de producción del backend, logger JSON, RPC publicnode
 - [x] Respaldos con validación y copia opcional a R2; deploy automático preparado
-- [ ] Dominio y VPS comprados, DNS apuntando
+- [ ] Dominio y VPS comprados, DNS apuntando (elegidos: Cloudflare, Vultr Miami 4 GB, Resend)
 - [ ] Primer deploy en el servidor y restauración de respaldo probada
 - [ ] UptimeRobot + Sentry
 - [ ] Roles de cuenta, verificación de correo, reset, rate limit, CORS cerrado

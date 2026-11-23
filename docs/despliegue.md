@@ -23,15 +23,38 @@ petición va a la API o al sitio. Por eso la cookie de sesión funciona sin conf
 
 ## 1. Comprar (lo hace el dueño del proyecto)
 
-| Qué | Recomendación | Costo |
-|---|---|---|
-| Dominio | Cloudflare Registrar (precio de costo, DNS incluido). Alternativa: Namecheap o Porkbun | ~10–12 USD/año un `.com` |
-| Servidor | Hetzner Cloud **CX22** (2 vCPU, 4 GB RAM, 40 GB) en Ashburn o Hillsboro (EE. UU., menor latencia a Costa Rica). Alternativa: DigitalOcean Basic 4 GB | ~5 USD/mes Hetzner, 24 USD/mes DO |
-| Correo transaccional | Ver sección 6 | 0 |
+Proveedores elegidos el 2026-11-23 (comparación y precios en la conversación de esa fecha):
 
-Al crear el servidor en Hetzner: imagen **Ubuntu 24.04**, y en "SSH keys" pegá tu llave
-pública (si no tenés una, en PowerShell: `ssh-keygen -t ed25519`, y copiá el contenido de
-`C:\Users\<vos>\.ssh\id_ed25519.pub`). Anotá la IP pública que te asigna.
+| Qué | Proveedor | Costo aprox. |
+|---|---|---|
+| Dominio `.com` | **Cloudflare Registrar** (precio de costo, igual al renovar, DNS incluido) | 10,44 USD/año |
+| Servidor | **Vultr**, Cloud Compute Regular, **4 GB**, región **Miami** | 20 USD/mes + 4 USD respaldos automáticos |
+| Correo | **Resend**, plan gratis (3.000/mes, 100/día) | 0 |
+
+### 1.1 Dominio en Cloudflare
+
+1. Crear cuenta en dash.cloudflare.com y agregar un medio de pago.
+2. Menú **Domain Registration → Register Domains**, buscar el nombre y comprarlo. La privacidad
+   de los datos del dueño (WHOIS) va incluida sin costo.
+3. El dominio aparece solo en la cuenta con el DNS de Cloudflare ya activo.
+
+### 1.2 Servidor en Vultr
+
+1. Crear cuenta en vultr.com y agregar un medio de pago.
+2. **Account → SSH Keys → Add SSH Key**: nombre `certificado`, y pegar el contenido de
+   `C:\Users\Usuario\.ssh\certificado_vultr.pub` (una sola línea que empieza con
+   `ssh-ed25519`). Es la llave pública: se puede compartir. La privada
+   (`certificado_vultr`, sin `.pub`) nunca sale de la PC.
+3. **Deploy → Deploy New Server**:
+   - Tipo: **Cloud Compute – Shared CPU**, **Regular Performance**.
+   - Ubicación: **Miami**.
+   - Imagen: **Ubuntu 24.04 LTS x64**.
+   - Plan: el de **4 GB** de RAM (2 vCPU, ~20 USD/mes).
+   - **Auto Backups: activado** (+20 %). Es una copia de todo el disco, aparte del respaldo
+     diario de la base que hace `backup.sh`.
+   - SSH Keys: marcar `certificado`.
+   - Hostname: `certificado`.
+4. Esperar a que quede en "Running" y anotar la **IP** (IPv4) del servidor.
 
 ## 2. DNS
 
@@ -51,13 +74,17 @@ Comprobar que propagó (desde tu PC): `nslookup tu-dominio.com` tiene que devolv
 ## 3. Preparar el servidor (una vez)
 
 ```bash
-ssh root@<ip>
+ssh -i ~/.ssh/certificado_vultr root@<ip>
 curl -fsSL https://raw.githubusercontent.com/Laga07/Certificados-de-transformacion-GFRM/main/deploy/setup-servidor.sh | bash
 ```
 
 Instala Docker, firewall (solo 22/80/443), actualizaciones automáticas de seguridad, swap,
 el usuario `deploy`, clona el repo en `/opt/certificado` y programa el respaldo diario.
-**Después de esto el login de root queda deshabilitado**: se entra con `ssh deploy@<ip>`.
+**Después de esto el login de root queda deshabilitado**: se entra con
+`ssh -i ~/.ssh/certificado_vultr deploy@<ip>`.
+
+Las imágenes de Ubuntu de Vultr traen `ufw` activo con solo el puerto 22 abierto; el script
+lo deja en 22/80/443. Si además se usa el firewall del panel de Vultr, abrir los mismos tres.
 
 ## 4. Configurar
 
@@ -111,6 +138,22 @@ eso se configura después de tener el dominio.
 `MAIL_FROM` tiene que usar el dominio verificado, p. ej.
 `Certificado de Transformación <no-responder@tu-dominio.com>`.
 
+### 6.1 Resend (elegido)
+
+1. Crear cuenta en resend.com.
+2. **Domains → Add Domain**: escribir el dominio y región **North Virginia (us-east-1)**.
+3. Resend muestra 3–4 registros DNS (un MX y TXT para SPF en el subdominio `send`, un TXT
+   de DKIM). Con el botón **Auto configure** inicia sesión en Cloudflare y los crea solo; si
+   no, copiarlos a mano en Cloudflare → DNS, con la nube **gris**.
+4. Agregar también un registro DMARC en Cloudflare (mejora la entrega y evita suplantación):
+   TXT, nombre `_dmarc`, contenido `v=DMARC1; p=none; rua=mailto:aaroncaldered@gmail.com`.
+5. Esperar a que Resend marque el dominio como **Verified** (minutos a una hora).
+6. **API Keys → Create API Key**, permiso **Sending access**, solo para ese dominio. Copiarla
+   (se muestra una sola vez) en `deploy/.env.prod` como `RESEND_API_KEY=re_...` y poner
+   `MAIL_FROM="Certificado de Transformación <no-responder@tu-dominio.com>"`.
+7. `./deploy/deploy.sh` y probar creando una cuenta: tiene que llegar el correo de
+   verificación. En Resend → Emails se ve cada envío y si fue entregado.
+
 ## 7. Respaldos
 
 El cron diario (03:15) guarda la base y los documentos en `/var/backups/certificado` durante
@@ -130,7 +173,8 @@ gunzip -c /var/backups/certificado/db-AAAAMMDD-HHMM.sql.gz | dc exec -T postgres
   psql -U postgres -d certificado_transformacion
 ```
 
-Además, activar los snapshots automáticos del proveedor (Hetzner: "Backups", +20 % del precio).
+Además, los Auto Backups de Vultr (activados al crear el servidor) guardan una imagen de todo
+el disco; sirven para volver atrás si el servidor completo se rompe.
 
 ## 8. Despliegue automático (opcional)
 

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { API_URL_SERVER as API_URL } from "@/lib/apiUrl";
+import { cabecerasDelVisitante } from "@/lib/api.server";
 import { MATERIALES } from "@/lib/catalogos";
 
 // Catalogo de emisiones con kilos disponibles para venta primaria. Antes el comprador tenia
@@ -26,7 +27,10 @@ export default async function MercadoPage({ searchParams }: { searchParams: Prom
   let emisiones: EmisionRow[] = [];
   let errorApi = false;
   try {
-    const res = await fetch(`${API_URL}/api/emisiones?pageSize=100${material ? `&material=${material}` : ""}`, { cache: "no-store" });
+    const res = await fetch(`${API_URL}/api/emisiones?pageSize=100${material ? `&material=${material}` : ""}`, {
+      cache: "no-store",
+      headers: await cabecerasDelVisitante(), // ver nota en dashboard/page.tsx
+    });
     if (res.ok) emisiones = ((await res.json()) as { data: EmisionRow[] }).data;
     else errorApi = true;
   } catch {

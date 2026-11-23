@@ -1,6 +1,7 @@
 import { StatsBarChart, type StatsBarChartDatum } from "@/components/StatsBarChart";
 import { CantonMap, type CantonRow } from "@/components/CantonMap";
 import { API_URL_SERVER as API_URL } from "@/lib/apiUrl";
+import { cabecerasDelVisitante } from "@/lib/api.server";
 
 interface Stats {
   totales: {
@@ -30,7 +31,9 @@ interface EmisionRow {
 
 async function getJson<T>(path: string): Promise<T | null> {
   try {
-    const res = await fetch(`${API_URL}${path}`, { cache: "no-store" });
+    // Reenvia la IP del visitante: sin esto, todas las visitas al dashboard comparten el cupo
+    // del rate limit de la API (la API veria siempre la IP del contenedor de Next).
+    const res = await fetch(`${API_URL}${path}`, { cache: "no-store", headers: await cabecerasDelVisitante() });
     if (!res.ok) return null;
     return (await res.json()) as T;
   } catch {

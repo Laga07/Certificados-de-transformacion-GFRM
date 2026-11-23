@@ -51,8 +51,16 @@ if ! id "$DEPLOY_USER" >/dev/null 2>&1; then
 fi
 
 echo "==> SSH: sin contrasenas ni login de root"
-sed -i -E 's/^#?PasswordAuthentication .*/PasswordAuthentication no/' /etc/ssh/sshd_config
-sed -i -E 's/^#?PermitRootLogin .*/PermitRootLogin no/' /etc/ssh/sshd_config
+# Archivo propio en sshd_config.d con prefijo 00: sshd usa el PRIMER valor que encuentra y los
+# Include van antes que el resto del archivo principal. Las imagenes cloud de Ubuntu traen
+# 50-cloud-init.conf con "PasswordAuthentication yes", que le ganaria a un sed sobre
+# sshd_config.
+cat > /etc/ssh/sshd_config.d/00-certificado.conf <<'SSHD'
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PermitRootLogin no
+SSHD
+sshd -t
 systemctl reload ssh || systemctl reload sshd
 
 echo "==> Firewall: solo SSH, HTTP y HTTPS"

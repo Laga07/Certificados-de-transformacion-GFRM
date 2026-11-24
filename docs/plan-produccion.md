@@ -210,7 +210,7 @@ compra: dominio, VPS, DNS, `.env.prod`, primer deploy, R2 y UptimeRobot.
 - [x] Primer deploy en el servidor (2026-11-23): `https://valorverde.org` con HTTPS de Let's
       Encrypt, SSH solo con llave y usuario `deploy`, firewall 22/80/443, base y servicios
       internos cerrados desde afuera, IP real del visitante llegando a la API
-- [ ] Restauración de respaldo probada
+- [x] Restauración de respaldo probada (2026-11-24: dump restaurado en una base aparte, conteos idénticos a producción)
 - [ ] Resend verificado con el dominio y correo de verificación probado
 - [ ] Dominio agregado a la lista permitida del proyecto de WalletConnect (Reown)
 - [ ] UptimeRobot + Sentry

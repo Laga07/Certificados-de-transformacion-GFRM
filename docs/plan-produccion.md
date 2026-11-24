@@ -185,14 +185,15 @@ revisión en móvil.
 - [x] Portada/footer/metadata propios; scripts de tesis eliminados
 - [x] `error.tsx`, `not-found.tsx`, `loading.tsx`
 - [x] `setPlataforma`, revocación, remanente, tests, redeploy Amoy
-- [ ] Slither sin hallazgos altos (job informativo ya en CI); verify en Polygonscan
+- [x] Slither: 0 hallazgos altos y 0 medios, bloqueante en CI (2026-11-20; encontró el bug de unidades g/kg)
+- [ ] Código de los contratos verificado en Polygonscan (confirmar el check verde en la pestaña "Contract")
 - [x] `VERIFIER_ROLE` y `PAUSER_ROLE` en la wallet operativa `0x9b59…ea18` (2026-11-23, confirmado on-chain)
 - [x] Roles de cuenta, verificación de correo, reset, rate limit, CORS cerrado
 - [x] Firma de wallet + perfil off-chain + panel admin con datos reales
 - [x] Hash de identidad con pepper
 - [x] Catálogo de emisiones, Mis lotes, búsqueda de separador, cantones, faucet
 - [x] Términos, privacidad, aviso testnet, guía de onboarding
-- [ ] Correo transaccional configurado (Resend, Brevo o SMTP) y probado de punta a punta
+- [x] Correo transaccional configurado (Resend) y probado de punta a punta (2026-11-24)
 - [ ] Revisión en móvil de los formularios nuevos
 
 Avance 2026-11-20 (Sprint 3, parte que no depende de comprar nada): build de producción del
@@ -211,14 +212,18 @@ compra: dominio, VPS, DNS, `.env.prod`, primer deploy, R2 y UptimeRobot.
       Encrypt, SSH solo con llave y usuario `deploy`, firewall 22/80/443, base y servicios
       internos cerrados desde afuera, IP real del visitante llegando a la API
 - [x] Restauración de respaldo probada (2026-11-24: dump restaurado en una base aparte, conteos idénticos a producción)
-- [ ] Resend verificado con el dominio y correo de verificación probado
-- [ ] Dominio agregado a la lista permitida del proyecto de WalletConnect (Reown)
-- [ ] UptimeRobot + Sentry
-- [ ] Roles de cuenta, verificación de correo, reset, rate limit, CORS cerrado
-- [ ] SIWE + perfil off-chain + panel admin con datos reales
-- [ ] Hash de identidad con pepper
-- [ ] Catálogo de emisiones, Mis lotes, búsqueda de separador, cantones, faucet
-- [ ] Términos, privacidad, aviso testnet, guía de onboarding
-- [ ] Dominio + VPS + Docker + Caddy + Cloudflare + backups + monitoreo
-- [ ] Alchemy, build de producción, logger JSON, deploy automatizado
-- [ ] Safe multisig, wallet nueva, auditoría, plan mainnet
+- [x] Resend verificado con el dominio (DKIM, return-path, DMARC) y correo de verificación de
+      cuenta recibido; cuenta admin `aaroncaldered@gmail.com` creada con la wallet `0x9b59…` vinculada
+- [x] Dominios en la lista permitida de Reown (WalletConnect): `https://valorverde.org`,
+      `http://localhost:3001`, `http://localhost:3000`. **Excepción a la separación total:** el
+      proyecto de Reown (ID `54e4b818…3d1d`) lo comparten Valor Verde y DAPP Plástico Tesis
+      porque crear un segundo proyecto exige plan pago. Separarlos al contratar un plan o
+      antes de mainnet (nuevo Project ID en `deploy/.env.prod` y rebuild de `web`).
+- [ ] UptimeRobot (monitoreo de `https://valorverde.org` y `/api/health`)
+- [ ] Sentry (errores de frontend y API)
+
+**Antes de mainnet (Sprint 4):**
+- [ ] Safe multisig para admin y `plataforma`; wallet de mainnet nueva (la clave actual se compartió en un chat)
+- [ ] Test de gas con N separadores y tope por lote (A3)
+- [ ] Auditoría externa; runbook de incidentes
+- [ ] Revisión legal de términos y privacidad; plan de migración a USDT real (A12)

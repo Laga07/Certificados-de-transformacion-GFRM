@@ -26,7 +26,7 @@ echo "==> up (migrate corre antes que api/indexer)"
 echo "==> esperando /api/health"
 DOMINIO=$(grep -E '^APP_DOMAIN=' deploy/.env.prod | cut -d= -f2)
 for i in $(seq 1 30); do
-  if "${COMPOSE[@]}" exec -T api node -e "fetch('http://localhost:4001/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))" 2>/dev/null; then
+  if "${COMPOSE[@]}" exec -T api node -e "fetch('http://localhost:4001/api/health/live').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))" 2>/dev/null; then
     echo "    API sana. Sitio: https://$DOMINIO"
     docker image prune -f >/dev/null
     exit 0

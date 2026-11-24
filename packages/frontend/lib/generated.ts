@@ -3008,6 +3008,27 @@ export const tokenCustodiaAbi = [
   {
     type: 'function',
     inputs: [],
+    name: 'MAX_ESLABONES_POR_LOTE',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'MAX_SEPARADORES_POR_LOTE',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'MAX_SEPARADORES_X_PIEZAS',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
     name: 'MERCADO_ROLE',
     outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
     stateMutability: 'view',
@@ -5573,6 +5594,33 @@ export const useReadTokenCustodiaDefaultAdminRole =
   /*#__PURE__*/ createUseReadContract({
     abi: tokenCustodiaAbi,
     functionName: 'DEFAULT_ADMIN_ROLE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"MAX_ESLABONES_POR_LOTE"`
+ */
+export const useReadTokenCustodiaMaxEslabonesPorLote =
+  /*#__PURE__*/ createUseReadContract({
+    abi: tokenCustodiaAbi,
+    functionName: 'MAX_ESLABONES_POR_LOTE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"MAX_SEPARADORES_POR_LOTE"`
+ */
+export const useReadTokenCustodiaMaxSeparadoresPorLote =
+  /*#__PURE__*/ createUseReadContract({
+    abi: tokenCustodiaAbi,
+    functionName: 'MAX_SEPARADORES_POR_LOTE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenCustodiaAbi}__ and `functionName` set to `"MAX_SEPARADORES_X_PIEZAS"`
+ */
+export const useReadTokenCustodiaMaxSeparadoresXPiezas =
+  /*#__PURE__*/ createUseReadContract({
+    abi: tokenCustodiaAbi,
+    functionName: 'MAX_SEPARADORES_X_PIEZAS',
   })
 
 /**

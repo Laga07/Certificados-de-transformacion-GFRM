@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useWriteRegistroEntidadesRegistrarIntermediario } from "@/lib/generated";
+import { registroEntidadesAbi } from "@/lib/generated";
 import { cargarPerfilPropio, hashIdentidad, provinciaIdDesdeClave } from "@/lib/identidad";
 import { SUBTIPOS_INTERMEDIARIO } from "@/lib/catalogos";
 import { UbicacionField } from "@/components/UbicacionField";
 import { TxButton } from "@/components/TxButton";
 import { useTxReceipt } from "@/lib/useTxReceipt";
-import { GAS_FEE_OVERRIDES } from "@/lib/gasOverrides";
+import { useEscribir } from "@/lib/useEscribir";
 
 export function RegistroIntermediarioForm({ registroAddress }: { registroAddress: `0x${string}` }) {
   const [nombre, setNombre] = useState("");
@@ -18,7 +18,7 @@ export function RegistroIntermediarioForm({ registroAddress }: { registroAddress
   const [preparando, setPreparando] = useState(false);
   const [errorHash, setErrorHash] = useState<Error | null>(null);
 
-  const { writeContract, data: hash, isPending, error } = useWriteRegistroEntidadesRegistrarIntermediario();
+  const { enviar, data: hash, isPending, error } = useEscribir(registroEntidadesAbi, "registrarIntermediario");
   const { isConfirming, isSuccess, revertedError } = useTxReceipt(hash);
 
   useEffect(() => {
@@ -38,11 +38,7 @@ export function RegistroIntermediarioForm({ registroAddress }: { registroAddress
     setErrorHash(null);
     try {
       const { nombreHash, cedulaHash } = await hashIdentidad({ nombre, cedula });
-      writeContract({
-        address: registroAddress,
-        args: [nombreHash!, cedulaHash!, provinciaId, cantonId, subtipo],
-        ...GAS_FEE_OVERRIDES,
-      });
+      enviar(registroAddress, [nombreHash!, cedulaHash!, provinciaId, cantonId, subtipo]);
     } catch (e) {
       setErrorHash(e instanceof Error ? e : new Error("No se pudo preparar el registro"));
     } finally {

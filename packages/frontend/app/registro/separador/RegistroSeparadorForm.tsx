@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useWriteRegistroEntidadesRegistrarSeparador } from "@/lib/generated";
+import { registroEntidadesAbi } from "@/lib/generated";
 import { cargarPerfilPropio, hashIdentidad, provinciaIdDesdeClave } from "@/lib/identidad";
 import { TIPOS_SEPARADOR } from "@/lib/catalogos";
 import { UbicacionField } from "@/components/UbicacionField";
 import { TxButton } from "@/components/TxButton";
 import { useTxReceipt } from "@/lib/useTxReceipt";
-import { GAS_FEE_OVERRIDES } from "@/lib/gasOverrides";
+import { useEscribir } from "@/lib/useEscribir";
 
 export function RegistroSeparadorForm({ registroAddress }: { registroAddress: `0x${string}` }) {
   const [cedula, setCedula] = useState("");
@@ -17,7 +17,7 @@ export function RegistroSeparadorForm({ registroAddress }: { registroAddress: `0
   const [preparando, setPreparando] = useState(false);
   const [errorHash, setErrorHash] = useState<Error | null>(null);
 
-  const { writeContract, data: hash, isPending, error } = useWriteRegistroEntidadesRegistrarSeparador();
+  const { enviar, data: hash, isPending, error } = useEscribir(registroEntidadesAbi, "registrarSeparador");
   const { isConfirming, isSuccess, revertedError } = useTxReceipt(hash);
 
   // Se llena solo con los datos de "Mi entidad" si ya estan cargados.
@@ -37,11 +37,7 @@ export function RegistroSeparadorForm({ registroAddress }: { registroAddress: `0
     setErrorHash(null);
     try {
       const { cedulaHash } = await hashIdentidad({ cedula });
-      writeContract({
-        address: registroAddress,
-        args: [cedulaHash!, provinciaId, cantonId, tipoSeparador],
-        ...GAS_FEE_OVERRIDES,
-      });
+      enviar(registroAddress, [cedulaHash!, provinciaId, cantonId, tipoSeparador]);
     } catch (e) {
       setErrorHash(e instanceof Error ? e : new Error("No se pudo preparar el registro"));
     } finally {

@@ -2,12 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useAccount } from "wagmi";
-import {
-  useReadRegistroEntidadesHasRole,
-  useReadRegistroEntidadesVerifierRole,
-  useWriteRegistroEntidadesVerificarIntermediario,
-  useWriteRegistroEntidadesVerificarTransformador,
-} from "@/lib/generated";
+import { useReadRegistroEntidadesHasRole, useReadRegistroEntidadesVerifierRole, registroEntidadesAbi } from "@/lib/generated";
 import { apiFetch, apiPost, ApiError, type EstadoRevision, type Perfil } from "@/lib/api";
 import { API_URL } from "@/lib/apiUrl";
 import { PROVINCIAS } from "@/lib/catalogos";
@@ -16,7 +11,7 @@ import { provinciaIdDesdeClave } from "@/lib/identidad";
 import { SUBTIPOS_INTERMEDIARIO, TIPOS_SEPARADOR } from "@/lib/catalogos";
 import { TxButton } from "@/components/TxButton";
 import { useTxReceipt } from "@/lib/useTxReceipt";
-import { GAS_FEE_OVERRIDES } from "@/lib/gasOverrides";
+import { useEscribir } from "@/lib/useEscribir";
 import { EstadoBadge } from "@/components/EstadoBadge";
 
 interface PerfilAdmin extends Perfil {
@@ -239,8 +234,8 @@ function VerificacionOnChain({
     args: verifierRole.data && address ? ([verifierRole.data, address] as const) : undefined,
     query: { enabled: Boolean(verifierRole.data && address), staleTime: 0 },
   });
-  const intermediarioWrite = useWriteRegistroEntidadesVerificarIntermediario();
-  const transformadorWrite = useWriteRegistroEntidadesVerificarTransformador();
+  const intermediarioWrite = useEscribir(registroEntidadesAbi, "verificarIntermediario");
+  const transformadorWrite = useEscribir(registroEntidadesAbi, "verificarTransformador");
   const write = perfil.tipo === "INTERMEDIARIO" ? intermediarioWrite : transformadorWrite;
   const { isConfirming, isSuccess, revertedError } = useTxReceipt(write.data);
 
@@ -267,7 +262,7 @@ function VerificacionOnChain({
         <p className="text-amber-700">La wallet conectada no tiene VERIFIER_ROLE.</p>
       ) : (
         <TxButton
-          onClick={() => write.writeContract({ address: registroAddress, args: [wallet], ...GAS_FEE_OVERRIDES })}
+          onClick={() => write.enviar(registroAddress, [wallet])}
           isPending={write.isPending}
           isConfirming={isConfirming}
           isSuccess={isSuccess}

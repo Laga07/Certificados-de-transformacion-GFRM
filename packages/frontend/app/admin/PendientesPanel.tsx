@@ -1,13 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  useWriteRegistroEntidadesVerificarIntermediario,
-  useWriteRegistroEntidadesVerificarTransformador,
-} from "@/lib/generated";
+import { registroEntidadesAbi } from "@/lib/generated";
 import { TxButton } from "@/components/TxButton";
 import { useTxReceipt } from "@/lib/useTxReceipt";
-import { GAS_FEE_OVERRIDES } from "@/lib/gasOverrides";
+import { useEscribir } from "@/lib/useEscribir";
 import { API_URL } from "@/lib/apiUrl";
 
 interface Pendiente {
@@ -76,8 +73,8 @@ function FilaPendiente({
   tipo: "intermediario" | "transformador";
   onVerificado: () => void;
 }) {
-  const intermediarioWrite = useWriteRegistroEntidadesVerificarIntermediario();
-  const transformadorWrite = useWriteRegistroEntidadesVerificarTransformador();
+  const intermediarioWrite = useEscribir(registroEntidadesAbi, "verificarIntermediario");
+  const transformadorWrite = useEscribir(registroEntidadesAbi, "verificarTransformador");
   const write = tipo === "intermediario" ? intermediarioWrite : transformadorWrite;
   const { isConfirming, isSuccess, revertedError } = useTxReceipt(write.data);
 
@@ -93,11 +90,7 @@ function FilaPendiente({
       </div>
       <TxButton
         onClick={() =>
-          write.writeContract({
-            address: registroAddress,
-            args: [pendiente.wallet as `0x${string}`],
-            ...GAS_FEE_OVERRIDES,
-          })
+          write.enviar(registroAddress, [pendiente.wallet as `0x${string}`])
         }
         isPending={write.isPending}
         isConfirming={isConfirming}

@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import { formatUnits, parseUnits } from "viem";
 import { useAccount, useBalance } from "wagmi";
-import { useReadMockUsdtBalanceOf, useWriteMockUsdtFaucet } from "@/lib/generated";
+import { useReadMockUsdtBalanceOf, mockUsdtAbi } from "@/lib/generated";
 import { TxButton } from "@/components/TxButton";
 import { useTxReceipt } from "@/lib/useTxReceipt";
-import { GAS_FEE_OVERRIDES } from "@/lib/gasOverrides";
+import { useEscribir } from "@/lib/useEscribir";
 
 export function FaucetForm({ usdtAddress }: { usdtAddress: `0x${string}` }) {
   const { address, isConnected } = useAccount();
@@ -19,7 +19,7 @@ export function FaucetForm({ usdtAddress }: { usdtAddress: `0x${string}` }) {
     query: { enabled: Boolean(address), staleTime: 0 },
   });
 
-  const { writeContract, data: hash, isPending, error } = useWriteMockUsdtFaucet();
+  const { enviar, data: hash, isPending, error } = useEscribir(mockUsdtAbi, "faucet");
   const { isConfirming, isSuccess, revertedError } = useTxReceipt(hash);
 
   useEffect(() => {
@@ -56,7 +56,7 @@ export function FaucetForm({ usdtAddress }: { usdtAddress: `0x${string}` }) {
 
       <TxButton
         onClick={() =>
-          writeContract({ address: usdtAddress, args: [parseUnits(String(Math.min(monto, 10_000)), 6)], ...GAS_FEE_OVERRIDES })
+          enviar(usdtAddress, [parseUnits(String(Math.min(monto, 10_000)), 6)])
         }
         isPending={isPending}
         isConfirming={isConfirming}

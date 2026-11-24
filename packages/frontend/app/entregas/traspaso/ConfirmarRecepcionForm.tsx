@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useWriteTokenCustodiaConfirmarRecepcion } from "@/lib/generated";
+import { tokenCustodiaAbi } from "@/lib/generated";
 import { TxButton } from "@/components/TxButton";
 import { useTxReceipt } from "@/lib/useTxReceipt";
-import { GAS_FEE_OVERRIDES } from "@/lib/gasOverrides";
+import { useEscribir } from "@/lib/useEscribir";
 
 const QUIEN_ABSORBE = ["Quien envía", "Quien recibe", "Mitad y mitad"] as const;
 
@@ -19,18 +19,14 @@ export function ConfirmarRecepcionForm({
   const [pesoRecibido, setPesoRecibido] = useState(0);
   const [quienAbsorbe, setQuienAbsorbe] = useState(2);
 
-  const { writeContract, data: hash, isPending, error } =
-    useWriteTokenCustodiaConfirmarRecepcion();
+  const { enviar, data: hash, isPending, error } =
+    useEscribir(tokenCustodiaAbi, "confirmarRecepcion");
   const { isConfirming, isSuccess, revertedError } = useTxReceipt(hash);
 
   function handleSubmit() {
     if (!loteId || pesoRecibido <= 0) return;
 
-    writeContract({
-      address: custodiaAddress,
-      args: [BigInt(loteId), BigInt(pesoRecibido), quienAbsorbe],
-      ...GAS_FEE_OVERRIDES,
-    });
+    enviar(custodiaAddress, [BigInt(loteId), BigInt(pesoRecibido), quienAbsorbe]);
   }
 
   return (

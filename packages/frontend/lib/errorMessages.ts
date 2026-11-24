@@ -47,6 +47,13 @@ export function friendlyTxErrorMessage(error: Error): string {
       "https://rpc-amoy.polygon.technology/), después intentá de nuevo.";
   }
 
+  // Revert del contrato detectado al estimar el gas (lib/useEscribir.ts), antes de firmar.
+  // viem lo formatea como: 'The contract function "x" reverted with the following reason:\n<motivo>'
+  const viemRevert = message.match(/reverted with the following reason:\s*\n?\s*([^\n]+)/i);
+  if (viemRevert) {
+    return `No se envió: el contrato la rechazaría. Motivo: ${viemRevert[1].trim()}`;
+  }
+
   // Revert reasons del contrato suelen venir como "... reason: <mensaje>"
   const revertMatch = message.match(/reason:\s*"?([^"\n]+)"?/i);
   if (revertMatch) {

@@ -3,16 +3,11 @@
 import { useState } from "react";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
-import {
-  useReadMercadoCertificadosEmisiones,
-  useReadMockUsdtAllowance,
-  useWriteMercadoCertificadosComprarCertificado,
-  useWriteMockUsdtApprove,
-} from "@/lib/generated";
+import { useReadMercadoCertificadosEmisiones, useReadMockUsdtAllowance, mockUsdtAbi, mercadoCertificadosAbi } from "@/lib/generated";
 import { MATERIALES } from "@/lib/catalogos";
 import { TxButton } from "@/components/TxButton";
 import { useTxReceipt } from "@/lib/useTxReceipt";
-import { GAS_FEE_OVERRIDES } from "@/lib/gasOverrides";
+import { useEscribir } from "@/lib/useEscribir";
 
 const CERO = BigInt(0);
 
@@ -53,28 +48,20 @@ export function ComprarCertificadoForm({
 
   const necesitaAprobar = valorTotal > CERO && (allowance ?? CERO) < valorTotal;
 
-  const approveWrite = useWriteMockUsdtApprove();
+  const approveWrite = useEscribir(mockUsdtAbi, "approve");
   const approveReceipt = useTxReceipt(approveWrite.data);
 
-  const compraWrite = useWriteMercadoCertificadosComprarCertificado();
+  const compraWrite = useEscribir(mercadoCertificadosAbi, "comprarCertificado");
   const compraReceipt = useTxReceipt(compraWrite.data);
 
   function handleApprove() {
     if (valorTotal <= CERO) return;
-    approveWrite.writeContract({
-      address: usdtAddress,
-      args: [mercadoAddress, valorTotal],
-      ...GAS_FEE_OVERRIDES,
-    });
+    approveWrite.enviar(usdtAddress, [mercadoAddress, valorTotal]);
   }
 
   function handleComprar() {
     if (emisionId === undefined || cantidadKg <= 0) return;
-    compraWrite.writeContract({
-      address: mercadoAddress,
-      args: [emisionId, BigInt(cantidadKg)],
-      ...GAS_FEE_OVERRIDES,
-    });
+    compraWrite.enviar(mercadoAddress, [emisionId, BigInt(cantidadKg)]);
   }
 
   return (

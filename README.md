@@ -35,6 +35,13 @@ VERIFIER_WALLET=0x... PAUSER_WALLET=0x... PLATAFORMA_WALLET=0x... \
 # Subir una implementacion nueva a un proxy UUPS (la direccion publica no cambia)
 CONTRACT=MercadoCertificados npx hardhat run scripts/upgrade.ts --network amoy
 
+# Si una transaccion del deployer queda trabada porque la red subio de precio
+# (pasa en Amoy: el base fee salta de ~4 a ~60 gwei), reenviarla con mas comision:
+TX=0x<hash> node scripts/reemplazar-tx.mjs
+
+# Medir gas por cantidad de separadores (verifica los topes de TokenCustodia)
+npx hardhat test test/Gas.test.ts
+
 # Verificar el codigo en Polygonscan (requiere ETHERSCAN_API_KEY en packages/contracts/.env)
 npx hardhat verify --network amoy <direccion>
 ```

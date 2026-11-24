@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useWriteTokenCustodiaUnirLotes } from "@/lib/generated";
+import { tokenCustodiaAbi } from "@/lib/generated";
 import { MaterialVarianteField } from "@/components/MaterialVarianteField";
 import { TxButton } from "@/components/TxButton";
 import { useTxReceipt } from "@/lib/useTxReceipt";
-import { GAS_FEE_OVERRIDES } from "@/lib/gasOverrides";
+import { useEscribir } from "@/lib/useEscribir";
 
 export function UnirLotesForm({ custodiaAddress }: { custodiaAddress: `0x${string}` }) {
   const [loteIdsTexto, setLoteIdsTexto] = useState("");
@@ -14,7 +14,7 @@ export function UnirLotesForm({ custodiaAddress }: { custodiaAddress: `0x${strin
   const [material, setMaterial] = useState(0);
   const [varianteId, setVarianteId] = useState(0);
 
-  const { writeContract, data: hash, isPending, error } = useWriteTokenCustodiaUnirLotes();
+  const { enviar, data: hash, isPending, error } = useEscribir(tokenCustodiaAbi, "unirLotes");
   const { isConfirming, isSuccess, revertedError } = useTxReceipt(hash);
 
   const loteIds = loteIdsTexto.split(",").map((s) => s.trim()).filter(Boolean);
@@ -46,11 +46,7 @@ export function UnirLotesForm({ custodiaAddress }: { custodiaAddress: `0x${strin
 
       <TxButton
         onClick={() =>
-          writeContract({
-            address: custodiaAddress,
-            args: [loteIds.map((id) => BigInt(id)), varianteId],
-            ...GAS_FEE_OVERRIDES,
-          })
+          enviar(custodiaAddress, [loteIds.map((id) => BigInt(id)), varianteId])
         }
         isPending={isPending}
         isConfirming={isConfirming}

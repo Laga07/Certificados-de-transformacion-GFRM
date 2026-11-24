@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useWriteMercadoCertificadosRegistrarTransformacion } from "@/lib/generated";
+import { mercadoCertificadosAbi } from "@/lib/generated";
 import { TxButton } from "@/components/TxButton";
 import { useTxReceipt } from "@/lib/useTxReceipt";
-import { GAS_FEE_OVERRIDES } from "@/lib/gasOverrides";
+import { useEscribir } from "@/lib/useEscribir";
 
 export function TransformarForm({
   mercadoAddress,
@@ -17,8 +17,8 @@ export function TransformarForm({
   const [kgTransformados, setKgTransformados] = useState(0);
   const [precioUSDTporKg, setPrecioUSDTporKg] = useState(1);
 
-  const { writeContract, data: hash, isPending, error } =
-    useWriteMercadoCertificadosRegistrarTransformacion();
+  const { enviar, data: hash, isPending, error } =
+    useEscribir(mercadoCertificadosAbi, "registrarTransformacion");
   const { isConfirming, isSuccess, revertedError, receipt } = useTxReceipt(hash);
 
   const loteIds = loteIdsTexto
@@ -30,11 +30,7 @@ export function TransformarForm({
   function handleSubmit() {
     if (!loteIdsValidos || kgTransformados <= 0 || precioUSDTporKg <= 0) return;
 
-    writeContract({
-      address: mercadoAddress,
-      args: [loteIds.map((id) => BigInt(id)), BigInt(kgTransformados), BigInt(Math.round(precioUSDTporKg * 1_000_000))],
-      ...GAS_FEE_OVERRIDES,
-    });
+    enviar(mercadoAddress, [loteIds.map((id) => BigInt(id)), BigInt(kgTransformados), BigInt(Math.round(precioUSDTporKg * 1_000_000))]);
   }
 
   return (

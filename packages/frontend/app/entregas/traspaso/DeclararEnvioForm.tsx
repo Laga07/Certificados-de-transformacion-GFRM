@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { isAddress } from "viem";
-import { useWriteTokenCustodiaDeclararEnvio } from "@/lib/generated";
+import { tokenCustodiaAbi } from "@/lib/generated";
 import { TxButton } from "@/components/TxButton";
 import { useTxReceipt } from "@/lib/useTxReceipt";
-import { GAS_FEE_OVERRIDES } from "@/lib/gasOverrides";
+import { useEscribir } from "@/lib/useEscribir";
 
 export function DeclararEnvioForm({
   custodiaAddress,
@@ -19,7 +19,7 @@ export function DeclararEnvioForm({
   const [pesoEnviado, setPesoEnviado] = useState(0);
   const [precioUSDTporKg, setPrecioUSDTporKg] = useState(0);
 
-  const { writeContract, data: hash, isPending, error } = useWriteTokenCustodiaDeclararEnvio();
+  const { enviar, data: hash, isPending, error } = useEscribir(tokenCustodiaAbi, "declararEnvio");
   const { isConfirming, isSuccess, revertedError } = useTxReceipt(hash);
 
   const destinatarioValido = isAddress(destinatario);
@@ -27,16 +27,12 @@ export function DeclararEnvioForm({
   function handleSubmit() {
     if (!loteId || !destinatarioValido || pesoEnviado <= 0) return;
 
-    writeContract({
-      address: custodiaAddress,
-      args: [
+    enviar(custodiaAddress, [
         BigInt(loteId),
         destinatario as `0x${string}`,
         BigInt(pesoEnviado),
         BigInt(Math.round(precioUSDTporKg * 1_000_000)),
-      ],
-      ...GAS_FEE_OVERRIDES,
-    });
+      ]);
   }
 
   return (

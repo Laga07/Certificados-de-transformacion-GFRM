@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useReadTokenCustodiaLoteInfo, useWriteTokenCustodiaDividirLote } from "@/lib/generated";
+import { useReadTokenCustodiaLoteInfo, tokenCustodiaAbi } from "@/lib/generated";
 import { TxButton } from "@/components/TxButton";
 import { useTxReceipt } from "@/lib/useTxReceipt";
-import { GAS_FEE_OVERRIDES } from "@/lib/gasOverrides";
+import { useEscribir } from "@/lib/useEscribir";
 
 export function DividirLoteForm({ custodiaAddress }: { custodiaAddress: `0x${string}` }) {
   const [loteIdTexto, setLoteIdTexto] = useState("");
@@ -25,7 +25,7 @@ export function DividirLoteForm({ custodiaAddress }: { custodiaAddress: `0x${str
   const suma = pesosValidos ? pesos.reduce((acc, p) => acc + BigInt(p), BigInt(0)) : BigInt(0);
   const sumaCoincide = pesoActual !== undefined && suma === pesoActual;
 
-  const { writeContract, data: hash, isPending, error } = useWriteTokenCustodiaDividirLote();
+  const { enviar, data: hash, isPending, error } = useEscribir(tokenCustodiaAbi, "dividirLote");
   const { isConfirming, isSuccess, revertedError } = useTxReceipt(hash);
 
   return (
@@ -61,11 +61,7 @@ export function DividirLoteForm({ custodiaAddress }: { custodiaAddress: `0x${str
 
       <TxButton
         onClick={() =>
-          writeContract({
-            address: custodiaAddress,
-            args: [BigInt(loteIdTexto), pesos.map((p) => BigInt(p))],
-            ...GAS_FEE_OVERRIDES,
-          })
+          enviar(custodiaAddress, [BigInt(loteIdTexto), pesos.map((p) => BigInt(p))])
         }
         isPending={isPending}
         isConfirming={isConfirming}

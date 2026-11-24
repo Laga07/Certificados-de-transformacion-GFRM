@@ -78,6 +78,29 @@ ambas unidades. Lo encontró la revisión del hallazgo `divide-before-multiply` 
 Los nombres heredados `aporteKgDeEmision` y `mermaKgDeEmision` guardan **gramos**; no se
 renombraron para no cambiar el layout ni el ABI del proxy ya desplegado.
 
+### 0.3 Topes por lote para que toda operación entre en una transacción (2026-11-24, upgrade en Amoy)
+
+Unir, dividir, transformar y comprar recorren la lista de separadores del lote. Medido en
+`packages/contracts/test/Gas.test.ts`:
+
+| Separadores | Dividir (2 piezas) | Unir | Transformar | Comprar |
+|---|---|---|---|---|
+| 10 | 2,0M | 0,9M | 1,8M | 0,5M |
+| 60 | 10,4M | 4,6M | 7,8M | 2,0M |
+| 100 | no entra en 16,7M | 7,5M | 12,5M | 3,2M |
+
+Sin tope, un lote de una ruta municipal con cientos de separadores quedaba imposible de
+transformar o vender. `TokenCustodia` ahora exige:
+
+- `MAX_SEPARADORES_POR_LOTE = 60`, en toda vía que suma separadores a un lote (entrega, unión,
+  consolidación al transformar). Para más separadores: varios lotes y una transformación por
+  lote (cada una genera su emisión).
+- `MAX_SEPARADORES_X_PIEZAS = 120` al dividir: un lote lleno se puede partir en 2.
+- `MAX_ESLABONES_POR_LOTE = 20` intermediarios en la cadena de un lote.
+
+El frontend dejó de fijar 3M de gas por transacción: `lib/useEscribir.ts` estima con el RPC del
+sitio, suma 30 % y muestra el motivo del rechazo antes de firmar si la transacción revertiría.
+
 ---
 
 ## 1. Qué se reutiliza de DAPP Plástico Tesis

@@ -224,6 +224,8 @@ compra: dominio, VPS, DNS, `.env.prod`, primer deploy, R2 y UptimeRobot.
 
 **Antes de mainnet (Sprint 4):**
 - [ ] Safe multisig para admin y `plataforma`; wallet de mainnet nueva (la clave actual se compartió en un chat)
-- [ ] Test de gas con N separadores y tope por lote (A3)
+- [x] Test de gas con N separadores y tope por lote (A3, 2026-11-24): 60 separadores por lote,
+      peor operación ~10,4M de gas; frontend con gas estimado en vez de 3M fijos (con 3M, un
+      lote de más de ~20 separadores no se podía transformar)
 - [ ] Auditoría externa; runbook de incidentes
 - [ ] Revisión legal de términos y privacidad; plan de migración a USDT real (A12)

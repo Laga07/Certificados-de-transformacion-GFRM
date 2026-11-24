@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { formatUnits, isAddress } from "viem";
 import { useAccount } from "wagmi";
-import { useReadMercadoCertificadosSaldoPendiente, useWriteMercadoCertificadosRetirarPago } from "@/lib/generated";
+import { useReadMercadoCertificadosSaldoPendiente, mercadoCertificadosAbi } from "@/lib/generated";
 import { TxButton } from "@/components/TxButton";
 import { useTxReceipt } from "@/lib/useTxReceipt";
-import { GAS_FEE_OVERRIDES } from "@/lib/gasOverrides";
+import { useEscribir } from "@/lib/useEscribir";
 
 export function PagosForm({ mercadoAddress }: { mercadoAddress: `0x${string}` }) {
   const { address: conectada } = useAccount();
@@ -22,16 +22,12 @@ export function PagosForm({ mercadoAddress }: { mercadoAddress: `0x${string}` })
     query: { enabled: Boolean(direccionConsultada), staleTime: 0, refetchOnMount: "always" },
   });
 
-  const { writeContract, data: hash, isPending, error } = useWriteMercadoCertificadosRetirarPago();
+  const { enviar, data: hash, isPending, error } = useEscribir(mercadoCertificadosAbi, "retirarPago");
   const { isConfirming, isSuccess, revertedError } = useTxReceipt(hash);
 
   function handleRetirar() {
     if (!direccionConsultada) return;
-    writeContract({
-      address: mercadoAddress,
-      args: [direccionConsultada],
-      ...GAS_FEE_OVERRIDES,
-    });
+    enviar(mercadoAddress, [direccionConsultada]);
   }
 
   return (

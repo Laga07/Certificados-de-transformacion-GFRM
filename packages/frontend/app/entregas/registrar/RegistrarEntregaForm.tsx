@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { isAddress } from "viem";
-import { useWriteTokenCustodiaRegistrarEntrega } from "@/lib/generated";
+import { tokenCustodiaAbi } from "@/lib/generated";
 import { apiFetch, ApiError } from "@/lib/api";
 import { PROVINCIAS, TIPOS_SEPARADOR } from "@/lib/catalogos";
 import { nombreCanton } from "@/lib/cantones";
@@ -10,7 +10,7 @@ import { provinciaIdDesdeClave } from "@/lib/identidad";
 import { MaterialVarianteField } from "@/components/MaterialVarianteField";
 import { TxButton } from "@/components/TxButton";
 import { useTxReceipt } from "@/lib/useTxReceipt";
-import { GAS_FEE_OVERRIDES } from "@/lib/gasOverrides";
+import { useEscribir } from "@/lib/useEscribir";
 
 const MODALIDADES = ["Sin pago", "Con pago", "Ruta municipal"] as const;
 
@@ -43,7 +43,7 @@ export function RegistrarEntregaForm({
   const [modalidad, setModalidad] = useState(0);
   const [precioUSDTporKg, setPrecioUSDTporKg] = useState(0);
 
-  const { writeContract, data: hash, isPending, error } = useWriteTokenCustodiaRegistrarEntrega();
+  const { enviar, data: hash, isPending, error } = useEscribir(tokenCustodiaAbi, "registrarEntrega");
   const { isConfirming, isSuccess, revertedError, receipt } = useTxReceipt(hash);
 
   const separadorValido = isAddress(separador);
@@ -68,9 +68,7 @@ export function RegistrarEntregaForm({
   function handleSubmit() {
     if (!separadorValido || pesoGramos <= 0) return;
 
-    writeContract({
-      address: custodiaAddress,
-      args: [
+    enviar(custodiaAddress, [
         separador as `0x${string}`,
         material,
         varianteId,
@@ -79,9 +77,7 @@ export function RegistrarEntregaForm({
         modalidad,
         // precioUSDTporKg en unidades minimas de USDT (6 decimales) por kg
         BigInt(Math.round(precioUSDTporKg * 1_000_000)),
-      ],
-      ...GAS_FEE_OVERRIDES,
-    });
+      ]);
   }
 
   return (

@@ -82,6 +82,19 @@ contract TokenCustodia is
     // unico habilitado a consumir lotes al registrar una transformacion.
     bytes32 public constant MERCADO_ROLE = keccak256("MERCADO_ROLE");
 
+    /// @notice Topes para que ninguna operacion sobre un lote deje de entrar en una transaccion
+    /// (plan de produccion, A3; medido en test/Gas.test.ts el 2026-11-24). Unir, dividir,
+    /// transformar y comprar recorren la lista de separadores del lote: ~72k, ~84k por pieza,
+    /// ~119k y ~29k de gas por separador respectivamente. Con 60 separadores la peor operacion
+    /// (transformar, o dividir en 2) ronda los 10M de gas, por debajo del tope por transaccion
+    /// de EIP-7825 (2^24 ~ 16.7M) y de cualquier limite de bloque. Sin tope, un lote de una ruta
+    /// municipal con cientos de separadores quedaba imposible de transformar o vender.
+    uint256 public constant MAX_SEPARADORES_POR_LOTE = 60;
+    /// @notice Dividir copia aportes a cada pieza: el costo es separadores x piezas.
+    uint256 public constant MAX_SEPARADORES_X_PIEZAS = 120;
+    /// @notice Intermediarios/transformador que tocaron un lote (cada traspaso agrega <= 2).
+    uint256 public constant MAX_ESLABONES_POR_LOTE = 20;
+
     IRegistroEntidades public registro;
     uint256 public nextLoteId;
 
@@ -326,6 +339,10 @@ contract TokenCustodia is
         require(origen.custodioActual == msg.sender, "No sos el custodio de ese lote");
         require(!origen.pendienteDeConfirmacion, "Lote con traspaso pendiente");
         require(pesos.length >= 2, "Dividir requiere al menos 2 piezas");
+        require(
+            _separadoresDelLote[loteId].length * pesos.length <= MAX_SEPARADORES_X_PIEZAS,
+            "Demasiadas piezas para los separadores del lote (separadores x piezas <= 120)"
+        );
 
         uint256 sumaPesos = 0;
         for (uint256 i = 0; i < pesos.length; i++) {
@@ -461,6 +478,12 @@ contract TokenCustodia is
 
     function _acumularAporte(uint256 loteId, address separador, uint256 gramos) internal {
         if (!_separadorListado[loteId][separador]) {
+            // Aplica a toda via que suma separadores a un lote: entrega, union, consumo para
+            // transformar (y division, que nunca supera al lote de origen).
+            require(
+                _separadoresDelLote[loteId].length < MAX_SEPARADORES_POR_LOTE,
+                "Lote con el maximo de 60 separadores: usar un lote nuevo o menos lotes a la vez"
+            );
             _separadorListado[loteId][separador] = true;
             _separadoresDelLote[loteId].push(separador);
         }
@@ -471,6 +494,10 @@ contract TokenCustodia is
     // lista -- ver confirmarRecepcion). Idempotente.
     function _registrarParticipante(uint256 loteId, address intermediario) internal {
         if (!_intermediarioListado[loteId][intermediario]) {
+            require(
+                _intermediariosDelLote[loteId].length < MAX_ESLABONES_POR_LOTE,
+                "Lote con el maximo de 20 intermediarios en su cadena"
+            );
             _intermediarioListado[loteId][intermediario] = true;
             _intermediariosDelLote[loteId].push(intermediario);
         }

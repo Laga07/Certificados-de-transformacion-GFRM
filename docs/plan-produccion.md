@@ -219,7 +219,7 @@ compra: dominio, VPS, DNS, `.env.prod`, primer deploy, R2 y UptimeRobot.
       proyecto de Reown (ID `54e4b818…3d1d`) lo comparten Valor Verde y DAPP Plástico Tesis
       porque crear un segundo proyecto exige plan pago. Separarlos al contratar un plan o
       antes de mainnet (nuevo Project ID en `deploy/.env.prod` y rebuild de `web`).
-- [ ] UptimeRobot (monitoreo de `https://valorverde.org` y `/api/health`)
+- [x] UptimeRobot: `https://valorverde.org/login` y `/api/health` cada 5 min con alerta por correo (2026-11-24). `/api/health` da 503 si la base cae o el indexer se atrasa más de ~20 min
 - [ ] Sentry (errores de frontend y API)
 
 **Antes de mainnet (Sprint 4):**

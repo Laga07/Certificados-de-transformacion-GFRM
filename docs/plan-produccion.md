@@ -222,6 +222,29 @@ compra: dominio, VPS, DNS, `.env.prod`, primer deploy, R2 y UptimeRobot.
 - [x] UptimeRobot: `https://valorverde.org/login` y `/api/health` cada 5 min con alerta por correo (2026-11-24). `/api/health` da 503 si la base cae o el indexer se atrasa más de ~20 min
 - [ ] Sentry (errores de frontend y API)
 
+Avance 2026-11-24 (producto, pedido del 24/11):
+- [x] Declaraciones: el comprador registra una declaración (material, kg, período, entidad,
+      referencia), firma `retirarCertificado` (quema los certificados y graba la huella
+      keccak256 de los datos) y obtiene una constancia con código `VV-XXXX-XXXX`, QR, origen
+      del material y opción de imprimir o guardar en PDF. Archivo en "Mis declaraciones".
+- [x] Verificación pública sin cuenta en `/verificar/<código>`: recalcula la huella, enlaza la
+      transacción y muestra el origen (emisión, cantones, separadores e intermediarios).
+- [x] Portada pública ("lobby") con el recorrido animado de un lote, pasos por rol y reparto
+      animado de una venta; respeta `prefers-reduced-motion`.
+- [x] Ciclo completo validado en producción con wallets de prueba (separador → acopio →
+      transformador → venta → declaración `VV-B9FH-B9DB`). Encontró y corrigió dos bugs del
+      indexer: llaves foráneas que lo trababan cuando el transformador o el receptor de una
+      entrega no era un intermediario registrado, y la merma del transformador guardada en
+      unidades mezcladas. Entidades de prueba desactivadas por `VERIFIER_ROLE`.
+- [x] La constancia impresa conservaba la cabecera del sitio y perdía su propio encabezado
+      (título, logo y código): corregido en el CSS de impresión.
+
+**Operación y calidad (siguiente bloque):**
+- [ ] Copia de respaldos fuera del servidor (bucket R2 de Cloudflare)
+- [ ] Tests del backend (declaraciones, verificación, handlers del indexer)
+- [ ] Ambiente de staging antes de mainnet
+- [ ] Revisión en móvil de todos los formularios
+
 **Antes de mainnet (Sprint 4):**
 - [ ] Safe multisig para admin y `plataforma`; wallet de mainnet nueva (la clave actual se compartió en un chat)
 - [x] Test de gas con N separadores y tope por lote (A3, 2026-11-24): 60 separadores por lote,

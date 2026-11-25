@@ -17,11 +17,16 @@ const PUBLIC_PATHS = [
   "/terminos",
   "/privacidad",
   "/guia-inicio",
+  // Verificacion publica de constancias (el QR impreso lleva aca, sin cuenta).
+  "/verificar",
 ];
 const COOKIE_NAME = "session";
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Portada / lobby publico: explica la plataforma a quien todavia no tiene cuenta.
+  if (pathname === "/") return NextResponse.next();
 
   if (PUBLIC_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`))) {
     return NextResponse.next();

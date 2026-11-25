@@ -2,6 +2,7 @@ import type { ethers } from "ethers";
 import type { prisma as PrismaClientInstance } from "../../lib/prisma.js";
 import { materialDesdeIndice } from "../enumMaps.js";
 import type { IndexedContracts } from "../../lib/contracts.js";
+import { confirmarPorEvento } from "../../lib/declaraciones.js";
 
 type Prisma = typeof PrismaClientInstance;
 
@@ -159,7 +160,7 @@ export async function handlePagoRetirado(prisma: Prisma, log: ethers.EventLog) {
   });
 }
 
-export async function handleCertificadoRetirado(prisma: Prisma, log: ethers.EventLog) {
+export async function handleCertificadoRetirado(prisma: Prisma, provider: ethers.Provider, log: ethers.EventLog) {
   const [comprador, material, cantidadKg, informeRef, periodo] = log.args as unknown as [
     string,
     bigint,
@@ -181,5 +182,20 @@ export async function handleCertificadoRetirado(prisma: Prisma, log: ethers.Even
       logIndex: log.index,
     },
     update: {},
+  });
+
+  // Si el retiro corresponde a una declaracion creada en la plataforma (informeRef = huella
+  // de su contenido), se confirma aca tambien: cubre el caso en que el usuario cerro el
+  // navegador antes de que el frontend llamara a /declaraciones/:id/confirmar.
+  const bloque = await provider.getBlock(log.blockNumber);
+  await confirmarPorEvento({
+    informeRef,
+    wallet: comprador,
+    material: materialDesdeIndice(material),
+    cantidadKg: cantidadKg.toString(),
+    periodo: Number(periodo),
+    txHash: log.transactionHash,
+    blockNumber: BigInt(log.blockNumber),
+    timestamp: new Date((bloque?.timestamp ?? Math.floor(Date.now() / 1000)) * 1000),
   });
 }

@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import { Fraunces, Public_Sans, Space_Mono } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
-import { cookies, headers } from "next/headers";
+import { headers } from "next/headers";
 import { cookieToInitialState } from "wagmi";
-import jwt from "jsonwebtoken";
 import "./globals.css";
 import { Providers } from "./providers";
 import { ConnectWalletButton } from "@/components/ConnectWalletButton";
@@ -13,30 +12,9 @@ import { EmailVerificacionBanner } from "@/components/EmailVerificacionBanner";
 import { Footer } from "@/components/Footer";
 import { NavMenu } from "@/components/NavMenu";
 import { wagmiServerConfig } from "@/lib/wagmiServer";
+import { getSesion } from "@/lib/sesion.server";
 import { logoutAction } from "./login/actions";
 import logo from "../public/GFRM-Logo.png";
-
-interface Sesion {
-  email: string;
-  rol: "USER" | "ADMIN";
-  emailVerificado: boolean;
-}
-
-function getSesion(sessionCookie: string | undefined): Sesion | null {
-  const secret = process.env.JWT_SECRET;
-  if (!sessionCookie || !secret) return null;
-  try {
-    const payload = jwt.verify(sessionCookie, secret);
-    if (typeof payload !== "object" || !("email" in payload)) return null;
-    return {
-      email: String(payload.email),
-      rol: payload.rol === "ADMIN" ? "ADMIN" : "USER",
-      emailVerificado: Boolean(payload.ev),
-    };
-  } catch {
-    return null;
-  }
-}
 
 // Fraunces: serif con caracter para titulos (estilo "guia de campo" / informe de campo).
 // Se carga con estilo italica ademas de la normal -- la portada y los titulares grandes
@@ -82,7 +60,7 @@ export default async function RootLayout({
   } catch {
     initialState = undefined;
   }
-  const sesion = getSesion((await cookies()).get("session")?.value);
+  const sesion = await getSesion();
 
   return (
     <html
@@ -112,9 +90,9 @@ export default async function RootLayout({
                 />
                 Certificado de Transformación
               </Link>
-              <NavMenu esAdmin={sesion?.rol === "ADMIN"} />
+              <NavMenu esAdmin={sesion?.rol === "ADMIN"} conSesion={sesion !== null} />
               <div className="flex items-center gap-3">
-                <ConnectWalletButton />
+                {sesion ? <ConnectWalletButton /> : null}
                 {sesion ? (
                   <form action={logoutAction} className="flex items-center gap-2 text-xs text-neutral-500">
                     <Link href="/cuenta" className="hidden sm:inline hover:text-forest" title="Mi cuenta">

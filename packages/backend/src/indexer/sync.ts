@@ -192,7 +192,7 @@ async function dispatch(
       return handleCertificadoComprado(prisma, contracts, log);
     if (eventName === "PagoAcreditado") return handlePagoAcreditado(prisma, log);
     if (eventName === "PagoRetirado") return handlePagoRetirado(prisma, log);
-    if (eventName === "CertificadoRetirado") return handleCertificadoRetirado(prisma, log);
+    if (eventName === "CertificadoRetirado") return handleCertificadoRetirado(prisma, provider, log);
   }
 
   throw new Error(`Sin handler para ${contractName}.${eventName}`);

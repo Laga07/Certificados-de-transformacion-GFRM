@@ -500,8 +500,9 @@ model Account {
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @default(now()) @updatedAt
 
-  tokens AuthToken[]
-  perfil EntidadPerfil?
+  tokens        AuthToken[]
+  perfil        EntidadPerfil?
+  declaraciones Declaracion[]
 
   @@map("accounts")
 }
@@ -574,4 +575,54 @@ model PerfilDocumento {
 
   @@index([perfilId])
   @@map("perfil_documentos")
+}
+
+// ==== DECLARACIONES DE CUMPLIMIENTO (retiro de certificados) ====
+
+enum EstadoDeclaracion {
+  PENDIENTE
+  CONFIRMADA
+}
+
+/// Declaracion de cumplimiento: el comprador "retira" (quema) certificados para respaldar un
+/// informe ante una entidad (p. ej. Ministerio de Salud, Ley 9786) y un periodo.
+///
+/// Flujo: 1) se crea PENDIENTE con los datos de la declaracion; `contenido` es su JSON
+/// canonico y `informeRef` = keccak256(contenido). 2) el comprador llama
+/// MercadoCertificados.retirarCertificado(material, kg, informeRef, periodo): la huella queda
+/// grabada on-chain en el evento CertificadoRetirado. 3) pasa a CONFIRMADA al verificar ese
+/// evento (endpoint /confirmar o el indexer, lo que llegue primero).
+///
+/// Cualquiera puede verificar una constancia en /verificar/<codigo>: recalcula keccak256 del
+/// contenido publicado y lo compara con el informeRef del evento on-chain.
+model Declaracion {
+  id             Int               @id @default(autoincrement())
+  /// Codigo publico corto y aleatorio (no secuencial, para que no se puedan enumerar).
+  codigo         String            @unique @db.VarChar(16)
+  accountId      Int
+  wallet         String            @db.VarChar(42)
+  material       Material
+  cantidadKg     Decimal           @db.Decimal(78, 0)
+  /// Codificado AAAA*100 + NN: 00 anual, 01-12 mes, 21-24 trimestre, 31-32 semestre.
+  periodo        Int
+  periodoTexto   String            @db.VarChar(40)
+  entidadDestino String            @db.VarChar(200)
+  referencia     String?           @db.VarChar(120)
+  descripcion    String?           @db.VarChar(1000)
+  /// Snapshot del perfil de la entidad al momento de declarar.
+  razonSocial    String?           @db.VarChar(200)
+  cedulaJuridica String?           @db.VarChar(40)
+  contenido      String
+  informeRef     String            @unique @db.VarChar(66)
+  estado         EstadoDeclaracion @default(PENDIENTE)
+  txHash         String?           @unique @db.VarChar(66)
+  blockNumber    BigInt?
+  confirmadaEn   DateTime?
+  createdAt      DateTime          @default(now())
+
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@index([accountId])
+  @@index([wallet, material, estado])
+  @@map("declaraciones")
 }

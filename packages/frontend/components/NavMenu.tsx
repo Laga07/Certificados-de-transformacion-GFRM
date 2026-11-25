@@ -49,6 +49,9 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: "/mercado", label: "Catálogo de certificados" },
       { href: "/mercado/comprar", label: "Comprar certificado" },
+      { href: "/mercado/certificados", label: "Mis certificados" },
+      { href: "/declaraciones", label: "Mis declaraciones" },
+      { href: "/verificar", label: "Verificar una constancia" },
       { href: "/mercado/pagos", label: "Mis pagos" },
       { href: "/mercado/faucet", label: "USDT y POL de prueba" },
     ],
@@ -63,7 +66,39 @@ const NAV_ADMIN: NavGroup = {
   ],
 };
 
-export function NavMenu({ esAdmin }: { esAdmin?: boolean }) {
+// Visitante sin cuenta: solo lo que puede ver sin iniciar sesion (el resto lo mandaria al login).
+const NAV_PUBLICO: (NavItem & { soloEscritorio?: boolean })[] = [
+  { href: "/#recorrido", label: "Cómo funciona" },
+  { href: "/guia-inicio", label: "Guía de inicio", soloEscritorio: true },
+  { href: "/verificar", label: "Verificar" },
+];
+
+export function NavMenu({ esAdmin, conSesion = true }: { esAdmin?: boolean; conSesion?: boolean }) {
+  if (!conSesion) {
+    return (
+      <nav className="flex flex-wrap items-center gap-x-1 gap-y-1 flex-1">
+        {NAV_PUBLICO.map((link) => (
+          <Link key={link.href} href={link.href} className={`label-mono px-2 py-1 hover:text-forest ${link.soloEscritorio ? "hidden sm:inline" : ""}`}>
+            {link.label}
+          </Link>
+        ))}
+        <span className="hidden sm:block flex-1" />
+        <Link href="/login" className="label-mono px-2 py-1 hover:text-forest">
+          Iniciar sesión
+        </Link>
+        <Link
+          href="/crear-cuenta"
+          className="rounded-sm bg-forest px-3 py-1.5 font-mono text-[0.68rem] uppercase tracking-wider text-white hover:bg-forest-light"
+        >
+          Crear cuenta
+        </Link>
+      </nav>
+    );
+  }
+  return <NavMenuConSesion esAdmin={esAdmin} />;
+}
+
+function NavMenuConSesion({ esAdmin }: { esAdmin?: boolean }) {
   const [abierto, setAbierto] = useState<string | null>(null);
   const containerRef = useRef<HTMLElement>(null);
 

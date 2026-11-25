@@ -187,3 +187,92 @@ h4 {
     top: 50%;
   }
 }
+
+/* ---- Impresion / guardar como PDF (constancias de declaracion) ----
+   Se oculta todo lo que no es el documento: encabezado, menu, pie, avisos y botones. */
+@media print {
+  @page {
+    size: A4;
+    margin: 16mm;
+  }
+  body {
+    background: #fff !important;
+    background-image: none !important;
+  }
+  header,
+  footer,
+  nav,
+  .no-print {
+    display: none !important;
+  }
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+  .constancia {
+    border: none !important;
+    box-shadow: none !important;
+  }
+  a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+}
+
+/* ---- Lobby: animaciones ----
+   Una sola idea de movimiento (el recorrido del lote) + revelado suave al hacer scroll. Todo
+   se desactiva con prefers-reduced-motion: el contenido queda visible y estatico. */
+.revelar {
+  transition: opacity 700ms ease, transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.revelar[data-estado="oculto"] {
+  opacity: 0;
+  transform: translateY(18px);
+}
+.revelar[data-estado="visible"] {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.aparecer {
+  animation: aparecer 450ms ease both;
+}
+
+@keyframes latido {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--gold) 55%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 8px color-mix(in srgb, var(--gold) 0%, transparent);
+  }
+}
+.latido {
+  animation: latido 2.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .revelar,
+  .revelar[data-estado="oculto"] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .aparecer,
+  .latido {
+    animation: none;
+  }
+  .sin-movimiento-reducido {
+    transition: none !important;
+  }
+}

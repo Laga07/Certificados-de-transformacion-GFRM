@@ -2,111 +2,62 @@ import Image from "next/image";
 import Link from "next/link";
 import rioNuboso from "../public/rio nubosos 2.png";
 import { MATERIALES, VARIANTES_POR_MATERIAL } from "@/lib/catalogos";
-import {
-  IconArrowRight,
-  IconCoin,
-  IconEye,
-  IconFuel,
-  IconLayers,
-  IconRecyclingTriangle,
-  IconRoute,
-  IconShieldCheck,
-  IconTruck,
-  IconWallet,
-} from "@/components/icons";
+import { getSesion } from "@/lib/sesion.server";
+import { IconEye, IconLayers, IconRoute, IconShieldCheck } from "@/components/icons";
+import { RecorridoLote } from "@/components/lobby/RecorridoLote";
+import { PasosPorRol } from "@/components/lobby/PasosPorRol";
+import { RepartoAnimado } from "@/components/lobby/RepartoAnimado";
+import { Revelar } from "@/components/lobby/Revelar";
 
-// El ciclo completo que cubre el sistema. ES una secuencia real (cada paso depende del
-// anterior), por eso va numerado.
-const CICLO = [
-  {
-    titulo: "Entrega",
-    detalle:
-      "Un separador entrega material a un intermediario o directo a un transformador. Quien recibe lo registra y paga el gas: el separador solo necesita su wallet.",
-    icon: <IconWallet className="h-6 w-6" />,
-  },
-  {
-    titulo: "Traspaso",
-    detalle:
-      "El lote viaja entre intermediarios en dos pasos: quien envía declara el peso, quien recibe confirma el que de verdad llegó. La diferencia (merma) queda atribuida a alguien.",
-    icon: <IconTruck className="h-6 w-6" />,
-  },
-  {
-    titulo: "Transformación",
-    detalle:
-      "El transformador verificado consume los lotes, declara los kilos efectivamente transformados y fija el precio del certificado.",
-    icon: <IconRecyclingTriangle className="h-6 w-6" />,
-  },
-  {
-    titulo: "Certificado",
-    detalle:
-      "Un comprador paga en USDT y recibe el Certificado de Transformación: un token ERC-20 donde 1 unidad = 1 kg transformado, con todo su origen auditable.",
-    icon: <IconShieldCheck className="h-6 w-6" />,
-  },
-];
+// Lobby publico: explica la plataforma a quien todavia no tiene cuenta (proxy.ts deja pasar
+// "/" sin sesion). Con sesion, los llamados a la accion llevan a la app en vez de al registro.
+export default async function Home() {
+  const sesion = await getSesion();
+  const conSesion = sesion !== null;
 
-const ROLES = [
-  {
-    href: "/registro/separador",
-    titulo: "Separador",
-    detalle: "Hogar, comercio, industria, institución o recuperador inclusivo. Entregás material y recibís el 35 % de cada venta del certificado que salga de él.",
-    nota: "Registro inmediato",
-  },
-  {
-    href: "/registro/intermediario",
-    titulo: "Intermediario",
-    detalle: "Recolector, centro de acopio, ruta municipal, compactador o transportista. Recibís, unís, dividís y traspasás lotes.",
-    nota: "Requiere verificación",
-  },
-  {
-    href: "/registro/transformador",
-    titulo: "Transformador",
-    detalle: "Convertís el material en materia prima y emitís el certificado. Fijás el precio por kilo.",
-    nota: "Requiere verificación",
-  },
-  {
-    href: "/registro/comprador",
-    titulo: "Comprador",
-    detalle: "Empresa que necesita demostrar material transformado. Comprás certificados y los retirás en tu informe de cumplimiento.",
-    nota: "Registro inmediato",
-  },
-];
-
-// Tabla 11 del documento de arquitectura. Porcentajes fijos del contrato.
-const REPARTO = [
-  { quien: "Separadores", pct: 35, detalle: "pro rata a los kilos aportados" },
-  { quien: "Intermediarios", pct: 20, detalle: "en partes iguales entre quienes movieron el lote" },
-  { quien: "Transformador", pct: 30, detalle: "quien emite el certificado" },
-  { quien: "Plataforma", pct: 15, detalle: "Green Foot" },
-];
-
-export default function Home() {
   return (
-    <div className="flex flex-col gap-16">
-      <section className="grid gap-8 lg:grid-cols-2 lg:items-center pt-2">
+    <div className="flex flex-col gap-20">
+      {/* ---- Portada ---- */}
+      <section className="grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:items-center pt-2">
         <div className="flex flex-col gap-5">
-          <span className="tag-mono">Polygon Amoy &middot; red de prueba &middot; Costa Rica</span>
-          <h1 className="text-4xl font-heading italic font-semibold leading-tight text-navy">
+          <span className="tag-mono">Valor Verde · Costa Rica · red de prueba Polygon Amoy</span>
+          <h1 className="text-4xl sm:text-5xl font-heading italic font-semibold leading-[1.05] text-navy text-balance">
             Del residuo al certificado, con cada kilo rastreado
           </h1>
-          <p className="text-foreground/70 max-w-lg">
-            Plástico, cartón, tetrapack, vidrio y metales: desde quien los separa hasta quien los
-            transforma, cada paso queda registrado en la cadena. Al final, un Certificado de
-            Transformación que una empresa puede comprar, auditar y presentar.
+          <p className="text-lg text-foreground/75 max-w-xl">
+            Plástico, cartón, tetrapack, vidrio y metales. Desde quien los separa hasta quien los
+            transforma, cada paso queda firmado en la blockchain. Al final, un Certificado de
+            Transformación que una empresa compra, declara y cualquiera puede verificar.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link
-              href="#roles"
-              className="rounded-sm bg-forest px-5 py-2.5 font-mono text-xs uppercase tracking-wider text-white hover:bg-forest-light"
-            >
-              Registrarme
-            </Link>
-            <Link
-              href="/dashboard"
-              className="rounded-sm border border-neutral-300 px-5 py-2.5 font-mono text-xs uppercase tracking-wider text-foreground hover:border-forest hover:text-forest"
-            >
-              Ver dashboard
-            </Link>
+            {conSesion ? (
+              <>
+                <Link href="/cuenta" className="rounded-sm bg-forest px-5 py-2.5 font-mono text-xs uppercase tracking-wider text-white hover:bg-forest-light">
+                  Ir a mi cuenta
+                </Link>
+                <Link href="/mercado" className="rounded-sm border border-neutral-300 px-5 py-2.5 font-mono text-xs uppercase tracking-wider hover:border-forest hover:text-forest">
+                  Ver el catálogo
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link href="/crear-cuenta" className="rounded-sm bg-forest px-5 py-2.5 font-mono text-xs uppercase tracking-wider text-white hover:bg-forest-light">
+                  Crear cuenta
+                </Link>
+                <Link href="#recorrido" className="rounded-sm border border-neutral-300 px-5 py-2.5 font-mono text-xs uppercase tracking-wider hover:border-forest hover:text-forest">
+                  Ver cómo funciona
+                </Link>
+              </>
+            )}
           </div>
+          {!conSesion ? (
+            <p className="text-sm text-foreground/60">
+              ¿Ya tenés cuenta?{" "}
+              <Link href="/login" className="text-forest hover:underline">
+                Iniciá sesión
+              </Link>
+            </p>
+          ) : null}
         </div>
         <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-lg">
           <Image
@@ -114,72 +65,127 @@ export default function Home() {
             alt="Río en un bosque nuboso de Costa Rica"
             fill
             priority
-            sizes="(min-width: 1024px) 50vw, 100vw"
+            sizes="(min-width: 1024px) 45vw, 100vw"
             className="object-cover"
           />
         </div>
       </section>
 
-      <section className="flex flex-col gap-6">
+      {/* ---- El recorrido de un lote (animacion principal) ---- */}
+      <section id="recorrido" className="scroll-mt-6 rounded-2xl bg-navy px-5 py-10 sm:px-10 sm:py-12 flex flex-col gap-8 text-white">
+        <div className="flex flex-col gap-2 max-w-2xl">
+          <span className="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-gold">El recorrido de un lote</span>
+          <h2 className="text-3xl font-heading italic font-semibold text-balance">
+            Seis pasos, cada uno firmado por quien lo hace
+          </h2>
+          <p className="text-white/70">
+            Seguí 10.000 kg de PET desde una casa en Heredia hasta la constancia que una empresa
+            presenta ante el Ministerio de Salud. El peso baja con cada merma, y cada merma queda a
+            cargo de quien la generó.
+          </p>
+        </div>
+        <RecorridoLote />
+      </section>
+
+      {/* ---- Pasos por rol ---- */}
+      <Revelar as="section" className="flex flex-col gap-6">
         <div>
-          <h2 className="text-2xl font-heading font-semibold text-navy">Cómo funciona</h2>
+          <span className="tag-mono">Para empezar</span>
+          <h2 className="text-3xl font-heading font-semibold text-navy mt-3 text-balance">¿Qué rol tenés en la cadena?</h2>
           <p className="text-foreground/70 mt-1 max-w-2xl">
-            Cuatro pasos, cada uno firmado por quien lo hace. El certificado hereda la historia
-            completa del material que lo respalda.
+            Una wallet, un rol. Intermediarios y transformadores pasan por una verificación de Green
+            Foot antes de operar, porque reciben material de terceros.
           </p>
         </div>
-        <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {CICLO.map((paso, index) => (
-            <li
-              key={paso.titulo}
-              className="border-t-2 border-forest pt-4 flex flex-col gap-2"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-clay">{paso.icon}</span>
-                <span className="font-heading italic text-2xl text-gold">{index + 1}</span>
-              </div>
-              <h3 className="font-heading font-semibold text-navy">{paso.titulo}</h3>
-              <p className="text-sm text-foreground/70">{paso.detalle}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
+        <PasosPorRol conSesion={conSesion} />
+      </Revelar>
 
-      <section id="roles" className="flex flex-col gap-6 scroll-mt-6">
+      {/* ---- Reparto ---- */}
+      <Revelar as="section" className="border border-neutral-300 bg-surface-warm p-6 sm:p-8 flex flex-col gap-6">
         <div>
-          <span className="tag-mono">Quién participa</span>
-          <p className="text-foreground/70 mt-3 max-w-2xl">
-            Una wallet, un rol. Elegí el tuyo para registrarte. Intermediarios y transformadores
-            pasan por una verificación de Green Foot antes de poder operar, porque reciben
-            material de terceros.
+          <h2 className="text-3xl font-heading font-semibold text-navy text-balance">Cómo se reparte cada venta</h2>
+          <p className="text-foreground/70 mt-1 max-w-2xl">
+            El mismo ejemplo: la empresa compra los 9.506 certificados a 1 USDT. El contrato acredita
+            a cada participante en el instante de la compra. Nadie custodia el dinero de nadie.
           </p>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {ROLES.map((rol) => (
-            <Link
-              key={rol.href}
-              href={rol.href}
-              className="group border border-neutral-300 bg-surface-warm p-5 flex flex-col gap-3 hover:border-forest transition-colors"
-            >
-              <div className="flex items-center justify-between gap-2">
-                <h3 className="font-heading font-semibold text-navy">{rol.titulo}</h3>
-                <span className="label-mono">{rol.nota}</span>
-              </div>
-              <p className="text-sm text-foreground/70">{rol.detalle}</p>
-              <span className="mt-auto flex items-center gap-1 label-mono text-forest group-hover:underline">
-                Registrarme <IconArrowRight className="h-3 w-3" />
-              </span>
-            </Link>
-          ))}
-        </div>
+        <RepartoAnimado />
+      </Revelar>
+
+      {/* ---- Garantias ---- */}
+      <section className="grid gap-6 sm:grid-cols-3">
+        {[
+          {
+            Icono: IconRoute,
+            titulo: "Trazable",
+            texto: "Cada certificado conserva qué separadores aportaron, por qué manos pasó el lote y cuánto se perdió en cada tramo.",
+          },
+          {
+            Icono: IconShieldCheck,
+            titulo: "Sin doble conteo",
+            texto: "Un certificado declarado se quema en la blockchain: ningún otro informe puede volver a usar esos kilos.",
+          },
+          {
+            Icono: IconEye,
+            titulo: "Verificable por cualquiera",
+            texto: "Cada constancia trae un código QR. Un auditor o el Ministerio lo comprueban sin pedirle nada a nadie.",
+          },
+        ].map((g, i) => (
+          <Revelar key={g.titulo} retraso={i * 120} className="border-t-2 border-forest pt-4 flex flex-col gap-2">
+            <span className="text-clay">
+              <g.Icono className="h-6 w-6" />
+            </span>
+            <h3 className="font-heading font-semibold text-navy">{g.titulo}</h3>
+            <p className="text-sm text-foreground/70">{g.texto}</p>
+          </Revelar>
+        ))}
       </section>
 
-      <section className="flex flex-col gap-6">
+      {/* ---- Verificacion publica ---- */}
+      <Revelar as="section" className="grid gap-8 lg:grid-cols-2 lg:items-center">
+        <div className="flex flex-col gap-3">
+          <span className="tag-mono">Transparencia</span>
+          <h2 className="text-3xl font-heading font-semibold text-navy text-balance">Una constancia que se defiende sola</h2>
+          <p className="text-foreground/70">
+            Cuando una empresa declara sus certificados para un informe, recibe una constancia con
+            el origen del material: cantones, separadores, intermediarios y la transacción en la
+            blockchain. Quien la recibe escanea el QR y la comprueba en segundos, sin crear cuenta.
+          </p>
+          <Link href="/verificar" className="w-fit label-mono text-forest hover:underline">
+            Verificar una constancia →
+          </Link>
+        </div>
+        <div className="border border-neutral-300 bg-white p-5 shadow-sm flex flex-col gap-3 rotate-[-1deg]" aria-hidden="true">
+          <div className="flex items-center justify-between border-b border-neutral-200 pb-2">
+            <span className="label-mono">Constancia de retiro</span>
+            <span className="font-mono text-xs">VV-7K3P-9QXM</span>
+          </div>
+          <p className="text-sm">
+            <strong>Embotelladora Tropical S.A.</strong> retiró <strong>9.506 certificados de plástico</strong> para su
+            informe ante el Ministerio de Salud, año 2026.
+          </p>
+          <div className="flex items-end justify-between gap-3">
+            <ul className="text-xs text-foreground/65 flex flex-col gap-0.5">
+              <li>✓ Retiro registrado en Polygon</li>
+              <li>✓ Huella digital coincide</li>
+              <li>✓ 1 separador · 2 intermediarios · Heredia</li>
+            </ul>
+            <div className="grid grid-cols-5 gap-0.5 p-1 border border-neutral-300">
+              {Array.from({ length: 25 }, (_, i) => (
+                <span key={i} className={`h-2.5 w-2.5 ${[0, 1, 3, 4, 5, 9, 12, 15, 19, 20, 21, 23, 24, 7, 17].includes(i) ? "bg-navy" : "bg-transparent"}`} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </Revelar>
+
+      {/* ---- Materiales ---- */}
+      <Revelar as="section" className="flex flex-col gap-6">
         <div>
           <h2 className="text-2xl font-heading font-semibold text-navy">Cinco materiales, un certificado por cada uno</h2>
           <p className="text-foreground/70 mt-1 max-w-2xl">
-            Cada material tiene su propio token de certificado. Las variantes se registran en cada
-            entrega para que el comprador sepa exactamente qué respalda su certificado.
+            Cada material tiene su propio certificado. La variante se registra en cada entrega para
+            que el comprador sepa exactamente qué respalda.
           </p>
         </div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
@@ -191,171 +197,49 @@ export default function Home() {
                   <IconLayers className="h-5 w-5" />
                 </span>
                 <h3 className="font-heading font-semibold text-navy">{material}</h3>
-                <p className="text-xs text-foreground/60">
-                  {variantes.length > 0 ? variantes.join(" · ") : "Sin subcategorías"}
-                </p>
+                <p className="text-xs text-foreground/60">{variantes.length > 0 ? variantes.join(" · ") : "Sin subcategorías"}</p>
               </div>
             );
           })}
         </div>
-        <Link href="/guia-plasticos" className="w-fit label-mono text-forest hover:underline">
-          Ver la guía de plásticos &rarr;
-        </Link>
-      </section>
+      </Revelar>
 
-      <section className="border border-neutral-300 bg-surface-warm p-6 sm:p-8 flex flex-col gap-6">
-        <div>
-          <h2 className="text-2xl font-heading font-semibold text-navy">Cómo se reparte cada venta</h2>
-          <p className="text-foreground/70 mt-1 max-w-2xl">
-            Cuando un comprador paga un certificado, el contrato acredita el valor en el mismo
-            instante a cada participante del lote. Nadie custodia el dinero de nadie: cada quien
-            retira lo suyo cuando quiere.
-          </p>
-        </div>
-        <div className="flex flex-col gap-3">
-          <div className="flex h-8 w-full overflow-hidden rounded-sm border border-neutral-300">
-            {REPARTO.map((parte, index) => (
-              <div
-                key={parte.quien}
-                style={{ width: `${parte.pct}%` }}
-                className={`flex items-center justify-center font-mono text-xs text-white ${
-                  ["bg-forest", "bg-forest-light", "bg-clay", "bg-gold"][index]
-                }`}
-                title={`${parte.quien}: ${parte.pct} %`}
-              >
-                {parte.pct} %
-              </div>
-            ))}
-          </div>
-          <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4 text-sm">
-            {REPARTO.map((parte, index) => (
-              <li key={parte.quien} className="flex items-start gap-2">
-                <span
-                  className={`mt-1 h-3 w-3 shrink-0 rounded-sm ${
-                    ["bg-forest", "bg-forest-light", "bg-clay", "bg-gold"][index]
-                  }`}
-                />
-                <span>
-                  <strong className="text-navy">{parte.quien}</strong>
-                  <br />
-                  <span className="text-foreground/60 text-xs">{parte.detalle}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <p className="text-sm text-foreground/70 max-w-2xl">
-          <strong className="text-forest">La merma la paga quien la genera.</strong> Si un
-          intermediario recibió 10 000 kg y entregó 9 800, esos 200 kg se le descuentan de su
-          parte, no de la de los demás. Los separadores nunca generan merma y la plataforma nunca
-          se beneficia de la pérdida de otro.
+      {/* ---- Gas: quien paga cada operacion ---- */}
+      <Revelar as="section" className="border border-neutral-300 p-6 sm:p-8 flex flex-col gap-3">
+        <span className="tag-mono">Quién paga cada operación</span>
+        <p className="text-foreground/75 max-w-2xl">
+          Cada operación en la blockchain tiene un costo pequeño (gas) que se paga en POL.{" "}
+          <strong className="text-forest">Las entregas las paga quien recibe el material</strong>, no el separador. Cada
+          participante paga su propio registro inicial y las operaciones que hace él mismo: traspasar,
+          transformar, comprar o retirar sus pagos. Mientras estemos en la red de prueba, el POL es gratuito.
         </p>
-      </section>
+      </Revelar>
 
-      <section className="grid gap-4 sm:grid-cols-3">
-        <FeatureCard
-          icon={<IconRoute className="h-6 w-6" />}
-          title="Trazabilidad"
-          description="Cada certificado conserva qué separadores aportaron, por qué manos pasó el lote y cuánto se perdió en cada tramo."
-        />
-        <FeatureCard
-          icon={<IconEye className="h-6 w-6" />}
-          title="Transparencia"
-          description="Cualquier institución o ciudadano puede auditar el histórico en el explorador de Polygon o en el dashboard."
-        />
-        <FeatureCard
-          icon={<IconCoin className="h-6 w-6" />}
-          title="Pago automático"
-          description="El reparto ocurre dentro de la misma transacción de compra. Sin intermediarios financieros ni cuentas por cobrar."
-        />
-      </section>
-
-      <section className="border border-neutral-300 p-6 sm:p-8 flex flex-col gap-4">
-        <div>
-          <span className="tag-mono">Cómo funciona el gas</span>
-          <p className="mt-3 text-foreground/70 max-w-2xl">
-            <strong className="text-forest">Quien recibe el material paga la transacción.</strong>{" "}
-            El separador solo necesita una wallet conectada, sin POL. Intermediarios,
-            transformadores y compradores sí necesitan POL para sus propias operaciones.
-          </p>
+      {/* ---- Cierre ---- */}
+      <section className="flex flex-col items-start gap-4 border-t border-neutral-300 pt-10">
+        <h2 className="text-3xl font-heading italic font-semibold text-navy text-balance">
+          {conSesion ? "Seguí donde quedaste" : "Empezá hoy, en la red de prueba"}
+        </h2>
+        <p className="text-foreground/70 max-w-2xl">
+          {conSesion
+            ? "Completá los datos de tu entidad, vinculá tu wallet y registrate con tu rol."
+            : "Creá tu cuenta, seguí la guía de inicio y recorré el ciclo completo con POL y USDT de prueba, sin costo."}
+        </p>
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href={conSesion ? "/cuenta" : "/crear-cuenta"}
+            className="rounded-sm bg-forest px-5 py-2.5 font-mono text-xs uppercase tracking-wider text-white hover:bg-forest-light"
+          >
+            {conSesion ? "Ir a mi cuenta" : "Crear cuenta"}
+          </Link>
+          <Link href="/guia-inicio" className="rounded-sm border border-neutral-300 px-5 py-2.5 font-mono text-xs uppercase tracking-wider hover:border-forest hover:text-forest">
+            Guía de inicio
+          </Link>
         </div>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 py-2">
-          <GasFlowNode icon={<IconWallet className="h-6 w-6" />} title="Separador" caption="Sin POL" />
-          <GasFlowConnector />
-          <GasFlowNode
-            icon={<IconFuel className="h-6 w-6" />}
-            title="Intermediario / Transformador"
-            caption="Paga el gas"
-            highlight
-          />
-          <GasFlowConnector animado />
-          <GasFlowNode icon={<IconShieldCheck className="h-6 w-6" />} title="Polygon" caption="Registro confirmado" />
-        </div>
-      </section>
-
-      <section className="border border-amber-300 bg-amber-50 p-5 text-sm text-amber-900 flex flex-col gap-2">
-        <strong className="font-heading">Esto es una red de prueba.</strong>
-        <p>
-          El sistema corre sobre Polygon Amoy. El USDT que se usa es de prueba y los certificados
-          no tienen valor económico todavía. Sirve para probar el flujo completo con datos reales
-          de operación antes de pasar a la red principal.
+        <p className="text-xs text-amber-800">
+          Red de prueba Polygon Amoy: el USDT es de prueba y los certificados todavía no tienen valor económico.
         </p>
       </section>
     </div>
-  );
-}
-
-function FeatureCard({
-  icon,
-  title,
-  description,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="border-t-2 border-forest pt-4 flex flex-col gap-2">
-      <span className="text-clay">{icon}</span>
-      <h3 className="font-heading font-semibold text-navy">{title}</h3>
-      <p className="text-sm text-foreground/70">{description}</p>
-    </div>
-  );
-}
-
-function GasFlowNode({
-  icon,
-  title,
-  caption,
-  highlight,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  caption: string;
-  highlight?: boolean;
-}) {
-  return (
-    <div
-      className={`flex flex-1 flex-col items-center gap-1.5 text-center px-3 py-4 border ${
-        highlight ? "border-forest bg-background" : "border-neutral-300 bg-background/60"
-      }`}
-    >
-      <span className={highlight ? "text-forest" : "text-clay"}>{icon}</span>
-      <p className="font-heading font-semibold text-navy text-sm">{title}</p>
-      <p className="label-mono">{caption}</p>
-    </div>
-  );
-}
-
-function GasFlowConnector({ animado }: { animado?: boolean }) {
-  return (
-    <>
-      <div className="relative hidden sm:block flex-1 min-w-6 h-px bg-neutral-300 mx-1">
-        {animado ? <span className="gas-flow-dot" aria-hidden="true" /> : null}
-      </div>
-      <div className="relative block sm:hidden self-center w-px h-6 bg-neutral-300 my-1">
-        {animado ? <span className="gas-flow-dot-vertical" aria-hidden="true" /> : null}
-      </div>
-    </>
   );
 }

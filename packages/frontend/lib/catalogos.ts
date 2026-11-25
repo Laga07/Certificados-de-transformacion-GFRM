@@ -68,3 +68,16 @@ export const PLASTICO_EJEMPLOS: Record<string, string | null> = {
   PS: "Empaques, envases de comida (PS/EPS)",
   Otros: null,
 };
+
+// Claves del enum Material tal como las devuelve la API (mismo orden que MATERIALES).
+export const MATERIAL_KEYS = ["Plastico", "CartonPapel", "Tetrapack", "Vidrio", "Metales"] as const;
+
+export function nombreMaterialPorClave(clave: string): string {
+  const idx = (MATERIAL_KEYS as readonly string[]).indexOf(clave);
+  return idx === -1 ? clave : MATERIALES[idx];
+}
+
+export function nombreProvinciaPorClave(clave: string): string {
+  const idx = (PROVINCIA_ENUM_KEYS as readonly string[]).indexOf(clave);
+  return idx === -1 ? clave : PROVINCIAS[idx];
+}

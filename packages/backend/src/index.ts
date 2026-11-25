@@ -21,6 +21,7 @@ import { lotesRoutes } from "./routes/lotes.js";
 import { emisionesRoutes } from "./routes/emisiones.js";
 import { walletsRoutes } from "./routes/wallets.js";
 import { statsRoutes } from "./routes/stats.js";
+import { declaracionesRoutes } from "./routes/declaraciones.js";
 
 const PORT = Number(process.env.PORT ?? 4001);
 const ES_PRODUCCION = process.env.NODE_ENV === "production";
@@ -80,6 +81,7 @@ async function main() {
   await app.register(emisionesRoutes, { prefix: "/api" });
   await app.register(walletsRoutes, { prefix: "/api" });
   await app.register(statsRoutes, { prefix: "/api" });
+  await app.register(declaracionesRoutes, { prefix: "/api" });
 
   await app.listen({ port: PORT, host: "0.0.0.0" });
   logger.info(

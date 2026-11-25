@@ -80,3 +80,75 @@ export interface Perfil {
   updatedAt: string;
   documentos: PerfilDocumento[];
 }
+
+// ---- Declaraciones de cumplimiento (backend/src/routes/declaraciones.ts) ----
+export type EstadoDeclaracion = "PENDIENTE" | "CONFIRMADA";
+
+export interface Declaracion {
+  id: number;
+  codigo: string;
+  wallet: string;
+  material: string;
+  materialIndex: number;
+  cantidadKg: string;
+  periodo: number;
+  periodoTexto: string;
+  entidadDestino: string;
+  referencia: string | null;
+  descripcion: string | null;
+  razonSocial: string | null;
+  cedulaJuridica: string | null;
+  informeRef: `0x${string}`;
+  contenido: string;
+  estado: EstadoDeclaracion;
+  txHash: string | null;
+  blockNumber: string | null;
+  confirmadaEn: string | null;
+  createdAt: string;
+}
+
+export interface CantonOrigen {
+  provincia: string;
+  cantonId: number;
+  kgAportados: string;
+}
+
+export interface TramoOrigen {
+  emisionId: string;
+  kg: string;
+  compraTxHash?: string;
+  compraBloque?: string;
+  transformadorWallet?: string;
+  precioUSDTporKg?: string;
+  kgTransformadosEmision?: string;
+  separadores: number;
+  intermediarios: number;
+  cantones: CantonOrigen[];
+  mermaTotalGramos?: string;
+}
+
+export interface OrigenDeclaracion {
+  tramos: TramoOrigen[];
+  kgSinOrigen: string;
+}
+
+export interface VerificacionPublica {
+  codigo: string;
+  estado: EstadoDeclaracion;
+  razonSocial: string | null;
+  cedulaJuridica: string | null;
+  wallet: string;
+  material: string;
+  cantidadKg: string;
+  periodoTexto: string;
+  entidadDestino: string;
+  referencia: string | null;
+  confirmadaEn: string | null;
+  txHash: string | null;
+  blockNumber: string | null;
+  informeRef: string;
+  contenido: string;
+  huellaCoincide: boolean;
+  retiroIndexado: boolean;
+  origen: OrigenDeclaracion;
+}

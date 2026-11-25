@@ -12,6 +12,7 @@ import {
   generarCodigo,
   informeRefDe,
   origenDeDeclaracion,
+  origenPendienteDeIndexar,
 } from "../lib/declaraciones.js";
 import type { Declaracion } from "../generated/prisma/client.js";
 
@@ -196,7 +197,11 @@ export async function declaracionesRoutes(app: FastifyInstance) {
     const decl = await prisma.declaracion.findUnique({ where: { id } });
     const account = request.account!;
     if (!decl || (decl.accountId !== account.id && account.rol !== "ADMIN")) return reply.notFound("Declaración no encontrada");
-    return { declaracion: vistaPrivada(decl), origen: await origenDeDeclaracion(decl) };
+    return {
+      declaracion: vistaPrivada(decl),
+      origen: await origenDeDeclaracion(decl),
+      origenSincronizando: await origenPendienteDeIndexar(decl),
+    };
   });
 
   // ---- borrar una PENDIENTE (si el retiro nunca se hizo) ----
@@ -244,6 +249,7 @@ export async function declaracionesRoutes(app: FastifyInstance) {
         // informeRef grabado on-chain.
         huellaCoincide: informeRefDe(decl.contenido).toLowerCase() === decl.informeRef.toLowerCase(),
         retiroIndexado: Boolean(retiro),
+        origenSincronizando: await origenPendienteDeIndexar(decl),
         origen: {
           kgSinOrigen: origen.kgSinOrigen,
           tramos: origen.tramos.map((t) => ({

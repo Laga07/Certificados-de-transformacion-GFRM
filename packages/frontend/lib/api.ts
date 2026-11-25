@@ -150,5 +150,6 @@ export interface VerificacionPublica {
   contenido: string;
   huellaCoincide: boolean;
   retiroIndexado: boolean;
+  origenSincronizando: boolean;
   origen: OrigenDeclaracion;
 }

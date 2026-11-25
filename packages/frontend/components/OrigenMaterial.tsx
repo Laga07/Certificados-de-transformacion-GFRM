@@ -5,7 +5,15 @@ import { nombreCantonPorClave } from "@/lib/cantones";
 // Origen del material de una declaracion: de que emisiones (lotes transformados) salen los
 // kg declarados, cuantos separadores e intermediarios participaron y en que cantones se
 // separo el material. Se usa en la constancia privada y en la verificacion publica.
-export function OrigenMaterial({ origen }: { origen: OrigenDeclaracion }) {
+export function OrigenMaterial({ origen, sincronizando = false }: { origen: OrigenDeclaracion; sincronizando?: boolean }) {
+  if (sincronizando) {
+    return (
+      <p className="text-sm text-foreground/70">
+        El retiro se registró hace instantes. El detalle del origen (cantones, separadores e intermediarios) se
+        completa en uno o dos minutos, cuando la plataforma termina de procesar ese bloque. Recargá la página.
+      </p>
+    );
+  }
   if (origen.tramos.length === 0 && origen.kgSinOrigen === "0") return null;
 
   return (

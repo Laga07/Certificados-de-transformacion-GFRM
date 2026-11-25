@@ -36,8 +36,8 @@ export async function handleTransformacionRegistrada(
   contracts: IndexedContracts,
   log: ethers.EventLog,
 ) {
-  const [emisionId, transformador, material, , loteConsolidadoId, pesoConsumidoTotal] =
-    log.args as unknown as [bigint, string, bigint, bigint[], bigint, bigint];
+  const [emisionId, transformador, material, , loteConsolidadoId, pesoConsumidoTotal, , mermaTransformador] =
+    log.args as unknown as [bigint, string, bigint, bigint[], bigint, bigint, bigint, bigint];
 
   const emision = await contracts.mercado.emisiones(emisionId);
 
@@ -52,7 +52,9 @@ export async function handleTransformacionRegistrada(
       kgTransformadosOriginal: emision.kgTransformadosOriginal.toString(),
       kgDisponiblesPrimario: emision.kgDisponiblesPrimario.toString(),
       pesoAceptadoOrigenTotal: emision.pesoAceptadoOrigenTotal.toString(),
-      mermaTransformador: (pesoConsumidoTotal - emision.kgTransformadosOriginal).toString(),
+      // En GRAMOS, tal como lo emite el contrato (antes se calculaba gramos - kg, mezclando
+      // unidades; ver seccion 0.2 de docs/arquitectura-certificado-transformacion.md).
+      mermaTransformador: mermaTransformador.toString(),
       precioUSDTporKg: emision.precioUSDTporKg.toString(),
       blockNumber: BigInt(log.blockNumber),
       txHash: log.transactionHash,

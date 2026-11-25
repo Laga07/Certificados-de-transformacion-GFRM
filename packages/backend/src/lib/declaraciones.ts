@@ -210,3 +210,12 @@ export async function confirmarPorEvento(args: {
     data: { estado: "CONFIRMADA", txHash: args.txHash, blockNumber: args.blockNumber, confirmadaEn: args.timestamp },
   });
 }
+
+// true si el indexer todavia no llego al bloque del retiro: el origen (que sale de las compras
+// indexadas) puede estar incompleto por unos segundos. La constancia lo indica en vez de
+// decir que los kg "no provienen de compras primarias".
+export async function origenPendienteDeIndexar(decl: Declaracion): Promise<boolean> {
+  if (decl.blockNumber === null) return false;
+  const estado = await prisma.indexerState.findFirst();
+  return !estado || estado.lastBlockNumber < decl.blockNumber;
+}

@@ -19,13 +19,13 @@ export default async function DeclaracionPage({
   searchParams: Promise<{ confirmada?: string }>;
 }) {
   const [{ id }, { confirmada }] = await Promise.all([params, searchParams]);
-  const res = await apiFetchServer<{ declaracion: Declaracion; origen: OrigenDeclaracion }>(`/api/declaraciones/${id}`);
+  const res = await apiFetchServer<{ declaracion: Declaracion; origen: OrigenDeclaracion; origenSincronizando: boolean }>(`/api/declaraciones/${id}`);
   const deployment = getDeploymentAddresses();
 
   if (!res || !deployment) {
     return <p className="text-neutral-500">No se encontró la declaración.</p>;
   }
-  const { declaracion: d, origen } = res;
+  const { declaracion: d, origen, origenSincronizando } = res;
   const material = MATERIALES[d.materialIndex];
 
   if (d.estado === "PENDIENTE") {
@@ -101,7 +101,7 @@ export default async function DeclaracionPage({
 
         <section className="flex flex-col gap-2">
           <h2 className="font-heading font-semibold text-navy">Origen del material</h2>
-          <OrigenMaterial origen={origen} />
+          <OrigenMaterial origen={origen} sincronizando={origenSincronizando} />
         </section>
 
         <section className="flex flex-col gap-2 text-xs border-t border-neutral-300 pt-4">

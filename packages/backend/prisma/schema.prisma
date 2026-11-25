@@ -89,8 +89,10 @@ model Intermediario {
   txHash        String    @db.VarChar(66)
   createdAt     DateTime  @default(now())
 
-  entregasRecibidas  Entrega[]
-  eslabonesDeEmision EmisionEslabon[]
+  // Sin relaciones a Entrega.receptorWallet ni EmisionEslabon.direccion: esas direcciones
+  // tambien pueden ser de un TRANSFORMADOR (entrega directa, o el propio transformador como
+  // eslabon de su emision). Una FK a Intermediario rechazaba esas filas y trababa el indexer
+  // (paso en el primer ciclo completo en produccion, 2026-11-25).
 
   @@index([verificado])
   @@index([provincia, cantonId])
@@ -183,7 +185,8 @@ model Entrega {
 
   lote      Lote           @relation(fields: [loteId], references: [id])
   separador Separador      @relation(fields: [separadorWallet], references: [wallet])
-  receptor  Intermediario  @relation(fields: [receptorWallet], references: [wallet])
+  // receptorWallet puede ser un intermediario O un transformador (entrega directa, "sin
+  // intermediarios"): sin FK a proposito -- ver nota en el modelo Intermediario.
 
   @@unique([txHash, logIndex])
   @@index([loteId])
@@ -330,7 +333,7 @@ model EmisionEslabon {
   mermaKg    Decimal @db.Decimal(78, 0)
 
   emision       Emision        @relation(fields: [emisionId], references: [id])
-  intermediario Intermediario? @relation(fields: [direccion], references: [wallet])
+  // direccion puede ser un intermediario o el transformador: sin FK a proposito.
 
   @@unique([emisionId, direccion])
   @@index([direccion])

@@ -82,7 +82,7 @@ export default async function VerificarCodigoPage({ params }: { params: Promise<
 
       <section className="flex flex-col gap-2">
         <h2 className="font-heading font-semibold text-navy">Origen del material</h2>
-        <OrigenMaterial origen={datos.origen} />
+        <OrigenMaterial origen={datos.origen} sincronizando={datos.origenSincronizando} />
       </section>
 
       <section className="flex flex-col gap-3 border-t border-neutral-300 pt-4 text-sm">

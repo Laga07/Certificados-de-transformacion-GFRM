@@ -14,7 +14,7 @@ export function ChainGuard() {
   const redPreferida = chains[0];
 
   return (
-    <div className="bg-amber-50 border-b border-amber-200 px-4 py-2 text-sm text-amber-900 flex flex-wrap items-center gap-3">
+    <div className="no-print bg-amber-50 border-b border-amber-200 px-4 py-2 text-sm text-amber-900 flex flex-wrap items-center gap-3">
       <span>
         Tu wallet está conectada a {chain?.name ?? `chain ${chainId}`}, que no es una red
         soportada por esta DApp.

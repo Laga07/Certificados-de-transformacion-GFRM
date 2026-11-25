@@ -22,7 +22,7 @@ export function EmailVerificacionBanner() {
   }
 
   return (
-    <div className="bg-amber-50 border-b border-amber-200 px-4 py-2 text-sm text-amber-900 flex flex-wrap items-center gap-3">
+    <div className="no-print bg-amber-50 border-b border-amber-200 px-4 py-2 text-sm text-amber-900 flex flex-wrap items-center gap-3">
       <span>
         Tu correo todavía no está verificado. Revisá tu bandeja de entrada (y el spam) o pedí que te
         lo reenviemos.

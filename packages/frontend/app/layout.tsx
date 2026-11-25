@@ -70,7 +70,7 @@ export default async function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <Providers initialState={initialState}>
-          <header className="border-b border-neutral-300 bg-background">
+          <header className="no-print border-b border-neutral-300 bg-background">
             <div className="px-4 py-1.5 flex justify-between label-mono text-[0.65rem] border-b border-neutral-200">
               <span>Registro de campo &middot; trazabilidad y Certificado de Transformación</span>
               <span className="hidden sm:inline">Polygon Amoy (red de prueba) &middot; Costa Rica</span>

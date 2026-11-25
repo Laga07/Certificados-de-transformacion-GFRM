@@ -199,9 +199,9 @@ h4 {
     background: #fff !important;
     background-image: none !important;
   }
-  header,
-  footer,
-  nav,
+  /* Solo lo marcado: un selector `header` a secas tambien ocultaba el encabezado de la
+     constancia (titulo, logo y codigo). La cabecera, el pie y los avisos del sitio llevan
+     .no-print. */
   .no-print {
     display: none !important;
   }

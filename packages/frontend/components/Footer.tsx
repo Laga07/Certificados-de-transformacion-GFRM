@@ -4,7 +4,7 @@ import bosqueNuboso from "../public/bosque nuboso.png";
 
 export function Footer() {
   return (
-    <footer className="relative mt-auto overflow-hidden">
+    <footer className="no-print relative mt-auto overflow-hidden">
       <Image
         src={bosqueNuboso}
         alt=""
